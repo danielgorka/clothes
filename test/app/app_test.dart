@@ -3,9 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('App', () {
-    testWidgets('should app starts', (tester) async {
+    testWidgets('should show HomePage at start', (tester) async {
       await tester.pumpWidget(App());
-      expect(find.text('Hello world!'), findsOneWidget);
+      await tester.pump();
+      expect(find.text('Home page'), findsOneWidget);
     });
   });
 }
