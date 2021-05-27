@@ -1,11 +1,13 @@
 import 'package:clothes/app/app.dart';
+import 'package:clothes/presentation/pages/home/home_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('App', () {
-    testWidgets('should app starts', (tester) async {
+    testWidgets('should show HomePage when app starts', (tester) async {
       await tester.pumpWidget(App());
-      expect(find.text('Hello world!'), findsOneWidget);
+      await tester.pump();
+      expect(find.byType(HomePage), findsOneWidget);
     });
   });
 }
