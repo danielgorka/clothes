@@ -12,7 +12,8 @@ import 'package:clothes/presentation/pages/outfits_page.dart' as _i5;
 import 'package:flutter/material.dart' as _i2;
 
 class AppRouter extends _i1.RootStackRouter {
-  AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey]) : super(navigatorKey);
+  AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey])
+      : super(navigatorKey);
 
   @override
   final Map<String, _i1.PageFactory> pagesMap = {
@@ -58,18 +59,22 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(HomeRoute.name, path: '/', children: [
           _i1.RouteConfig(ClothesRouter.name, path: 'clothes', children: [
             _i1.RouteConfig(ClothesRoute.name, path: ''),
-            _i1.RouteConfig('*#redirect', path: '*', redirectTo: '', fullMatch: true)
+            _i1.RouteConfig('*#redirect',
+                path: '*', redirectTo: '', fullMatch: true)
           ]),
           _i1.RouteConfig(OutfitsRouter.name, path: 'outfits', children: [
             _i1.RouteConfig(OutfitsRoute.name, path: ''),
-            _i1.RouteConfig('*#redirect', path: '*', redirectTo: '', fullMatch: true)
+            _i1.RouteConfig('*#redirect',
+                path: '*', redirectTo: '', fullMatch: true)
           ]),
           _i1.RouteConfig(CalendarRouter.name, path: 'calendar', children: [
             _i1.RouteConfig(CalendarRoute.name, path: ''),
-            _i1.RouteConfig('*#redirect', path: '*', redirectTo: '', fullMatch: true)
+            _i1.RouteConfig('*#redirect',
+                path: '*', redirectTo: '', fullMatch: true)
           ])
         ]),
-        _i1.RouteConfig('*#redirect', path: '*', redirectTo: '/', fullMatch: true)
+        _i1.RouteConfig('*#redirect',
+            path: '*', redirectTo: '/', fullMatch: true)
       ];
 }
 

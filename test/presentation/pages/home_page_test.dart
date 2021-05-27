@@ -75,17 +75,25 @@ void main() {
           // assert
           final theme = tester.widget<Theme>(find.byType(Theme));
 
-          final clothesIcon = tester.element(find.byKey(Keys.clothesNavbarIcon));
+          final clothesIcon =
+              tester.element(find.byKey(Keys.clothesNavbarIcon));
           final clothesIconTheme =
               clothesIcon.findAncestorWidgetOfExactType<IconTheme>()!;
           final unselectedColorValue = theme.data.unselectedWidgetColor.value;
-          expect(clothesIconTheme.data.color?.value, equals(unselectedColorValue));
+          expect(
+            clothesIconTheme.data.color?.value,
+            equals(unselectedColorValue),
+          );
 
-          final calendarIcon = tester.element(find.byKey(Keys.calendarNavbarIcon));
+          final calendarIcon =
+              tester.element(find.byKey(Keys.calendarNavbarIcon));
           final calendarIconTheme =
               calendarIcon.findAncestorWidgetOfExactType<IconTheme>()!;
           final primaryColorValue = theme.data.primaryColor.value;
-          expect(calendarIconTheme.data.color?.value, equals(primaryColorValue));
+          expect(
+            calendarIconTheme.data.color?.value,
+            equals(primaryColorValue),
+          );
         },
       );
     },
