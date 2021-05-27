@@ -1,5 +1,5 @@
 import 'package:clothes/app/app.dart';
-import 'package:clothes/presentation/pages/home_page.dart';
+import 'package:clothes/presentation/pages/home/home_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

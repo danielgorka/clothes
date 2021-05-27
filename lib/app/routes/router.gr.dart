@@ -7,7 +7,7 @@
 import 'package:auto_route/auto_route.dart' as _i1;
 import 'package:clothes/presentation/pages/calendar_page.dart' as _i6;
 import 'package:clothes/presentation/pages/clothes_page.dart' as _i4;
-import 'package:clothes/presentation/pages/home_page.dart' as _i3;
+import 'package:clothes/presentation/pages/home/home_page.dart' as _i3;
 import 'package:clothes/presentation/pages/outfits_page.dart' as _i5;
 import 'package:flutter/material.dart' as _i2;
 
