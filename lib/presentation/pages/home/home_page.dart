@@ -1,6 +1,7 @@
 import 'package:clothes/app/display_sizes.dart';
 import 'package:clothes/app/keys.dart';
 import 'package:clothes/app/routes/router.gr.dart';
+import 'package:clothes/l10n/l10n.dart';
 import 'package:clothes/presentation/pages/home/widgets/navigation_scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -25,17 +26,17 @@ class HomePage extends StatelessWidget {
         items: [
           //TODO: change icons
           NavigationItem(
-            label: 'Clothes',
+            label: context.l10n.clothes,
             icon: const Icon(Icons.help_outline, key: Keys.clothesNavbarIcon),
             route: const ClothesRouter(),
           ),
           NavigationItem(
-            label: 'Outfits',
+            label: context.l10n.outfits,
             icon: const Icon(Icons.help_outline, key: Keys.outfitsNavbarIcon),
             route: const OutfitsRouter(),
           ),
           NavigationItem(
-            label: 'Calendar',
+            label: context.l10n.calendar,
             icon: const Icon(Icons.help_outline, key: Keys.calendarNavbarIcon),
             route: const CalendarRouter(),
           ),
