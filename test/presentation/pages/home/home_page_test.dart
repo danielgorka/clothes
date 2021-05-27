@@ -86,7 +86,7 @@ void main() {
         'Small display',
         () {
           testWidgets(
-            'should display BottomNavigationBar when device is small',
+            'should display BottomNavigationBar when display is small',
             (tester) async {
               // arrange
               tester.setSmallDisplaySize();
@@ -152,7 +152,7 @@ void main() {
         'Medium display',
         () {
           testWidgets(
-            'should display not extended NavigationRail when device is medium',
+            'should display not extended NavigationRail when display is medium',
             (tester) async {
               // arrange
               tester.setMediumDisplaySize();
@@ -219,7 +219,7 @@ void main() {
         'Large display',
         () {
           testWidgets(
-            'should display extended NavigationRail when device is large',
+            'should display extended NavigationRail when display is large',
             (tester) async {
               // arrange
               tester.setLargeDisplaySize();

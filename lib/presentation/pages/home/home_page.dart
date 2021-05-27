@@ -7,19 +7,21 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  NavigationType _getNavigationType(BoxConstraints constraints) {
+    if (constraints.maxWidth >= DisplaySizes.large) {
+      return NavigationType.extendedNavRail;
+    } else if (constraints.maxWidth >= DisplaySizes.medium) {
+      return NavigationType.navRail;
+    } else {
+      return NavigationType.bottomNavBar;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      late final NavigationType type;
-      if (constraints.maxWidth >= DisplaySizes.large) {
-        type = NavigationType.extendedNavRail;
-      } else if (constraints.maxWidth >= DisplaySizes.medium) {
-        type = NavigationType.navRail;
-      } else {
-        type = NavigationType.bottomNavBar;
-      }
       return NavigationScaffold(
-        navigationType: type,
+        navigationType: _getNavigationType(constraints),
         items: [
           //TODO: change icons
           NavigationItem(
