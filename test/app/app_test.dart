@@ -1,6 +1,6 @@
 import 'package:clothes/app/app.dart';
-import 'package:clothes/app/theme.dart';
-import 'package:clothes/presentation/pages/home/home_page.dart';
+import 'package:clothes/app/pages/home_page.dart';
+import 'package:clothes/app/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
