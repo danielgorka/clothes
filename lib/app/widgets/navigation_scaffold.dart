@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:clothes/app/keys.dart';
+import 'package:clothes/app/utils/keys.dart';
 import 'package:flutter/material.dart';
 
 enum NavigationType {

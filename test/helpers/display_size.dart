@@ -1,4 +1,4 @@
-import 'package:clothes/app/display_sizes.dart';
+import 'package:clothes/app/utils/display_sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

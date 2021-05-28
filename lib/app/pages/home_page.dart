@@ -1,8 +1,8 @@
-import 'package:clothes/app/display_sizes.dart';
-import 'package:clothes/app/keys.dart';
 import 'package:clothes/app/routes/router.gr.dart';
+import 'package:clothes/app/utils/display_sizes.dart';
+import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/app/widgets/navigation_scaffold.dart';
 import 'package:clothes/l10n/l10n.dart';
-import 'package:clothes/presentation/pages/home/widgets/navigation_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {

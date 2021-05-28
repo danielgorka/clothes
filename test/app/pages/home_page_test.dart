@@ -1,12 +1,12 @@
 import 'package:clothes/app/app.dart';
-import 'package:clothes/app/keys.dart';
-import 'package:clothes/presentation/pages/calendar_page.dart';
-import 'package:clothes/presentation/pages/clothes_page.dart';
-import 'package:clothes/presentation/pages/outfits_page.dart';
+import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
+import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../helpers/display_size.dart';
+import '../../helpers/display_size.dart';
 
 typedef ThemeColorGetter = Color? Function(Theme theme);
 

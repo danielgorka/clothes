@@ -1,9 +1,9 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:clothes/presentation/pages/calendar_page.dart';
-import 'package:clothes/presentation/pages/clothes_page.dart';
-import 'package:clothes/presentation/pages/home/home_page.dart';
-import 'package:clothes/presentation/pages/outfits_page.dart';
+import 'package:clothes/app/pages/home_page.dart';
+import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart';
+import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
+import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
 
 @MaterialAutoRouter(
   preferRelativeImports: false,
