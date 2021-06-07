@@ -1,4 +1,4 @@
-import 'package:clothes/features/clothes/domain/repositories/clothes_repository.dart';
+import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:clothes/features/clothes/domain/use_cases/remove_cloth_image.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
