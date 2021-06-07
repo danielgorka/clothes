@@ -60,6 +60,28 @@ class ClothModel extends Equatable {
     );
   }
 
+  ClothModel copyWith({
+    int? id,
+    String? name,
+    String? description,
+    List<int>? imagesIds,
+    List<int>? tagsIds,
+    bool? favourite,
+    int? order,
+    DateTime? creationDate,
+  }) {
+    return ClothModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      imagesIds: imagesIds ?? this.imagesIds,
+      tagsIds: tagsIds ?? this.tagsIds,
+      favourite: favourite ?? this.favourite,
+      order: order ?? this.order,
+      creationDate: creationDate ?? this.creationDate,
+    );
+  }
+
   factory ClothModel.fromJson(Map<String, dynamic> json) =>
       _$ClothModelFromJson(json);
 

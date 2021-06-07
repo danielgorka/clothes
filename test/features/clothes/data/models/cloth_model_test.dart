@@ -109,7 +109,64 @@ void main() {
                 tags: allTags,
               );
               // assert
-              expect(result, cloth);
+              expect(result, equals(cloth));
+            },
+          );
+        },
+      );
+
+      group(
+        'copyWith',
+        () {
+          test(
+            'should return unchanged model when running copyWith wihtout arguments',
+            () {
+              // act
+              final newClothModel = clothModel.copyWith();
+              // assert
+              expect(newClothModel, equals(clothModel));
+            },
+          );
+          test(
+            'should return a valid updated model',
+            () {
+              // arrange
+              const newId = 92;
+              const newName = 'Top';
+              const newDescription = 'Pretty';
+              const newImagesIds = [3];
+              const newTagsIds = [5];
+              const newFavourite = false;
+              const newOrder = 4;
+              final newCreationDate = DateTime(2021, 6, 7, 22, 30, 43, 10);
+
+              // act
+              final newClothModel = clothModel.copyWith(
+                id: newId,
+                name: newName,
+                description: newDescription,
+                imagesIds: newImagesIds,
+                tagsIds: newTagsIds,
+                favourite: newFavourite,
+                order: newOrder,
+                creationDate: newCreationDate,
+              );
+              // assert
+              expect(
+                newClothModel,
+                equals(
+                  ClothModel(
+                    id: newId,
+                    name: newName,
+                    description: newDescription,
+                    imagesIds: newImagesIds,
+                    tagsIds: newTagsIds,
+                    favourite: newFavourite,
+                    order: newOrder,
+                    creationDate: newCreationDate,
+                  ),
+                ),
+              );
             },
           );
         },
