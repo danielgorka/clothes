@@ -46,7 +46,7 @@ void main() {
 
   group(
     'CreateClothTagParams',
-        () {
+    () {
       test('should return correct props', () {
         expect(
           const CreateClothTagParams(tag: clothTag).props,
