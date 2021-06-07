@@ -27,7 +27,7 @@ void main() {
 
       test(
         'should create new tag in the repository',
-            () async {
+        () async {
           const newId = 2;
           // arrange
           when(() => repository.createClothTag(clothTag))
