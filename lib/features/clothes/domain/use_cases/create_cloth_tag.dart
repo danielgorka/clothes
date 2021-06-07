@@ -5,26 +5,24 @@ import 'package:clothes/features/clothes/domain/repositories/base_clothes_reposi
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class CreateClothTag extends UseCase<ClothTag, CreateClothTagParams> {
+class CreateClothTag extends UseCase<int, CreateClothTagParams> {
   final BaseClothesRepository repository;
 
   CreateClothTag(this.repository);
 
   @override
-  Future<Either<Failure, ClothTag>> call(CreateClothTagParams params) {
-    return repository.createClothTag(params.type, params.name);
+  Future<Either<Failure, int>> call(CreateClothTagParams params) {
+    return repository.createClothTag(params.tag);
   }
 }
 
 class CreateClothTagParams extends Equatable {
-  final ClothTagType type;
-  final String name;
+  final ClothTag tag;
 
   const CreateClothTagParams({
-    required this.type,
-    required this.name,
+    required this.tag,
   });
 
   @override
-  List<Object?> get props => [type, name];
+  List<Object?> get props => [tag];
 }

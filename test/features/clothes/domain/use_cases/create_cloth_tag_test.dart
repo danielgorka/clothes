@@ -8,6 +8,12 @@ import 'package:mocktail/mocktail.dart';
 class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
 void main() {
+  const clothTag = ClothTag(
+    id: 0,
+    type: ClothTagType.other,
+    name: 'NewTag',
+  );
+
   group(
     'CreateClothTag',
     () {
@@ -19,25 +25,19 @@ void main() {
         useCase = CreateClothTag(repository);
       });
 
-      const tagType = ClothTagType.other;
-      const tagName = 'NewTag';
-      const clothTag = ClothTag(
-        id: 0,
-        type: tagType,
-        name: tagName,
-      );
       test(
         'should create new tag in the repository',
-        () async {
+            () async {
+          const newId = 2;
           // arrange
-          when(() => repository.createClothTag(tagType, tagName))
-              .thenAnswer((_) async => const Right(clothTag));
+          when(() => repository.createClothTag(clothTag))
+              .thenAnswer((_) async => const Right(newId));
           // act
-          final result = await useCase(
-              const CreateClothTagParams(type: tagType, name: tagName));
+          final result =
+              await useCase(const CreateClothTagParams(tag: clothTag));
           // assert
-          expect(result, equals(const Right(clothTag)));
-          verify(() => repository.createClothTag(tagType, tagName)).called(1);
+          expect(result, equals(const Right(newId)));
+          verify(() => repository.createClothTag(clothTag)).called(1);
           verifyNoMoreInteractions(repository);
         },
       );
@@ -46,13 +46,11 @@ void main() {
 
   group(
     'CreateClothTagParams',
-    () {
+        () {
       test('should return correct props', () {
-        const tagType = ClothTagType.other;
-        const tagName = 'NewTag';
         expect(
-          const CreateClothTagParams(type: tagType, name: tagName).props,
-          [tagType, tagName],
+          const CreateClothTagParams(tag: clothTag).props,
+          [clothTag],
         );
       });
     },

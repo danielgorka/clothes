@@ -11,7 +11,7 @@ abstract class BaseClothesRepository {
 
   Future<Either<Failure, Cloth>> getCloth(int id);
 
-  Future<Either<Failure, int>> createCloth();
+  Future<Either<Failure, int>> createCloth(Cloth cloth);
 
   Future<Failure?> updateCloth(Cloth cloth);
 
@@ -22,8 +22,7 @@ abstract class BaseClothesRepository {
 
   Future<Failure?> deleteClothImage(int id);
 
-  Future<Either<Failure, ClothTag>> createClothTag(
-      ClothTagType type, String name);
+  Future<Either<Failure, int>> createClothTag(ClothTag tag);
 
   Future<Failure?> updateClothTag(ClothTag tag);
 
