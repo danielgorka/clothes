@@ -1,5 +1,5 @@
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
-import 'package:clothes/features/clothes/domain/use_cases/remove_cloth_image.dart';
+import 'package:clothes/features/clothes/domain/use_cases/delete_cloth_tag.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -7,29 +7,28 @@ class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
 void main() {
   group(
-    'RemoveClothImage',
+    'DeleteClothTag',
     () {
-      late RemoveClothImage useCase;
+      late DeleteClothTag useCase;
       late MockClothesRepository repository;
 
       setUp(() {
         repository = MockClothesRepository();
-        useCase = RemoveClothImage(repository);
+        useCase = DeleteClothTag(repository);
       });
 
-      const imageId = 1;
+      const tagId = 1;
       test(
-        'should remove image from cloth in the repository',
+        'should delete image from cloth in the repository',
         () async {
           // arrange
-          when(() => repository.removeClothImage(imageId))
+          when(() => repository.deleteClothTag(tagId))
               .thenAnswer((_) async => null);
           // act
-          final result =
-              await useCase(const RemoveClothImageParams(id: imageId));
+          final result = await useCase(const DeleteClothTagParams(id: tagId));
           // assert
           expect(result, equals(null));
-          verify(() => repository.removeClothImage(imageId)).called(1);
+          verify(() => repository.deleteClothTag(tagId)).called(1);
           verifyNoMoreInteractions(repository);
         },
       );
@@ -37,13 +36,13 @@ void main() {
   );
 
   group(
-    'RemoveClothImageParams',
+    'DeleteClothTagParams',
     () {
       test('should return correct props', () {
-        const imageId = 1;
+        const tagId = 1;
         expect(
-          const RemoveClothImageParams(id: imageId).props,
-          [imageId],
+          const DeleteClothTagParams(id: tagId).props,
+          [tagId],
         );
       });
     },

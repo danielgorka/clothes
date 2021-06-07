@@ -20,12 +20,12 @@ abstract class BaseClothesRepository {
   Future<Either<Failure, ClothImage>> addClothImage(
       int clothId, Uint8List image);
 
-  Future<Failure?> removeClothImage(int id);
+  Future<Failure?> deleteClothImage(int id);
 
   Future<Either<Failure, ClothTag>> createClothTag(
       ClothTagType type, String name);
 
   Future<Failure?> updateClothTag(ClothTag tag);
 
-  Future<Failure?> removeClothTag(int id);
+  Future<Failure?> deleteClothTag(int id);
 }

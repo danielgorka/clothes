@@ -3,21 +3,21 @@ import 'package:clothes/core/use_cases/void_use_case.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:equatable/equatable.dart';
 
-class RemoveClothImage extends VoidUseCase<RemoveClothImageParams> {
+class DeleteClothTag extends VoidUseCase<DeleteClothTagParams> {
   final BaseClothesRepository repository;
 
-  RemoveClothImage(this.repository);
+  DeleteClothTag(this.repository);
 
   @override
-  Future<Failure?> call(RemoveClothImageParams params) {
-    return repository.removeClothImage(params.id);
+  Future<Failure?> call(DeleteClothTagParams params) {
+    return repository.deleteClothTag(params.id);
   }
 }
 
-class RemoveClothImageParams extends Equatable {
+class DeleteClothTagParams extends Equatable {
   final int id;
 
-  const RemoveClothImageParams({required this.id});
+  const DeleteClothTagParams({required this.id});
 
   @override
   List<Object?> get props => [id];
