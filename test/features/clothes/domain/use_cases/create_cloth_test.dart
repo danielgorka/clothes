@@ -17,7 +17,6 @@ void main() {
       setUp(() {
         repository = MockClothesRepository();
         useCase = CreateCloth(repository);
-        registerFallbackValue(Cloth.createNew());
       });
 
       const clothId = 1;
