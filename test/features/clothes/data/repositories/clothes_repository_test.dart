@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/error/failures.dart';
 import 'package:clothes/features/clothes/data/data_sources/clothes_local_data_source.dart';
-import 'package:clothes/features/clothes/data/data_sources/images_local_data_source.dart';
+import 'package:clothes/features/clothes/data/data_sources/images/base_images_local_data_source.dart';
 import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
 import 'package:clothes/features/clothes/data/models/cloth_model.dart';
 import 'package:clothes/features/clothes/data/models/cloth_tag_model.dart';

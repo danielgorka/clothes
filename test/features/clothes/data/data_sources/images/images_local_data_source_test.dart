@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/path_provider.dart';
-import 'package:clothes/features/clothes/data/data_sources/images/base_images_local_data_source.dart';
+import 'package:clothes/features/clothes/data/data_sources/images/images_local_data_source.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
