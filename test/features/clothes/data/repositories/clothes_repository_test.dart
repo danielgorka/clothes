@@ -125,7 +125,6 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
-
           test(
             'should return stream with DatabaseFailure '
             'when data source return DatabaseException',
@@ -143,6 +142,32 @@ void main() {
               await expectLater(
                 result,
                 emits(Left(DatabaseFailure())),
+              );
+              verify(() => mockClothesLocalDataSource.getClothes()).called(1);
+              verify(() => mockClothesLocalDataSource.getClothTags()).called(1);
+              verify(() => mockClothesLocalDataSource.getClothImages())
+                  .called(1);
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return stream with ObjectNotFoundFailure '
+            'when data source return ObjectNotFoundException',
+            () async {
+              // arrange
+              when(() => mockClothesLocalDataSource.getClothes())
+                  .thenThrow(ObjectNotFoundException());
+              when(() => mockClothesLocalDataSource.getClothTags())
+                  .thenAnswer((_) => Stream.value([clothTagModel]));
+              when(() => mockClothesLocalDataSource.getClothImages())
+                  .thenAnswer((_) => Stream.value([clothImageModel]));
+              // act
+              final result = repository.getClothes();
+              // assert
+              await expectLater(
+                result,
+                emits(Left(ObjectNotFoundFailure())),
               );
               verify(() => mockClothesLocalDataSource.getClothes()).called(1);
               verify(() => mockClothesLocalDataSource.getClothTags()).called(1);
@@ -183,7 +208,6 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
-
           test(
             'should return DatabaseFailure when '
             'the data source throws DatabaseException',
@@ -194,6 +218,21 @@ void main() {
                 actFunction: () => repository.getCloth(clothId),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.getCloth(clothId),
+                actFunction: () => repository.getCloth(clothId),
+                exception: ObjectNotFoundException(),
+                expectValue: Left(ObjectNotFoundFailure()),
               );
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -237,6 +276,21 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.createCloth(clothModel),
+                actFunction: () => repository.createCloth(cloth),
+                exception: ObjectNotFoundException(),
+                expectValue: Left(ObjectNotFoundFailure()),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
         },
       );
 
@@ -274,6 +328,21 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.updateCloth(clothModel),
+                actFunction: () => repository.updateCloth(cloth),
+                exception: ObjectNotFoundException(),
+                expectValue: ObjectNotFoundFailure(),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
         },
       );
 
@@ -306,6 +375,21 @@ void main() {
                 actFunction: () => repository.deleteCloth(clothId),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should returnObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.deleteCloth(clothId),
+                actFunction: () => repository.deleteCloth(clothId),
+                exception: ObjectNotFoundException(),
+                expectValue: ObjectNotFoundFailure(),
               );
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -384,6 +468,27 @@ void main() {
                     repository.addClothImage(clothId, clothImageData),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
+              );
+              verify(() => mockImagesLocalDataSource.saveImage(clothImageData))
+                  .called(1);
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              when(() => mockImagesLocalDataSource.saveImage(clothImageData))
+                  .thenAnswer((_) => Future.value(clothImagePath));
+
+              await shouldReturnFailure(
+                mockFunction: () => mockClothesLocalDataSource
+                    .createClothImage(tempClothImageModel),
+                actFunction: () =>
+                    repository.addClothImage(clothId, clothImageData),
+                exception: ObjectNotFoundException(),
+                expectValue: Left(ObjectNotFoundFailure()),
               );
               verify(() => mockImagesLocalDataSource.saveImage(clothImageData))
                   .called(1);
@@ -484,6 +589,21 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.getClothImage(clothImageId),
+                actFunction: () => repository.deleteClothImage(clothImageId),
+                exception: ObjectNotFoundException(),
+                expectValue: ObjectNotFoundFailure(),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
         },
       );
 
@@ -519,6 +639,21 @@ void main() {
                 actFunction: () => repository.createClothTag(clothTag),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.createClothTag(clothTagModel),
+                actFunction: () => repository.createClothTag(clothTag),
+                exception: ObjectNotFoundException(),
+                expectValue: Left(ObjectNotFoundFailure()),
               );
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -563,6 +698,21 @@ void main() {
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
           );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.updateClothTag(clothTagModel),
+                actFunction: () => repository.updateClothTag(clothTag),
+                exception: ObjectNotFoundException(),
+                expectValue: ObjectNotFoundFailure(),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
         },
       );
 
@@ -596,6 +746,21 @@ void main() {
                 actFunction: () => repository.deleteClothTag(clothTagId),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
+              );
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return ObjectNotFoundFailure when '
+            'the data source throws ObjectNotFoundException',
+            () async {
+              await shouldReturnFailure(
+                mockFunction: () =>
+                    mockClothesLocalDataSource.deleteClothTag(clothTagId),
+                actFunction: () => repository.deleteClothTag(clothTagId),
+                exception: ObjectNotFoundException(),
+                expectValue: ObjectNotFoundFailure(),
               );
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);

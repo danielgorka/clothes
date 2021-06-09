@@ -43,10 +43,12 @@ class ClothesRepository extends BaseClothesRepository {
     }
 
     void onError(Object e) {
-      if (e is DatabaseException) {
+      if (e is ObjectNotFoundException) {
+        controller.add(Left(ObjectNotFoundFailure()));
+      } else {
         controller.add(Left(DatabaseFailure()));
-        controller.close();
       }
+      controller.close();
     }
 
     void start() {
@@ -79,6 +81,8 @@ class ClothesRepository extends BaseClothesRepository {
           },
           onError: onError,
         );
+      } on ObjectNotFoundException catch (e) {
+        onError(e);
       } on DatabaseException catch (e) {
         onError(e);
       }
@@ -118,6 +122,8 @@ class ClothesRepository extends BaseClothesRepository {
           tags: tags.map((tag) => tag.toEntity()).toList(),
         ),
       );
+    } on ObjectNotFoundException {
+      return Left(ObjectNotFoundFailure());
     } on DatabaseException {
       return Left(DatabaseFailure());
     }
@@ -129,6 +135,8 @@ class ClothesRepository extends BaseClothesRepository {
       final newId =
           await clothesDataSource.createCloth(ClothModel.fromEntity(cloth));
       return Right(newId);
+    } on ObjectNotFoundException {
+      return Left(ObjectNotFoundFailure());
     } on DatabaseException {
       return Left(DatabaseFailure());
     }
@@ -138,6 +146,8 @@ class ClothesRepository extends BaseClothesRepository {
   Future<Failure?> updateCloth(Cloth cloth) async {
     try {
       await clothesDataSource.updateCloth(ClothModel.fromEntity(cloth));
+    } on ObjectNotFoundException {
+      return ObjectNotFoundFailure();
     } on DatabaseException {
       return DatabaseFailure();
     }
@@ -147,6 +157,8 @@ class ClothesRepository extends BaseClothesRepository {
   Future<Failure?> deleteCloth(int id) async {
     try {
       await clothesDataSource.deleteCloth(id);
+    } on ObjectNotFoundException {
+      return ObjectNotFoundFailure();
     } on DatabaseException {
       return DatabaseFailure();
     }
@@ -171,6 +183,8 @@ class ClothesRepository extends BaseClothesRepository {
       return Right(clothImage);
     } on LocalStorageException {
       return Left(LocalStorageFailure());
+    } on ObjectNotFoundException {
+      return Left(ObjectNotFoundFailure());
     } on DatabaseException {
       return Left(DatabaseFailure());
     }
@@ -193,6 +207,8 @@ class ClothesRepository extends BaseClothesRepository {
       );
     } on LocalStorageException {
       return LocalStorageFailure();
+    } on ObjectNotFoundException {
+      return ObjectNotFoundFailure();
     } on DatabaseException {
       return DatabaseFailure();
     }
@@ -204,6 +220,8 @@ class ClothesRepository extends BaseClothesRepository {
       final newId =
           await clothesDataSource.createClothTag(ClothTagModel.fromEntity(tag));
       return Right(newId);
+    } on ObjectNotFoundException {
+      return Left(ObjectNotFoundFailure());
     } on DatabaseException {
       return Left(DatabaseFailure());
     }
@@ -213,6 +231,8 @@ class ClothesRepository extends BaseClothesRepository {
   Future<Failure?> updateClothTag(ClothTag tag) async {
     try {
       await clothesDataSource.updateClothTag(ClothTagModel.fromEntity(tag));
+    } on ObjectNotFoundException {
+      return ObjectNotFoundFailure();
     } on DatabaseException {
       return DatabaseFailure();
     }
@@ -222,6 +242,8 @@ class ClothesRepository extends BaseClothesRepository {
   Future<Failure?> deleteClothTag(int id) async {
     try {
       await clothesDataSource.deleteClothTag(id);
+    } on ObjectNotFoundException {
+      return ObjectNotFoundFailure();
     } on DatabaseException {
       return DatabaseFailure();
     }

@@ -9,4 +9,6 @@ abstract class Failure extends Equatable {
 
 class DatabaseFailure extends Failure {}
 
+class ObjectNotFoundFailure extends DatabaseFailure {}
+
 class LocalStorageFailure extends Failure {}
