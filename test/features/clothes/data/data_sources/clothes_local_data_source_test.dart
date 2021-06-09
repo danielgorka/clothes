@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/path_provider.dart';
 import 'package:clothes/features/clothes/data/data_sources/clothes_local_data_source.dart';
@@ -25,7 +23,7 @@ void main() {
       late MockBox mockClothImagesBox;
       late ClothesLocalDataSource clothesLocalDataSource;
 
-      setUpAll(() async {
+      setUp(() async {
         mockClothesBox = MockBox();
         mockClothTagsBox = MockBox();
         mockClothImagesBox = MockBox();
@@ -34,12 +32,6 @@ void main() {
           clothTagsBox: mockClothTagsBox,
           clothImagesBox: mockClothImagesBox,
         );
-      });
-
-      setUp(() {
-        reset(mockClothesBox);
-        reset(mockClothTagsBox);
-        reset(mockClothImagesBox);
       });
 
       const clothModelId = 1;
@@ -248,7 +240,7 @@ void main() {
               final mockPathProvider = MockPathProvider();
               const path = 'path';
               when(() => mockPathProvider.getAppPath())
-                  .thenAnswer((_) => Future.value(Directory(path)));
+                  .thenAnswer((_) => Future.value(path));
               when(() => mockHive.init(path))
                   .thenAnswer((_) => Future.value(null));
               when(() => mockHive.openBox(any()))

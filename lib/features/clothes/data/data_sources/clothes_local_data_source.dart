@@ -66,8 +66,8 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
     required BasePathProvider pathProvider,
   }) async {
     if (!kIsWeb) {
-      final appDir = await pathProvider.getAppPath();
-      hive.init(appDir.path);
+      final appPath = await pathProvider.getAppPath();
+      hive.init(appPath);
     }
 
     final clothesBox = await hive.openBox(clothesBoxName);

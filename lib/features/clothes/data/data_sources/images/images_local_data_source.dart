@@ -27,7 +27,7 @@ class ImagesLocalDataSource extends BaseImagesLocalDataSource {
     required BasePathProvider pathProvider,
   }) async {
     final appPath = await pathProvider.getAppPath();
-    final dir = fileSystem.directory(join(appPath.path, folderName));
+    final dir = fileSystem.directory(join(appPath, folderName));
     await dir.create(recursive: true);
     return ImagesLocalDataSource(
       fileSystem: fileSystem,

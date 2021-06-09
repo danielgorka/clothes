@@ -1,4 +1,3 @@
-import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
@@ -45,7 +44,7 @@ void main() {
               final mockPathProvider = MockPathProvider();
               const path = 'app/path';
               when(() => mockPathProvider.getAppPath())
-                  .thenAnswer((_) => Future.value(io.Directory(path)));
+                  .thenAnswer((_) => Future.value(path));
               // act
               final result = await ImagesLocalDataSource.init(
                 fileSystem: mockFileSystem,

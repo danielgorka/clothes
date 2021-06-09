@@ -35,7 +35,7 @@ void main() {
               // act
               final result = await pathProvider.getAppPath();
               // assert
-              expect(result.path, appDir);
+              expect(result, equals(appDir));
             },
           );
         },
