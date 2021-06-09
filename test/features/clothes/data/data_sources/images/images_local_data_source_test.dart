@@ -147,12 +147,12 @@ void main() {
             },
           );
           test(
-            'should throws LocalStorageException '
+            'should throw LocalStorageException '
             'if specified path is not in base folder',
             () async {
               // arrange
               final filePath = p.join(notFolderPath, '1234567890.png');
-              await mockFileSystem.file(filePath).create();
+              await mockFileSystem.file(filePath).create(recursive: true);
               // act
               final func = imagesLocalDataSource.deleteImage;
               // assert
