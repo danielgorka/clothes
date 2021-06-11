@@ -13,7 +13,9 @@ import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: BaseClothesRepository)
 class ClothesRepository extends BaseClothesRepository {
   final BaseClothesLocalDataSource clothesDataSource;
   final BaseImagesLocalDataSource imagesDataSource;

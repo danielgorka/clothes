@@ -6,6 +6,7 @@ import 'package:clothes/features/clothes/data/models/cloth_tag_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:injectable/injectable.dart';
 
 abstract class BaseClothesLocalDataSource {
   Stream<List<ClothModel>> getClothes();
@@ -45,6 +46,7 @@ typedef _JsonMapper<T> = T Function(Map<String, dynamic> json);
 
 typedef _IdMatcher<T> = bool Function(T model, int id);
 
+@LazySingleton(as: BaseClothesLocalDataSource)
 class ClothesLocalDataSource extends BaseClothesLocalDataSource {
   static const clothesBoxName = 'clothes';
   static const clothTagsBoxName = 'cloth_tags';
@@ -61,6 +63,7 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
     required this.clothImagesBox,
   });
 
+  @factoryMethod
   static Future<ClothesLocalDataSource> init({
     required HiveInterface hive,
     required BasePathProvider pathProvider,
@@ -212,6 +215,7 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
     await clothImagesBox.delete(id);
   }
 
+  @disposeMethod
   @override
   Future<void> close() async {
     await clothesBox.close();

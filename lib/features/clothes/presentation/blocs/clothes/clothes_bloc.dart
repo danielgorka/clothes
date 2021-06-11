@@ -5,10 +5,12 @@ import 'package:clothes/core/use_cases/no_params.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/use_cases/get_clothes.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 
 part 'clothes_event.dart';
 part 'clothes_state.dart';
 
+@injectable
 class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
   final GetClothes getClothes;
   StreamSubscription? _clothesSubscription;

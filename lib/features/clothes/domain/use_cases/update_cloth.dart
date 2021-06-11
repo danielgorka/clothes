@@ -3,7 +3,9 @@ import 'package:clothes/core/use_cases/void_use_case.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class UpdateCloth extends VoidUseCase<UpdateClothParams> {
   final BaseClothesRepository repository;
 

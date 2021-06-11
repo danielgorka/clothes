@@ -4,7 +4,9 @@ import 'package:clothes/core/use_cases/stream_use_case.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class GetClothes implements StreamUseCase<List<Cloth>, NoParams> {
   final BaseClothesRepository repository;
 

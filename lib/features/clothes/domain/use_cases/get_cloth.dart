@@ -4,7 +4,9 @@ import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class GetCloth extends UseCase<Cloth, GetClothParams> {
   final BaseClothesRepository repository;
 
