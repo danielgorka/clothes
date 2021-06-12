@@ -16,18 +16,25 @@ Future<void> configureDependencies() => $initGetIt(getIt);
 
 @module
 abstract class RegisterModule {
-  @LazySingleton()
+  @LazySingleton(dispose: disposeHive)
   HiveInterface hive() => Hive;
 
   @preResolve
-  Future<BaseImagesLocalDataSource> imagesLocalDataSource() async {
+  @LazySingleton()
+  Future<BaseImagesLocalDataSource> imagesLocalDataSource(
+    BasePathProvider pathProvider,
+  ) async {
     if (kIsWeb) {
       return ImagesLocalDataSourceWeb();
     } else {
       return ImagesLocalDataSource.init(
         fileSystem: const LocalFileSystem(),
-        pathProvider: getIt<BasePathProvider>(),
+        pathProvider: pathProvider,
       );
     }
   }
+}
+
+Future<void> disposeHive(HiveInterface hive) {
+  return hive.close();
 }

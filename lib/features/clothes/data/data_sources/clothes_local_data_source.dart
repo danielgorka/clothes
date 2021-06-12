@@ -46,6 +46,7 @@ typedef _JsonMapper<T> = T Function(Map<String, dynamic> json);
 
 typedef _IdMatcher<T> = bool Function(T model, int id);
 
+@preResolve
 @LazySingleton(as: BaseClothesLocalDataSource)
 class ClothesLocalDataSource extends BaseClothesLocalDataSource {
   static const clothesBoxName = 'clothes';
