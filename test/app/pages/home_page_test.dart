@@ -1,22 +1,116 @@
-import 'package:clothes/app/app.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:auto_route/src/route/route_data_scope.dart';
+import 'package:clothes/app/pages/home_page.dart';
 import 'package:clothes/app/utils/keys.dart';
-import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart';
-import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
-import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/display_size.dart';
 
 typedef ThemeColorGetter = Color? Function(Theme theme);
 
+class MockAppRouter extends RootStackRouter {
+  static const main = 'main';
+  static const tab1 = '1';
+  static const tab2 = '2';
+  static const tab3 = '3';
+  static const tabText1 = 'Tab 1';
+  static const tabText2 = 'Tab 2';
+  static const tabText3 = 'Tab 3';
+
+  MockAppRouter() : super(null);
+
+  @override
+  final Map<String, PageFactory> pagesMap = {
+    main: (routeData) => MaterialPageX<dynamic>(
+          routeData: routeData,
+          builder: (_) {
+            return Container();
+          },
+        ),
+    tab1: (routeData) => MaterialPageX<dynamic>(
+          routeData: routeData,
+          builder: (_) {
+            return const Text(tabText1);
+          },
+        ),
+    tab2: (routeData) => MaterialPageX<dynamic>(
+          routeData: routeData,
+          builder: (_) {
+            return const Text(tabText2);
+          },
+        ),
+    tab3: (routeData) => MaterialPageX<dynamic>(
+          routeData: routeData,
+          builder: (_) {
+            return const Text(tabText3);
+          },
+        ),
+  };
+
+  @override
+  List<RouteConfig> get routes => [
+        RouteConfig(main, path: '/', children: [
+          RouteConfig(tab1, path: tab1, children: [
+            RouteConfig(tab1, path: ''),
+          ]),
+          RouteConfig(tab2, path: tab2, children: [
+            RouteConfig(tab2, path: ''),
+          ]),
+          RouteConfig(tab3, path: tab3, children: [
+            RouteConfig(tab3, path: ''),
+          ])
+        ]),
+      ];
+}
+
 void main() {
+  final baseWidget = MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: RouteDataScope(
+      routeData: RouteData(
+        route: const RouteMatch(
+          routeName: MockAppRouter.main,
+          segments: [],
+          path: '/',
+          stringMatch: '/',
+          key: ValueKey(MockAppRouter.main),
+        ),
+        router: MockAppRouter(),
+      ),
+      segmentsHash: 0,
+      child: RouterScope(
+        segmentsHash: 0,
+        inheritableObserversBuilder: () => [],
+        controller: MockAppRouter(),
+        navigatorObservers: const [],
+        child: Builder(builder: (context) {
+          return const HomePage(
+            clothesRouter: PageRouteInfo(
+              MockAppRouter.tab1,
+              path: MockAppRouter.tab1,
+            ),
+            outfitsRouter: PageRouteInfo(
+              MockAppRouter.tab2,
+              path: MockAppRouter.tab2,
+            ),
+            calendarRouter: PageRouteInfo(
+              MockAppRouter.tab3,
+              path: MockAppRouter.tab3,
+            ),
+          );
+        }),
+      ),
+    ),
+  );
+
   group(
     'NavigationScaffold',
     () {
       Future<void> shouldDisplayThreeItems(WidgetTester tester) async {
         // arrange
-        await tester.pumpWidget(App());
+        await tester.pumpWidget(baseWidget);
         await tester.pump();
         // assert
         expect(find.byKey(Keys.clothesNavbarIcon), findsOneWidget);
@@ -25,27 +119,39 @@ void main() {
       }
 
       Future<void> shouldDisplayPage(
-          WidgetTester tester, Type page, Key tapKey) async {
+          WidgetTester tester, String text, Key tapKey) async {
         // arrange
-        await tester.pumpWidget(App());
+        await tester.pumpWidget(baseWidget);
         await tester.pump();
         // act
         await tester.tap(find.byKey(tapKey));
         await tester.pumpAndSettle();
         // assert
-        expect(find.byType(page), findsOneWidget);
+        expect(find.text(text), findsOneWidget);
       }
 
       Future<void> shouldDisplayClothesPage(WidgetTester tester) async {
-        shouldDisplayPage(tester, ClothesPage, Keys.clothesNavbarIcon);
+        shouldDisplayPage(
+          tester,
+          MockAppRouter.tabText1,
+          Keys.clothesNavbarIcon,
+        );
       }
 
       Future<void> shouldDisplayOutfitsPage(WidgetTester tester) async {
-        shouldDisplayPage(tester, OutfitsPage, Keys.outfitsNavbarIcon);
+        shouldDisplayPage(
+          tester,
+          MockAppRouter.tabText2,
+          Keys.outfitsNavbarIcon,
+        );
       }
 
       Future<void> shouldDisplayCalendarPage(WidgetTester tester) async {
-        shouldDisplayPage(tester, CalendarPage, Keys.calendarNavbarIcon);
+        shouldDisplayPage(
+          tester,
+          MockAppRouter.tabText3,
+          Keys.calendarNavbarIcon,
+        );
       }
 
       Future<void> shouldChangeItemsColor(
@@ -54,7 +160,7 @@ void main() {
         required ThemeColorGetter selectedColor,
       }) async {
         // arrange
-        await tester.pumpWidget(App());
+        await tester.pumpWidget(baseWidget);
         await tester.pump();
         // act
         await tester.tap(find.byKey(Keys.calendarNavbarIcon));
@@ -90,7 +196,7 @@ void main() {
             (tester) async {
               // arrange
               tester.setSmallDisplaySize();
-              await tester.pumpWidget(App());
+              await tester.pumpWidget(baseWidget);
               await tester.pump();
               // assert
               expect(find.byType(NavigationRail), findsNothing);
@@ -156,7 +262,7 @@ void main() {
             (tester) async {
               // arrange
               tester.setMediumDisplaySize();
-              await tester.pumpWidget(App());
+              await tester.pumpWidget(baseWidget);
               await tester.pump();
               // assert
               expect(find.byType(BottomNavigationBar), findsNothing);
@@ -223,7 +329,7 @@ void main() {
             (tester) async {
               // arrange
               tester.setLargeDisplaySize();
-              await tester.pumpWidget(App());
+              await tester.pumpWidget(baseWidget);
               await tester.pump();
               // assert
               expect(find.byType(BottomNavigationBar), findsNothing);

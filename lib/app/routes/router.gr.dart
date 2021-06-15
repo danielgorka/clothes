@@ -22,8 +22,14 @@ class AppRouter extends _i1.RootStackRouter {
   final Map<String, _i1.PageFactory> pagesMap = {
     HomeRoute.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
-        builder: (_) {
-          return const _i3.HomePage();
+        builder: (data) {
+          final args =
+              data.argsAs<HomeRouteArgs>(orElse: () => const HomeRouteArgs());
+          return _i3.HomePage(
+              key: args.key,
+              clothesRouter: args.clothesRouter,
+              outfitsRouter: args.outfitsRouter,
+              calendarRouter: args.calendarRouter);
         }),
     ClothesRouter.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
@@ -81,11 +87,36 @@ class AppRouter extends _i1.RootStackRouter {
       ];
 }
 
-class HomeRoute extends _i1.PageRouteInfo {
-  const HomeRoute({List<_i1.PageRouteInfo>? children})
-      : super(name, path: '/', initialChildren: children);
+class HomeRoute extends _i1.PageRouteInfo<HomeRouteArgs> {
+  HomeRoute(
+      {_i2.Key? key,
+      _i1.PageRouteInfo<dynamic>? clothesRouter,
+      _i1.PageRouteInfo<dynamic>? outfitsRouter,
+      _i1.PageRouteInfo<dynamic>? calendarRouter,
+      List<_i1.PageRouteInfo>? children})
+      : super(name,
+            path: '/',
+            args: HomeRouteArgs(
+                key: key,
+                clothesRouter: clothesRouter,
+                outfitsRouter: outfitsRouter,
+                calendarRouter: calendarRouter),
+            initialChildren: children);
 
   static const String name = 'HomeRoute';
+}
+
+class HomeRouteArgs {
+  const HomeRouteArgs(
+      {this.key, this.clothesRouter, this.outfitsRouter, this.calendarRouter});
+
+  final _i2.Key? key;
+
+  final _i1.PageRouteInfo<dynamic>? clothesRouter;
+
+  final _i1.PageRouteInfo<dynamic>? outfitsRouter;
+
+  final _i1.PageRouteInfo<dynamic>? calendarRouter;
 }
 
 class ClothesRouter extends _i1.PageRouteInfo {

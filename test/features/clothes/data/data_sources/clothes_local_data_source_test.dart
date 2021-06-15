@@ -1,4 +1,5 @@
 import 'package:clothes/core/error/exceptions.dart';
+import 'package:clothes/core/platform/app_platform.dart';
 import 'package:clothes/core/platform/path_provider.dart';
 import 'package:clothes/features/clothes/data/data_sources/clothes_local_data_source.dart';
 import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
@@ -13,6 +14,8 @@ class MockHive extends Mock implements HiveInterface {}
 class MockBox extends Mock implements Box {}
 
 class MockPathProvider extends Mock implements BasePathProvider {}
+
+class MockAppPlatform extends Mock implements BaseAppPlatform {}
 
 void main() {
   group(
@@ -238,6 +241,7 @@ void main() {
               // arrange
               final mockHive = MockHive();
               final mockPathProvider = MockPathProvider();
+              final mockAppPlatform = MockAppPlatform();
               const path = 'path';
               when(() => mockPathProvider.getAppPath())
                   .thenAnswer((_) => Future.value(path));
@@ -245,10 +249,13 @@ void main() {
                   .thenAnswer((_) => Future.value(null));
               when(() => mockHive.openBox(any()))
                   .thenAnswer((_) => Future.value(MockBox()));
+              when(() => mockAppPlatform.isWeb)
+                  .thenAnswer((invocation) => false);
               // act
               final result = await ClothesLocalDataSource.init(
                 hive: mockHive,
                 pathProvider: mockPathProvider,
+                appPlatform: mockAppPlatform,
               );
               // assert
               expect(result, isA<ClothesLocalDataSource>());

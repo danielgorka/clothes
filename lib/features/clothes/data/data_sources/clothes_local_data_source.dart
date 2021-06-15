@@ -1,4 +1,5 @@
 import 'package:clothes/core/error/exceptions.dart';
+import 'package:clothes/core/platform/app_platform.dart';
 import 'package:clothes/core/platform/path_provider.dart';
 import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
 import 'package:clothes/features/clothes/data/models/cloth_model.dart';
@@ -68,8 +69,9 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
   static Future<ClothesLocalDataSource> init({
     required HiveInterface hive,
     required BasePathProvider pathProvider,
+    required BaseAppPlatform appPlatform,
   }) async {
-    if (!kIsWeb) {
+    if (!appPlatform.isWeb) {
       final appPath = await pathProvider.getAppPath();
       hive.init(appPath);
     }
