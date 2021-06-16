@@ -249,8 +249,7 @@ void main() {
                   .thenAnswer((_) => Future.value(null));
               when(() => mockHive.openBox(any()))
                   .thenAnswer((_) => Future.value(MockBox()));
-              when(() => mockAppPlatform.isWeb)
-                  .thenAnswer((_) => false);
+              when(() => mockAppPlatform.isWeb).thenAnswer((_) => false);
               // act
               final result = await ClothesLocalDataSource.init(
                 hive: mockHive,

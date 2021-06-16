@@ -6,10 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group(
     'ImageView',
-        () {
+    () {
       testWidgets(
         'should show CachedNetworkImage when path is http url',
-            (tester) async {
+        (tester) async {
           // arrange
           const path = 'http://test.pl';
           await tester.pumpWidget(const ImageView(path: path));
@@ -21,7 +21,7 @@ void main() {
       );
       testWidgets(
         'should show CachedNetworkImage when path is https url',
-            (tester) async {
+        (tester) async {
           // arrange
           const path = 'https://test.pl';
           await tester.pumpWidget(const ImageView(path: path));
@@ -33,7 +33,7 @@ void main() {
       );
       testWidgets(
         'should show CachedNetworkImage when path is base64 url',
-            (tester) async {
+        (tester) async {
           // arrange
           const path = 'data:image/png;base64,'
               'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAAC'
@@ -48,7 +48,7 @@ void main() {
       );
       testWidgets(
         'should show Image.file when path is not url',
-            (tester) async {
+        (tester) async {
           // arrange
           const path = 'images/image.png';
           await tester.pumpWidget(const ImageView(path: path));
