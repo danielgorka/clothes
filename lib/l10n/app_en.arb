@@ -1,6 +1,9 @@
 {
   "appName": "Clothes",
+  "calendar": "Calendar",
   "clothes": "Clothes",
+  "nothingToShow": "Nothing to show",
   "outfits": "Outfits",
-  "calendar": "Calendar"
+  "somethingWentWrong": "Something went wrong",
+  "tryAgain": "Try again"
 }
