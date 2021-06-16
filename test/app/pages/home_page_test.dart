@@ -3,9 +3,9 @@ import 'package:auto_route/src/route/route_data_scope.dart';
 import 'package:clothes/app/pages/home_page.dart';
 import 'package:clothes/app/utils/keys.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/app_wrapper.dart';
 import '../../helpers/display_size.dart';
 
 typedef ThemeColorGetter = Color? Function(Theme theme);
@@ -66,9 +66,8 @@ class MockAppRouter extends RootStackRouter {
 }
 
 void main() {
-  final baseWidget = MaterialApp(
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    home: RouteDataScope(
+  final baseWidget = wrapWithApp(
+    RouteDataScope(
       routeData: RouteData(
         route: const RouteMatch(
           routeName: MockAppRouter.main,
