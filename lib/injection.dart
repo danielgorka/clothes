@@ -10,7 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 typedef InitGetItFunction = Future<void> Function(GetIt getIt);
-late final GetIt getIt;
+late GetIt getIt;
 
 @InjectableInit()
 Future<void> configureDependencies({

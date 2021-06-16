@@ -44,6 +44,22 @@ void main() {
           verifyNoMoreInteractions(mockInitGetItFunction);
         },
       );
+
+      test(
+        'should set global getIt to GetIt.instance when none is specified',
+        () async {
+          // arrange
+          final mockInitGetItFunction = MockInitGetItFunction();
+          when(() => mockInitGetItFunction(GetIt.instance))
+              .thenAnswer((_) => Future.value(GetIt.instance));
+          // act
+          await configureDependencies(
+            initGetIt: mockInitGetItFunction,
+          );
+          // assert
+          expect(getIt, equals(GetIt.instance));
+        },
+      );
     },
   );
 
@@ -83,8 +99,7 @@ void main() {
             'when platform is not web',
             () async {
               // arrange
-              when(() => mockAppPlatform.isWeb)
-                  .thenAnswer((invocation) => false);
+              when(() => mockAppPlatform.isWeb).thenAnswer((_) => false);
               when(() => mockPathProvider.getAppPath())
                   .thenAnswer((_) => Future.value('path'));
               // act
@@ -106,8 +121,7 @@ void main() {
             'when platform is web',
             () async {
               // arrange
-              when(() => mockAppPlatform.isWeb)
-                  .thenAnswer((invocation) => true);
+              when(() => mockAppPlatform.isWeb).thenAnswer((_) => true);
               // act
               final result = await testableRegisterModule.imagesLocalDataSource(
                 mockPathProvider,
