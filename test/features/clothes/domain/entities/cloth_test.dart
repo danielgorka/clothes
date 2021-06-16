@@ -7,6 +7,21 @@ void main() {
   group(
     'Cloth',
     () {
+      group(
+        'empty',
+        () {
+          test(
+            'should create empty cloth',
+            () {
+              // act
+              final result = Cloth.empty();
+              // assert
+              expect(result.id, equals(0));
+            },
+          );
+        },
+      );
+
       test('should return correct props', () {
         const id = 1;
         const name = 'Name';

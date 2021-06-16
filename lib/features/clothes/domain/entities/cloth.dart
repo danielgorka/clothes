@@ -23,6 +23,8 @@ class Cloth extends Equatable {
     required this.creationDate,
   });
 
+  factory Cloth.empty() => Cloth(id: 0, creationDate: DateTime.now());
+
   @override
   List<Object?> get props => [
         id,
