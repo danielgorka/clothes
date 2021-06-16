@@ -7,6 +7,7 @@ import 'app/configure/configure_nonweb.dart'
 
 Future<void> main() async {
   configureApp();
+  WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   runApp(App());
 }
