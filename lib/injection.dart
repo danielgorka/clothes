@@ -7,6 +7,7 @@ import 'package:clothes/injection.config.dart';
 import 'package:file/local.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 typedef InitGetItFunction = Future<void> Function(GetIt getIt);
@@ -25,6 +26,9 @@ Future<void> configureDependencies({
 abstract class RegisterModule {
   @LazySingleton(dispose: disposeHive)
   HiveInterface hive() => Hive;
+
+  @LazySingleton()
+  ImagePicker imagePicker() => ImagePicker();
 
   @preResolve
   @LazySingleton()

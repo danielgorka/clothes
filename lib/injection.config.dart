@@ -5,17 +5,17 @@
 // **************************************************************************
 
 import 'package:get_it/get_it.dart' as _i1;
-import 'package:hive/hive.dart' as _i8;
-import 'package:image_picker/image_picker.dart' as _i4;
+import 'package:hive/hive.dart' as _i5;
+import 'package:image_picker/image_picker.dart' as _i7;
 import 'package:injectable/injectable.dart' as _i2;
 
-import 'core/platform/app_image_picker.dart' as _i3;
-import 'core/platform/app_platform.dart' as _i5;
-import 'core/platform/path_provider.dart' as _i6;
+import 'core/platform/app_image_picker.dart' as _i8;
+import 'core/platform/app_platform.dart' as _i3;
+import 'core/platform/path_provider.dart' as _i4;
 import 'features/clothes/data/data_sources/clothes_local_data_source.dart'
-    as _i10;
+    as _i9;
 import 'features/clothes/data/data_sources/images/base_images_local_data_source.dart'
-    as _i11;
+    as _i10;
 import 'features/clothes/data/repositories/clothes_repository.dart' as _i13;
 import 'features/clothes/domain/repositories/base_clothes_repository.dart'
     as _i12;
@@ -31,8 +31,8 @@ import 'features/clothes/domain/use_cases/update_cloth.dart' as _i21;
 import 'features/clothes/domain/use_cases/update_cloth_tag.dart' as _i22;
 import 'features/clothes/presentation/blocs/clothes/clothes_bloc.dart' as _i24;
 import 'features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
-    as _i7;
-import 'injection.dart' as _i9; // ignore_for_file: unnecessary_lambdas
+    as _i11;
+import 'injection.dart' as _i6; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -40,28 +40,29 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
     {String? environment, _i2.EnvironmentFilter? environmentFilter}) async {
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final registerModule = _$RegisterModule();
-  gh.lazySingleton<_i3.BaseAppImagePicker>(
-      () => _i3.AppImagePicker(imagePicker: get<_i4.ImagePicker>()));
-  gh.lazySingleton<_i5.BaseAppPlatform>(() => _i5.AppPlatform());
-  gh.lazySingleton<_i6.BasePathProvider>(() => _i6.PathProvider());
-  gh.factory<_i7.EditImageBloc>(
-      () => _i7.EditImageBloc(appImagePicker: get<_i3.BaseAppImagePicker>()));
-  gh.lazySingleton<_i8.HiveInterface>(() => registerModule.hive(),
-      dispose: _i9.disposeHive);
-  await gh.lazySingletonAsync<_i10.BaseClothesLocalDataSource>(
-      () => _i10.ClothesLocalDataSource.init(
-          hive: get<_i8.HiveInterface>(),
-          pathProvider: get<_i6.BasePathProvider>(),
-          appPlatform: get<_i5.BaseAppPlatform>()),
+  gh.lazySingleton<_i3.BaseAppPlatform>(() => _i3.AppPlatform());
+  gh.lazySingleton<_i4.BasePathProvider>(() => _i4.PathProvider());
+  gh.lazySingleton<_i5.HiveInterface>(() => registerModule.hive(),
+      dispose: _i6.disposeHive);
+  gh.lazySingleton<_i7.ImagePicker>(() => registerModule.imagePicker());
+  gh.lazySingleton<_i8.BaseAppImagePicker>(
+      () => _i8.AppImagePicker(imagePicker: get<_i7.ImagePicker>()));
+  await gh.lazySingletonAsync<_i9.BaseClothesLocalDataSource>(
+      () => _i9.ClothesLocalDataSource.init(
+          hive: get<_i5.HiveInterface>(),
+          pathProvider: get<_i4.BasePathProvider>(),
+          appPlatform: get<_i3.BaseAppPlatform>()),
       preResolve: true,
       dispose: (i) => i.close());
-  await gh.lazySingletonAsync<_i11.BaseImagesLocalDataSource>(
+  await gh.lazySingletonAsync<_i10.BaseImagesLocalDataSource>(
       () => registerModule.imagesLocalDataSource(
-          get<_i6.BasePathProvider>(), get<_i5.BaseAppPlatform>()),
+          get<_i4.BasePathProvider>(), get<_i3.BaseAppPlatform>()),
       preResolve: true);
+  gh.factory<_i11.EditImageBloc>(
+      () => _i11.EditImageBloc(appImagePicker: get<_i8.BaseAppImagePicker>()));
   gh.lazySingleton<_i12.BaseClothesRepository>(() => _i13.ClothesRepository(
-      clothesDataSource: get<_i10.BaseClothesLocalDataSource>(),
-      imagesDataSource: get<_i11.BaseImagesLocalDataSource>()));
+      clothesDataSource: get<_i9.BaseClothesLocalDataSource>(),
+      imagesDataSource: get<_i10.BaseImagesLocalDataSource>()));
   gh.lazySingleton<_i14.CreateCloth>(
       () => _i14.CreateCloth(get<_i12.BaseClothesRepository>()));
   gh.lazySingleton<_i15.CreateClothTag>(
@@ -87,4 +88,4 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
   return get;
 }
 
-class _$RegisterModule extends _i9.RegisterModule {}
+class _$RegisterModule extends _i6.RegisterModule {}
