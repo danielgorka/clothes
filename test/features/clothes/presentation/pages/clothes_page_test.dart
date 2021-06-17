@@ -14,6 +14,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/app_wrapper.dart';
+import '../../../../helpers/entities.dart';
 
 class MockGetIt extends Mock implements GetIt {}
 
@@ -133,18 +134,13 @@ void main() {
         'should show ClothesView when state is Loaded and clothes is not empty',
         (tester) async {
           // arrange
-          final clothes = [
-            Cloth(id: 0, creationDate: DateTime.now()),
-            Cloth(id: 1, creationDate: DateTime.now()),
-            Cloth(id: 2, creationDate: DateTime.now()),
-          ];
           when(() => mockClothesBloc.state)
-              .thenAnswer((_) => Loaded(clothes: clothes));
+              .thenAnswer((_) => Loaded(clothes: clothes1));
           await tester.pumpWidget(wrap(const ClothesView()));
           // assert
           final finder = find.byType(ClothesGridView);
           final clothesView = tester.widget<ClothesGridView>(finder);
-          expect(clothesView.clothes, clothes);
+          expect(clothesView.clothes, clothes1);
         },
       );
       testWidgets(
@@ -169,20 +165,15 @@ void main() {
         'equal to clothes.length',
         (tester) async {
           // arrange
-          final clothes = [
-            Cloth(id: 0, creationDate: DateTime.now()),
-            Cloth(id: 1, creationDate: DateTime.now()),
-            Cloth(id: 2, creationDate: DateTime.now()),
-          ];
           await tester.pumpWidget(wrapWithApp(
-            ClothesGridView(clothes: clothes),
+            ClothesGridView(clothes: clothes1),
           ));
           // assert
           final finder = find.byType(GridView);
           final gridView = tester.widget<GridView>(finder);
           final childrenDelegate =
               gridView.childrenDelegate as SliverChildBuilderDelegate;
-          expect(childrenDelegate.childCount, equals(clothes.length));
+          expect(childrenDelegate.childCount, equals(clothes1.length));
         },
       );
       testWidgets(

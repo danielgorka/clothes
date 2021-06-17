@@ -1,26 +1,21 @@
 import 'package:clothes/app/utils/clothes_utils.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../helpers/app_wrapper.dart';
+import '../../../../helpers/entities.dart';
 
 void main() {
   group(
     'ClothImageView',
     () {
-      const image = ClothImage(
-        id: 2,
-        path: 'path/image.png',
-      );
-
       testWidgets(
         'should have specified aspect ratio',
         (tester) async {
           // arrange
-          await tester.pumpWidget(const ClothImageView(image: image));
+          await tester.pumpWidget(const ClothImageView(image: clothImage1));
           // assert
           final finder = find.byType(AspectRatio);
           final aspectRatio = tester.widget<AspectRatio>(finder);
@@ -32,7 +27,7 @@ void main() {
         'should have ClipRRect with border radius',
         (tester) async {
           // arrange
-          await tester.pumpWidget(const ClothImageView(image: image));
+          await tester.pumpWidget(const ClothImageView(image: clothImage1));
           // assert
           final finder = find.byType(ClipRRect);
           final clipRRect = tester.widget<ClipRRect>(finder);
@@ -44,11 +39,11 @@ void main() {
         'should show image from path',
         (tester) async {
           // arrange
-          await tester.pumpWidget(const ClothImageView(image: image));
+          await tester.pumpWidget(const ClothImageView(image: clothImage1));
           // assert
           final finder = find.byType(ImageView);
           final imageView = tester.widget<ImageView>(finder);
-          expect(imageView.path, equals(image.path));
+          expect(imageView.path, equals(clothImage1.path));
         },
       );
 

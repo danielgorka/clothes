@@ -2,35 +2,23 @@ import 'package:clothes/features/clothes/data/models/cloth_tag_model.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../helpers/entities.dart';
+import '../../../../helpers/models.dart';
+
 void main() {
   group(
     'ClothTagModel',
     () {
-      const id = 1;
-      const type = 'color';
-      const name = 'path';
-
-      const clothTag = ClothTag(
-        id: id,
-        type: ClothTagType.color,
-        name: name,
-      );
-
-      const clothTagModel = ClothTagModel(
-        id: id,
-        type: type,
-        name: name,
-      );
-      const json = {
-        'id': id,
-        'type': type,
-        'name': name,
+      final json = {
+        'id': clothTagModel1.id,
+        'type': clothTagModel1.type,
+        'name': clothTagModel1.name,
       };
 
       test('should return correct props', () {
         expect(
-          clothTagModel.props,
-          [id, type, name],
+          clothTagModel1.props,
+          [clothTagModel1.id, clothTagModel1.type, clothTagModel1.name],
         );
       });
 
@@ -41,9 +29,9 @@ void main() {
             'should return a valid model from ClothTag entity',
             () {
               // act
-              final result = ClothTagModel.fromEntity(clothTag);
+              final result = ClothTagModel.fromEntity(clothTag1);
               // assert
-              expect(result, equals(clothTagModel));
+              expect(result, equals(clothTagModel1));
             },
           );
         },
@@ -56,20 +44,14 @@ void main() {
             'should return a valid ClothTag entity from model',
             () {
               // act
-              final result = clothTagModel.toEntity();
+              final result = clothTagModel1.toEntity();
               // assert
-              expect(result, clothTag);
+              expect(result, clothTag1);
             },
           );
           test(
             'should return ClothTagType.other when model contains unknown type',
             () {
-              // arrange
-              const clothTagModelWithUnknownType = ClothTagModel(
-                id: id,
-                type: 'unknown type',
-                name: name,
-              );
               // act
               final result = clothTagModelWithUnknownType.toEntity();
               // assert
@@ -88,7 +70,7 @@ void main() {
               // act
               final result = ClothTagModel.fromJson(json);
               // assert
-              expect(result, equals(clothTagModel));
+              expect(result, equals(clothTagModel1));
             },
           );
         },
@@ -101,7 +83,7 @@ void main() {
             'should return a valid JSON from model',
             () {
               // act
-              final result = clothTagModel.toJson();
+              final result = clothTagModel1.toJson();
               // assert
               expect(result, json);
             },

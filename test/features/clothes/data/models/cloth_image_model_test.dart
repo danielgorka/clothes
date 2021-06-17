@@ -1,32 +1,22 @@
 import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../../helpers/entities.dart';
+import '../../../../helpers/models.dart';
 
 void main() {
   group(
     'ClothImageModel',
     () {
-      const id = 1;
-      const path = 'path/image.png';
-
-      const clothImage = ClothImage(
-        id: id,
-        path: path,
-      );
-
-      const clothImageModel = ClothImageModel(
-        id: id,
-        path: path,
-      );
-      const json = {
-        'id': id,
-        'path': path,
+      final json = {
+        'id': clothImageModel1.id,
+        'path': clothImageModel1.path,
       };
 
       test('should return correct props', () {
         expect(
-          clothImageModel.props,
-          [id, path],
+          clothImageModel1.props,
+          [clothImageModel1.id, clothImageModel1.path],
         );
       });
 
@@ -37,9 +27,9 @@ void main() {
             'should return a valid model from ClothImage entity',
             () {
               // act
-              final result = ClothImageModel.fromEntity(clothImage);
+              final result = ClothImageModel.fromEntity(clothImage1);
               // assert
-              expect(result, equals(clothImageModel));
+              expect(result, equals(clothImageModel1));
             },
           );
         },
@@ -52,9 +42,9 @@ void main() {
             'should return a valid ClothImage entity from model',
             () {
               // act
-              final result = clothImageModel.toEntity();
+              final result = clothImageModel1.toEntity();
               // assert
-              expect(result, clothImage);
+              expect(result, clothImage1);
             },
           );
         },
@@ -69,7 +59,7 @@ void main() {
               // act
               final result = ClothImageModel.fromJson(json);
               // assert
-              expect(result, equals(clothImageModel));
+              expect(result, equals(clothImageModel1));
             },
           );
         },
@@ -82,7 +72,7 @@ void main() {
             'should return a valid JSON from model',
             () {
               // act
-              final result = clothImageModel.toJson();
+              final result = clothImageModel1.toJson();
               // assert
               expect(result, json);
             },

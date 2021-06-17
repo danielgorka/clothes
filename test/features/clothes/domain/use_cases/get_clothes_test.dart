@@ -1,10 +1,11 @@
 import 'package:clothes/core/use_cases/no_params.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:clothes/features/clothes/domain/use_cases/get_clothes.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../helpers/entities.dart';
 
 class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
@@ -20,24 +21,18 @@ void main() {
         useCase = GetClothes(repository);
       });
 
-      final emptyList = <Cloth>[];
-      final clothes = [
-        Cloth(id: 0, creationDate: DateTime.now()),
-        Cloth(id: 1, creationDate: DateTime.now()),
-        Cloth(id: 2, creationDate: DateTime.now()),
-      ];
       test(
         'should get all clothes from the repository',
         () async {
           // arrange
-          when(() => repository.getClothes()).thenAnswer(
-              (_) => Stream.fromIterable([Right(emptyList), Right(clothes)]));
+          when(() => repository.getClothes()).thenAnswer((_) =>
+              Stream.fromIterable([Right(emptyClothes), Right(clothes1)]));
           // act
           final stream = useCase(NoParams());
           // assert
           await expectLater(
             stream,
-            emitsInOrder([Right(emptyList), Right(clothes)]),
+            emitsInOrder([Right(emptyClothes), Right(clothes1)]),
           );
           verify(() => repository.getClothes()).called(1);
           verifyNoMoreInteractions(repository);

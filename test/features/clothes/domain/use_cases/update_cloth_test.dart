@@ -1,8 +1,9 @@
-import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:clothes/features/clothes/domain/use_cases/update_cloth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../helpers/entities.dart';
 
 class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
@@ -18,19 +19,17 @@ void main() {
         useCase = UpdateCloth(repository);
       });
 
-      const clothId = 1;
-      final cloth = Cloth(id: clothId, creationDate: DateTime.now());
       test(
         'should update cloth in the repository',
         () async {
           // arrange
-          when(() => repository.updateCloth(cloth))
+          when(() => repository.updateCloth(cloth1))
               .thenAnswer((_) async => null);
           // act
-          final result = await useCase(UpdateClothParams(cloth: cloth));
+          final result = await useCase(UpdateClothParams(cloth: cloth1));
           // assert
           expect(result, equals(null));
-          verify(() => repository.updateCloth(cloth)).called(1);
+          verify(() => repository.updateCloth(cloth1)).called(1);
           verifyNoMoreInteractions(repository);
         },
       );
@@ -41,8 +40,7 @@ void main() {
     'UpdateClothParams',
     () {
       test('should return correct props', () {
-        final cloth = Cloth(id: 1, creationDate: DateTime.now());
-        expect(UpdateClothParams(cloth: cloth).props, [cloth]);
+        expect(UpdateClothParams(cloth: cloth1).props, [cloth1]);
       });
     },
   );

@@ -1,19 +1,14 @@
-import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:clothes/features/clothes/domain/use_cases/create_cloth_tag.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../helpers/entities.dart';
+
 class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
 void main() {
-  const clothTag = ClothTag(
-    id: 0,
-    type: ClothTagType.other,
-    name: 'NewTag',
-  );
-
   group(
     'CreateClothTag',
     () {
@@ -30,14 +25,14 @@ void main() {
         () async {
           const newId = 2;
           // arrange
-          when(() => repository.createClothTag(clothTag))
+          when(() => repository.createClothTag(clothTag1))
               .thenAnswer((_) async => const Right(newId));
           // act
           final result =
-              await useCase(const CreateClothTagParams(tag: clothTag));
+              await useCase(const CreateClothTagParams(tag: clothTag1));
           // assert
           expect(result, equals(const Right(newId)));
-          verify(() => repository.createClothTag(clothTag)).called(1);
+          verify(() => repository.createClothTag(clothTag1)).called(1);
           verifyNoMoreInteractions(repository);
         },
       );
@@ -49,8 +44,8 @@ void main() {
     () {
       test('should return correct props', () {
         expect(
-          const CreateClothTagParams(tag: clothTag).props,
-          [clothTag],
+          const CreateClothTagParams(tag: clothTag1).props,
+          [clothTag1],
         );
       });
     },

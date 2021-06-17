@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:clothes/core/error/failures.dart';
 import 'package:clothes/core/use_cases/no_params.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
-import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/domain/use_cases/get_clothes.dart';
 import 'package:clothes/features/clothes/presentation/blocs/clothes/clothes_bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../../helpers/entities.dart';
 
 class MockGetClothes extends Mock implements GetClothes {}
 
@@ -47,29 +46,6 @@ void main() {
     () {
       late TestableClothesBloc clothesBloc;
       late MockGetClothes mockGetClothes;
-
-      const tag = ClothTag(
-        id: 1,
-        type: ClothTagType.color,
-        name: 'Red',
-      );
-      const image = ClothImage(
-        id: 2,
-        path: 'path/image.png',
-      );
-      final cloth = Cloth(
-        id: 1,
-        name: 'T-shirt',
-        description: 'Too small',
-        images: const [image],
-        tags: const [tag],
-        favourite: true,
-        order: 2,
-        creationDate: DateTime.now(),
-      );
-
-      final list1 = List.filled(4, cloth);
-      final list2 = List.filled(5, cloth);
 
       setUp(() {
         mockGetClothes = MockGetClothes();
@@ -112,8 +88,8 @@ void main() {
               // arrange
               when(() => mockGetClothes(NoParams())).thenAnswer(
                 (_) => Stream.fromIterable([
-                  Right(list1),
-                  Right(list2),
+                  Right(clothes1),
+                  Right(clothes2),
                 ]),
               );
               // act
@@ -124,8 +100,8 @@ void main() {
                 clothesBloc.events,
                 equals([
                   LoadClothes(),
-                  ClothesUpdated(clothes: list1),
-                  ClothesUpdated(clothes: list2),
+                  ClothesUpdated(clothes: clothes1),
+                  ClothesUpdated(clothes: clothes2),
                 ]),
               );
             },
@@ -134,10 +110,11 @@ void main() {
             'should add ClothesError event when stream emits Failure',
             () async {
               // arrange
-              when(() => mockGetClothes(NoParams()))
-                  .thenAnswer((_) => Stream.fromIterable(
-                        [Right(list1), Left(DatabaseFailure())],
-                      ));
+              when(() => mockGetClothes(NoParams())).thenAnswer(
+                (_) => Stream.fromIterable(
+                  [Right(clothes1), Left(DatabaseFailure())],
+                ),
+              );
               // act
               clothesBloc.add(LoadClothes());
               await clothesBloc.waitUtilEvents(count: 3);
@@ -146,7 +123,7 @@ void main() {
                 clothesBloc.events,
                 equals([
                   LoadClothes(),
-                  ClothesUpdated(clothes: list1),
+                  ClothesUpdated(clothes: clothes1),
                   ClothesError(),
                 ]),
               );
@@ -162,9 +139,9 @@ void main() {
             'should emit Loaded state with clothes list',
             build: () => clothesBloc,
             act: (ClothesBloc bloc) =>
-                bloc..add(ClothesUpdated(clothes: list1)),
+                bloc..add(ClothesUpdated(clothes: clothes1)),
             expect: () => [
-              Loaded(clothes: list1),
+              Loaded(clothes: clothes1),
             ],
           );
         },

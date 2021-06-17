@@ -1,8 +1,9 @@
-import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:clothes/features/clothes/domain/use_cases/update_cloth_tag.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../helpers/entities.dart';
 
 class MockClothesRepository extends Mock implements BaseClothesRepository {}
 
@@ -18,23 +19,18 @@ void main() {
         useCase = UpdateClothTag(repository);
       });
 
-      const clothTag = ClothTag(
-        id: 0,
-        type: ClothTagType.other,
-        name: 'NewTag',
-      );
       test(
         'should update tag in the repository',
         () async {
           // arrange
-          when(() => repository.updateClothTag(clothTag))
+          when(() => repository.updateClothTag(clothTag1))
               .thenAnswer((_) async => null);
           // act
           final result =
-              await useCase(const UpdateClothTagParams(tag: clothTag));
+              await useCase(const UpdateClothTagParams(tag: clothTag1));
           // assert
           expect(result, equals(null));
-          verify(() => repository.updateClothTag(clothTag)).called(1);
+          verify(() => repository.updateClothTag(clothTag1)).called(1);
           verifyNoMoreInteractions(repository);
         },
       );
@@ -45,14 +41,9 @@ void main() {
     'UpdateClothTagParams',
     () {
       test('should return correct props', () {
-        const clothTag = ClothTag(
-          id: 0,
-          type: ClothTagType.other,
-          name: 'NewTag',
-        );
         expect(
-          const UpdateClothTagParams(tag: clothTag).props,
-          [clothTag],
+          const UpdateClothTagParams(tag: clothTag1).props,
+          [clothTag1],
         );
       });
     },

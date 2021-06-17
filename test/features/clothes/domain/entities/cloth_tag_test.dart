@@ -1,17 +1,15 @@
-import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../../helpers/entities.dart';
 
 void main() {
   group(
     'ClothTag',
     () {
       test('should return correct props', () {
-        const id = 1;
-        const type = ClothTagType.clothKind;
-        const name = 'T-shirt';
         expect(
-          const ClothTag(id: id, type: type, name: name).props,
-          [id, type, name],
+          clothTag1.props,
+          [clothTag1.id, clothTag1.type, clothTag1.name],
         );
       });
     },

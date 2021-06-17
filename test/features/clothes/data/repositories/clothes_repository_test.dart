@@ -5,12 +5,13 @@ import 'package:clothes/core/error/failures.dart';
 import 'package:clothes/features/clothes/data/data_sources/clothes_local_data_source.dart';
 import 'package:clothes/features/clothes/data/data_sources/images/base_images_local_data_source.dart';
 import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
-import 'package:clothes/features/clothes/data/models/cloth_model.dart';
-import 'package:clothes/features/clothes/data/models/cloth_tag_model.dart';
 import 'package:clothes/features/clothes/data/repositories/clothes_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../helpers/entities.dart';
+import '../../../../helpers/models.dart';
 
 class MockClothesLocalDataSource extends Mock
     implements BaseClothesLocalDataSource {}
@@ -55,35 +56,6 @@ void main() {
 
       final clothImageData = Uint8List.fromList([1, 2, 3, 4, 5, 6]);
 
-      const clothImageId = 1;
-      const clothImagePath = 'path';
-      const clothImageModel = ClothImageModel(
-        id: clothImageId,
-        path: clothImagePath,
-      );
-      final clothImage = clothImageModel.toEntity();
-
-      const clothTagId = 2;
-      const clothTagModel = ClothTagModel(
-        id: clothTagId,
-        type: 'color',
-        name: 'Blue',
-      );
-      final clothTag = clothTagModel.toEntity();
-
-      const clothId = 3;
-      final clothModel = ClothModel(
-        id: clothId,
-        name: 'T-shirt',
-        description: '',
-        imagesIds: const [1],
-        tagsIds: const [2],
-        favourite: true,
-        order: 2,
-        creationDate: DateTime.now(),
-      );
-      final cloth = clothModel.toEntity(images: [clothImage], tags: [clothTag]);
-
       group(
         'getClothes',
         () {
@@ -91,11 +63,11 @@ void main() {
             'should return stream of lists of all saved clothes',
             () async {
               // arrange
-              final clothesModelsList = List.filled(5, clothModel);
-              final clothesList = List.filled(5, cloth);
+              final clothesModelsList = List.filled(5, clothModel2);
+              final clothesList = List.filled(5, cloth2);
 
-              final secondClothesModelsList = List.filled(6, clothModel);
-              final secondClothesList = List.filled(6, cloth);
+              final secondClothesModelsList = List.filled(6, clothModel2);
+              final secondClothesList = List.filled(6, cloth2);
 
               final stream = Stream.fromIterable([
                 clothesModelsList,
@@ -106,9 +78,9 @@ void main() {
                   .thenAnswer((_) => stream);
 
               when(() => mockClothesLocalDataSource.getClothImages())
-                  .thenAnswer((_) => Stream.value([clothImageModel]));
+                  .thenAnswer((_) => Stream.value([clothImageModel2]));
               when(() => mockClothesLocalDataSource.getClothTags())
-                  .thenAnswer((_) => Stream.value([clothTagModel]));
+                  .thenAnswer((_) => Stream.value([clothTagModel2]));
               // act
               final result = repository.getClothes();
               // assert
@@ -133,9 +105,9 @@ void main() {
               when(() => mockClothesLocalDataSource.getClothes())
                   .thenThrow(DatabaseException());
               when(() => mockClothesLocalDataSource.getClothTags())
-                  .thenAnswer((_) => Stream.value([clothTagModel]));
+                  .thenAnswer((_) => Stream.value([clothTagModel1]));
               when(() => mockClothesLocalDataSource.getClothImages())
-                  .thenAnswer((_) => Stream.value([clothImageModel]));
+                  .thenAnswer((_) => Stream.value([clothImageModel1]));
               // act
               final result = repository.getClothes();
               // assert
@@ -159,9 +131,9 @@ void main() {
               when(() => mockClothesLocalDataSource.getClothes())
                   .thenThrow(ObjectNotFoundException());
               when(() => mockClothesLocalDataSource.getClothTags())
-                  .thenAnswer((_) => Stream.value([clothTagModel]));
+                  .thenAnswer((_) => Stream.value([clothTagModel1]));
               when(() => mockClothesLocalDataSource.getClothImages())
-                  .thenAnswer((_) => Stream.value([clothImageModel]));
+                  .thenAnswer((_) => Stream.value([clothImageModel1]));
               // act
               final result = repository.getClothes();
               // assert
@@ -188,21 +160,21 @@ void main() {
             () async {
               // arrange
               when(() => mockClothesLocalDataSource.getCloth(any()))
-                  .thenAnswer((_) => Future.value(clothModel));
+                  .thenAnswer((_) => Future.value(clothModel2));
               when(() => mockClothesLocalDataSource.getClothTag(any()))
-                  .thenAnswer((_) => Future.value(clothTagModel));
+                  .thenAnswer((_) => Future.value(clothTagModel2));
               when(() => mockClothesLocalDataSource.getClothImage(any()))
-                  .thenAnswer((_) => Future.value(clothImageModel));
+                  .thenAnswer((_) => Future.value(clothImageModel2));
               // act
-              final result = await repository.getCloth(clothId);
+              final result = await repository.getCloth(cloth2.id);
               // assert
-              expect(result, equals(Right(cloth)));
-              verify(() => mockClothesLocalDataSource.getCloth(clothId))
+              expect(result, equals(Right(cloth2)));
+              verify(() => mockClothesLocalDataSource.getCloth(cloth2.id))
                   .called(1);
-              verify(() => mockClothesLocalDataSource.getClothTag(clothTagId))
+              verify(() => mockClothesLocalDataSource.getClothTag(clothTag2.id))
                   .called(1);
               verify(() =>
-                      mockClothesLocalDataSource.getClothImage(clothImageId))
+                      mockClothesLocalDataSource.getClothImage(clothImage2.id))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -214,8 +186,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.getCloth(clothId),
-                actFunction: () => repository.getCloth(clothId),
+                    mockClothesLocalDataSource.getCloth(cloth1.id),
+                actFunction: () => repository.getCloth(cloth1.id),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
               );
@@ -229,8 +201,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.getCloth(clothId),
-                actFunction: () => repository.getCloth(clothId),
+                    mockClothesLocalDataSource.getCloth(cloth1.id),
+                actFunction: () => repository.getCloth(cloth1.id),
                 exception: ObjectNotFoundException(),
                 expectValue: Left(ObjectNotFoundFailure()),
               );
@@ -249,13 +221,13 @@ void main() {
             () async {
               // arrange
               const newId = 231;
-              when(() => mockClothesLocalDataSource.createCloth(clothModel))
+              when(() => mockClothesLocalDataSource.createCloth(clothModel1))
                   .thenAnswer((_) => Future.value(newId));
               // act
-              final result = await repository.createCloth(cloth);
+              final result = await repository.createCloth(cloth1);
               // assert
               expect(result, equals(const Right(newId)));
-              verify(() => mockClothesLocalDataSource.createCloth(clothModel))
+              verify(() => mockClothesLocalDataSource.createCloth(clothModel1))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -267,8 +239,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.createCloth(clothModel),
-                actFunction: () => repository.createCloth(cloth),
+                    mockClothesLocalDataSource.createCloth(clothModel1),
+                actFunction: () => repository.createCloth(cloth1),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
               );
@@ -282,8 +254,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.createCloth(clothModel),
-                actFunction: () => repository.createCloth(cloth),
+                    mockClothesLocalDataSource.createCloth(clothModel1),
+                actFunction: () => repository.createCloth(cloth1),
                 exception: ObjectNotFoundException(),
                 expectValue: Left(ObjectNotFoundFailure()),
               );
@@ -301,13 +273,13 @@ void main() {
             'should return null when cloth was updated successfully',
             () async {
               // arrange
-              when(() => mockClothesLocalDataSource.updateCloth(clothModel))
+              when(() => mockClothesLocalDataSource.updateCloth(clothModel1))
                   .thenAnswer((_) => Future.value(null));
               // act
-              final result = await repository.updateCloth(cloth);
+              final result = await repository.updateCloth(cloth1);
               // assert
               expect(result, equals(null));
-              verify(() => mockClothesLocalDataSource.updateCloth(clothModel))
+              verify(() => mockClothesLocalDataSource.updateCloth(clothModel1))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -319,8 +291,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.updateCloth(clothModel),
-                actFunction: () => repository.updateCloth(cloth),
+                    mockClothesLocalDataSource.updateCloth(clothModel1),
+                actFunction: () => repository.updateCloth(cloth1),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
               );
@@ -334,8 +306,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.updateCloth(clothModel),
-                actFunction: () => repository.updateCloth(cloth),
+                    mockClothesLocalDataSource.updateCloth(clothModel1),
+                actFunction: () => repository.updateCloth(cloth1),
                 exception: ObjectNotFoundException(),
                 expectValue: ObjectNotFoundFailure(),
               );
@@ -353,13 +325,13 @@ void main() {
             'should return null when cloth was deleted successfully',
             () async {
               // arrange
-              when(() => mockClothesLocalDataSource.deleteCloth(clothId))
+              when(() => mockClothesLocalDataSource.deleteCloth(cloth1.id))
                   .thenAnswer((_) => Future.value(null));
               // act
-              final result = await repository.deleteCloth(clothId);
+              final result = await repository.deleteCloth(cloth1.id);
               // assert
               expect(result, equals(null));
-              verify(() => mockClothesLocalDataSource.deleteCloth(clothId))
+              verify(() => mockClothesLocalDataSource.deleteCloth(cloth1.id))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -371,8 +343,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.deleteCloth(clothId),
-                actFunction: () => repository.deleteCloth(clothId),
+                    mockClothesLocalDataSource.deleteCloth(cloth1.id),
+                actFunction: () => repository.deleteCloth(cloth1.id),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
               );
@@ -386,8 +358,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.deleteCloth(clothId),
-                actFunction: () => repository.deleteCloth(clothId),
+                    mockClothesLocalDataSource.deleteCloth(cloth1.id),
+                actFunction: () => repository.deleteCloth(cloth1.id),
                 exception: ObjectNotFoundException(),
                 expectValue: ObjectNotFoundFailure(),
               );
@@ -401,35 +373,37 @@ void main() {
       group(
         'addClothImage',
         () {
-          const tempClothImageModel =
-              ClothImageModel(id: 0, path: clothImagePath);
+          final tempClothImageModel = ClothImageModel(
+            id: 0,
+            path: clothImage1.path,
+          );
 
           test(
             'should return saved image',
             () async {
               // arrange
-              final newClothModel = clothModel.copyWith(
-                  imagesIds: clothModel.imagesIds + [clothImageId]);
+              final newClothModel = clothModel1.copyWith(
+                  imagesIds: clothModel1.imagesIds + [clothImage1.id]);
 
               when(() => mockImagesLocalDataSource.saveImage(clothImageData))
-                  .thenAnswer((_) => Future.value(clothImagePath));
+                  .thenAnswer((_) => Future.value(clothImage1.path));
               when(() => mockClothesLocalDataSource
                       .createClothImage(tempClothImageModel))
-                  .thenAnswer((_) => Future.value(clothImageId));
-              when(() => mockClothesLocalDataSource.getCloth(clothId))
-                  .thenAnswer((_) => Future.value(clothModel));
+                  .thenAnswer((_) => Future.value(clothImage1.id));
+              when(() => mockClothesLocalDataSource.getCloth(cloth1.id))
+                  .thenAnswer((_) => Future.value(clothModel1));
               when(() => mockClothesLocalDataSource.updateCloth(newClothModel))
                   .thenAnswer((_) => Future.value(null));
               // act
               final result =
-                  await repository.addClothImage(clothId, clothImageData);
+                  await repository.addClothImage(cloth1.id, clothImageData);
               // assert
-              expect(result, equals(Right(clothImage)));
+              expect(result, equals(const Right(clothImage1)));
               verify(() => mockImagesLocalDataSource.saveImage(clothImageData))
                   .called(1);
               verify(() => mockClothesLocalDataSource
                   .createClothImage(tempClothImageModel)).called(1);
-              verify(() => mockClothesLocalDataSource.getCloth(clothId))
+              verify(() => mockClothesLocalDataSource.getCloth(cloth1.id))
                   .called(1);
               verify(() =>
                       mockClothesLocalDataSource.updateCloth(newClothModel))
@@ -446,7 +420,7 @@ void main() {
                 mockFunction: () =>
                     mockImagesLocalDataSource.saveImage(clothImageData),
                 actFunction: () =>
-                    repository.addClothImage(clothId, clothImageData),
+                    repository.addClothImage(cloth1.id, clothImageData),
                 exception: LocalStorageException(),
                 expectValue: Left(LocalStorageFailure()),
               );
@@ -459,13 +433,13 @@ void main() {
             'the data source throws DatabaseException',
             () async {
               when(() => mockImagesLocalDataSource.saveImage(clothImageData))
-                  .thenAnswer((_) => Future.value(clothImagePath));
+                  .thenAnswer((_) => Future.value(clothImage1.path));
 
               await shouldReturnFailure(
                 mockFunction: () => mockClothesLocalDataSource
                     .createClothImage(tempClothImageModel),
                 actFunction: () =>
-                    repository.addClothImage(clothId, clothImageData),
+                    repository.addClothImage(cloth1.id, clothImageData),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
               );
@@ -480,13 +454,13 @@ void main() {
             'the data source throws ObjectNotFoundException',
             () async {
               when(() => mockImagesLocalDataSource.saveImage(clothImageData))
-                  .thenAnswer((_) => Future.value(clothImagePath));
+                  .thenAnswer((_) => Future.value(clothImage1.path));
 
               await shouldReturnFailure(
                 mockFunction: () => mockClothesLocalDataSource
                     .createClothImage(tempClothImageModel),
                 actFunction: () =>
-                    repository.addClothImage(clothId, clothImageData),
+                    repository.addClothImage(cloth1.id, clothImageData),
                 exception: ObjectNotFoundException(),
                 expectValue: Left(ObjectNotFoundFailure()),
               );
@@ -506,36 +480,36 @@ void main() {
             'should return null when image was deleted successfully',
             () async {
               // arrange
-              final imagesIds = List.of(clothModel.imagesIds);
-              imagesIds.remove(clothImageId);
-              final newClothModel = clothModel.copyWith(
+              final imagesIds = List.of(clothModel1.imagesIds);
+              imagesIds.remove(clothImage1.id);
+              final newClothModel = clothModel1.copyWith(
                 imagesIds: imagesIds,
               );
 
-              when(() => mockClothesLocalDataSource.getClothImage(clothImageId))
-                  .thenAnswer((_) => Future.value(clothImageModel));
               when(() =>
-                      mockClothesLocalDataSource.deleteClothImage(clothImageId))
-                  .thenAnswer((_) => Future.value(null));
-              when(() => mockImagesLocalDataSource.deleteImage(clothImagePath))
+                      mockClothesLocalDataSource.getClothImage(clothImage1.id))
+                  .thenAnswer((_) => Future.value(clothImageModel1));
+              when(() => mockClothesLocalDataSource.deleteClothImage(
+                  clothImage1.id)).thenAnswer((_) => Future.value(null));
+              when(() =>
+                      mockImagesLocalDataSource.deleteImage(clothImage1.path))
                   .thenAnswer((_) => Future.value(null));
 
               when(() => mockClothesLocalDataSource.getClothes())
-                  .thenAnswer((_) => Stream.value(List.filled(5, clothModel)));
+                  .thenAnswer((_) => Stream.value(List.filled(5, clothModel1)));
               when(() => mockClothesLocalDataSource.updateCloth(newClothModel))
                   .thenAnswer((_) => Future.value(null));
               // act
-              final result = await repository.deleteClothImage(clothImageId);
+              final result = await repository.deleteClothImage(clothImage1.id);
               // assert
               expect(result, equals(null));
               verify(() =>
-                      mockClothesLocalDataSource.getClothImage(clothImageId))
+                      mockClothesLocalDataSource.getClothImage(clothImage1.id))
                   .called(1);
+              verify(() => mockClothesLocalDataSource
+                  .deleteClothImage(clothImage1.id)).called(1);
               verify(() =>
-                      mockClothesLocalDataSource.deleteClothImage(clothImageId))
-                  .called(1);
-              verify(() =>
-                      mockImagesLocalDataSource.deleteImage(clothImagePath))
+                      mockImagesLocalDataSource.deleteImage(clothImage1.path))
                   .called(1);
 
               verify(() => mockClothesLocalDataSource.getClothes()).called(1);
@@ -550,26 +524,25 @@ void main() {
             'should return LocalStorageFailure when '
             'the data source throws LocalStorageException',
             () async {
-              when(() => mockClothesLocalDataSource.getClothImage(clothImageId))
-                  .thenAnswer((_) => Future.value(clothImageModel));
               when(() =>
-                      mockClothesLocalDataSource.deleteClothImage(clothImageId))
-                  .thenAnswer((_) => Future.value(null));
+                      mockClothesLocalDataSource.getClothImage(clothImage1.id))
+                  .thenAnswer((_) => Future.value(clothImageModel1));
+              when(() => mockClothesLocalDataSource.deleteClothImage(
+                  clothImage1.id)).thenAnswer((_) => Future.value(null));
 
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockImagesLocalDataSource.deleteImage(clothImagePath),
-                actFunction: () => repository.deleteClothImage(clothImageId),
+                    mockImagesLocalDataSource.deleteImage(clothImage1.path),
+                actFunction: () => repository.deleteClothImage(clothImage1.id),
                 exception: LocalStorageException(),
                 expectValue: LocalStorageFailure(),
               );
 
               verify(() =>
-                      mockClothesLocalDataSource.getClothImage(clothImageId))
+                      mockClothesLocalDataSource.getClothImage(clothImage1.id))
                   .called(1);
-              verify(() =>
-                      mockClothesLocalDataSource.deleteClothImage(clothImageId))
-                  .called(1);
+              verify(() => mockClothesLocalDataSource
+                  .deleteClothImage(clothImage1.id)).called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
             },
@@ -580,8 +553,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.getClothImage(clothImageId),
-                actFunction: () => repository.deleteClothImage(clothImageId),
+                    mockClothesLocalDataSource.getClothImage(clothImage1.id),
+                actFunction: () => repository.deleteClothImage(clothImage1.id),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
               );
@@ -595,8 +568,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.getClothImage(clothImageId),
-                actFunction: () => repository.deleteClothImage(clothImageId),
+                    mockClothesLocalDataSource.getClothImage(clothImage1.id),
+                actFunction: () => repository.deleteClothImage(clothImage1.id),
                 exception: ObjectNotFoundException(),
                 expectValue: ObjectNotFoundFailure(),
               );
@@ -616,14 +589,14 @@ void main() {
               // arrange
               const newId = 45;
               when(() =>
-                      mockClothesLocalDataSource.createClothTag(clothTagModel))
+                      mockClothesLocalDataSource.createClothTag(clothTagModel1))
                   .thenAnswer((_) => Future.value(newId));
               // act
-              final result = await repository.createClothTag(clothTag);
+              final result = await repository.createClothTag(clothTag1);
               // assert
               expect(result, equals(const Right(newId)));
               verify(() =>
-                      mockClothesLocalDataSource.createClothTag(clothTagModel))
+                      mockClothesLocalDataSource.createClothTag(clothTagModel1))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -635,8 +608,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.createClothTag(clothTagModel),
-                actFunction: () => repository.createClothTag(clothTag),
+                    mockClothesLocalDataSource.createClothTag(clothTagModel1),
+                actFunction: () => repository.createClothTag(clothTag1),
                 exception: DatabaseException(),
                 expectValue: Left(DatabaseFailure()),
               );
@@ -650,8 +623,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.createClothTag(clothTagModel),
-                actFunction: () => repository.createClothTag(clothTag),
+                    mockClothesLocalDataSource.createClothTag(clothTagModel1),
+                actFunction: () => repository.createClothTag(clothTag1),
                 exception: ObjectNotFoundException(),
                 expectValue: Left(ObjectNotFoundFailure()),
               );
@@ -670,14 +643,14 @@ void main() {
             () async {
               // arrange
               when(() =>
-                      mockClothesLocalDataSource.updateClothTag(clothTagModel))
+                      mockClothesLocalDataSource.updateClothTag(clothTagModel1))
                   .thenAnswer((_) => Future.value(null));
               // act
-              final result = await repository.updateClothTag(clothTag);
+              final result = await repository.updateClothTag(clothTag1);
               // assert
               expect(result, equals(null));
               verify(() =>
-                      mockClothesLocalDataSource.updateClothTag(clothTagModel))
+                      mockClothesLocalDataSource.updateClothTag(clothTagModel1))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -689,8 +662,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.updateClothTag(clothTagModel),
-                actFunction: () => repository.updateClothTag(clothTag),
+                    mockClothesLocalDataSource.updateClothTag(clothTagModel1),
+                actFunction: () => repository.updateClothTag(clothTag1),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
               );
@@ -704,8 +677,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.updateClothTag(clothTagModel),
-                actFunction: () => repository.updateClothTag(clothTag),
+                    mockClothesLocalDataSource.updateClothTag(clothTagModel1),
+                actFunction: () => repository.updateClothTag(clothTag1),
                 exception: ObjectNotFoundException(),
                 expectValue: ObjectNotFoundFailure(),
               );
@@ -723,14 +696,15 @@ void main() {
             'should return null when tag was deleted successfully',
             () async {
               // arrange
-              when(() => mockClothesLocalDataSource.deleteClothTag(clothTagId))
+              when(() =>
+                      mockClothesLocalDataSource.deleteClothTag(clothTag1.id))
                   .thenAnswer((_) => Future.value(null));
               // act
-              final result = await repository.deleteClothTag(clothTagId);
+              final result = await repository.deleteClothTag(clothTag1.id);
               // assert
               expect(result, equals(null));
               verify(() =>
-                      mockClothesLocalDataSource.deleteClothTag(clothTagId))
+                      mockClothesLocalDataSource.deleteClothTag(clothTag1.id))
                   .called(1);
               verifyNoMoreInteractions(mockClothesLocalDataSource);
               verifyNoMoreInteractions(mockImagesLocalDataSource);
@@ -742,8 +716,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.deleteClothTag(clothTagId),
-                actFunction: () => repository.deleteClothTag(clothTagId),
+                    mockClothesLocalDataSource.deleteClothTag(clothTag1.id),
+                actFunction: () => repository.deleteClothTag(clothTag1.id),
                 exception: DatabaseException(),
                 expectValue: DatabaseFailure(),
               );
@@ -757,8 +731,8 @@ void main() {
             () async {
               await shouldReturnFailure(
                 mockFunction: () =>
-                    mockClothesLocalDataSource.deleteClothTag(clothTagId),
-                actFunction: () => repository.deleteClothTag(clothTagId),
+                    mockClothesLocalDataSource.deleteClothTag(clothTag1.id),
+                actFunction: () => repository.deleteClothTag(clothTag1.id),
                 exception: ObjectNotFoundException(),
                 expectValue: ObjectNotFoundFailure(),
               );

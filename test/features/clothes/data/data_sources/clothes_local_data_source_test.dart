@@ -2,12 +2,11 @@ import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/app_platform.dart';
 import 'package:clothes/core/platform/path_provider.dart';
 import 'package:clothes/features/clothes/data/data_sources/clothes_local_data_source.dart';
-import 'package:clothes/features/clothes/data/models/cloth_image_model.dart';
-import 'package:clothes/features/clothes/data/models/cloth_model.dart';
-import 'package:clothes/features/clothes/data/models/cloth_tag_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../helpers/models.dart';
 
 class MockHive extends Mock implements HiveInterface {}
 
@@ -36,69 +35,22 @@ void main() {
           clothImagesBox: mockClothImagesBox,
         );
       });
-
-      const clothModelId = 1;
-      const tagModelId = 2;
-      const imageModelId = 3;
-
-      final clothModel = ClothModel(
-        id: clothModelId,
-        name: 'T-shirt',
-        description: '',
-        imagesIds: const [imageModelId, 7],
-        tagsIds: const [tagModelId, 6],
-        favourite: true,
-        order: 2,
-        creationDate: DateTime.now(),
-      );
-      final clothJsonWithoutId = clothModel.toJson();
+      final clothJsonWithoutId = clothModel1.toJson();
       clothJsonWithoutId.remove('id');
 
-      const tagModel = ClothTagModel(
-        id: tagModelId,
-        type: 'color',
-        name: 'Brown',
-      );
-      final tagJsonWithoutId = tagModel.toJson();
+      final tagJsonWithoutId = clothTagModel1.toJson();
       tagJsonWithoutId.remove('id');
 
-      const imageModel = ClothImageModel(
-        id: imageModelId,
-        path: 'path/path',
-      );
-      final imageJsonWithoutId = imageModel.toJson();
+      final imageJsonWithoutId = clothImageModel1.toJson();
       imageJsonWithoutId.remove('id');
 
-      const secondClothModelId = clothModelId + 1;
-      const secondTagModelId = tagModelId + 1;
-      const secondImageModelId = imageModelId + 1;
-
-      final secondClothModel = ClothModel(
-        id: secondClothModelId,
-        name: 'Hat',
-        description: '',
-        imagesIds: const [secondImageModelId, 8],
-        tagsIds: const [secondTagModelId, 9],
-        favourite: false,
-        order: 3,
-        creationDate: DateTime.now(),
-      );
-      final secondClothJsonWithoutId = secondClothModel.toJson();
+      final secondClothJsonWithoutId = clothModel2.toJson();
       secondClothJsonWithoutId.remove('id');
 
-      const secondTagModel = ClothTagModel(
-        id: secondTagModelId,
-        type: 'other',
-        name: 'Winter',
-      );
-      final secondTagJsonWithoutId = secondTagModel.toJson();
+      final secondTagJsonWithoutId = clothTagModel2.toJson();
       secondTagJsonWithoutId.remove('id');
 
-      const secondImageModel = ClothImageModel(
-        id: secondImageModelId,
-        path: 'path/2',
-      );
-      final secondImageJsonWithoutId = secondImageModel.toJson();
+      final secondImageJsonWithoutId = clothImageModel2.toJson();
       secondImageJsonWithoutId.remove('id');
 
       Future<void> testStream<T>({
@@ -285,11 +237,11 @@ void main() {
             () async {
               testStream(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
-                model: clothModel,
+                modelId: clothModel1.id,
+                model: clothModel1,
                 jsonWithoutId: clothJsonWithoutId,
-                secondModelId: secondClothModelId,
-                secondModel: secondClothModel,
+                secondModelId: clothModel2.id,
+                secondModel: clothModel2,
                 secondJsonWithoutId: secondClothJsonWithoutId,
                 actFunc: () => clothesLocalDataSource.getClothes(),
               );
@@ -306,10 +258,10 @@ void main() {
             () async {
               testGettingModel(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
-                model: clothModel,
+                modelId: clothModel1.id,
+                model: clothModel1,
                 jsonWithoutId: clothJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.getCloth(clothModelId),
+                actFunc: () => clothesLocalDataSource.getCloth(clothModel1.id),
               );
             },
           );
@@ -319,8 +271,8 @@ void main() {
             () async {
               testGettingUnknownModel(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
-                actFunc: () => clothesLocalDataSource.getCloth(clothModelId),
+                modelId: clothModel1.id,
+                actFunc: () => clothesLocalDataSource.getCloth(clothModel1.id),
               );
             },
           );
@@ -335,9 +287,9 @@ void main() {
             () async {
               testCreatingModel(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
+                modelId: clothModel1.id,
                 jsonWithoutId: clothJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.createCloth(clothModel),
+                actFunc: () => clothesLocalDataSource.createCloth(clothModel1),
               );
             },
           );
@@ -352,9 +304,9 @@ void main() {
             () async {
               testUpdatingModel(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
+                modelId: clothModel1.id,
                 jsonWithoutId: clothJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.updateCloth(clothModel),
+                actFunc: () => clothesLocalDataSource.updateCloth(clothModel1),
               );
             },
           );
@@ -369,8 +321,9 @@ void main() {
             () async {
               testDeletingModel(
                 mockBox: mockClothesBox,
-                modelId: clothModelId,
-                actFunc: () => clothesLocalDataSource.deleteCloth(clothModelId),
+                modelId: clothModel1.id,
+                actFunc: () =>
+                    clothesLocalDataSource.deleteCloth(clothModel1.id),
               );
             },
           );
@@ -385,11 +338,11 @@ void main() {
             () async {
               testStream(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
-                model: tagModel,
+                modelId: clothTagModel1.id,
+                model: clothTagModel1,
                 jsonWithoutId: tagJsonWithoutId,
-                secondModelId: secondTagModelId,
-                secondModel: secondTagModel,
+                secondModelId: clothTagModel2.id,
+                secondModel: clothTagModel2,
                 secondJsonWithoutId: secondTagJsonWithoutId,
                 actFunc: () => clothesLocalDataSource.getClothTags(),
               );
@@ -406,10 +359,11 @@ void main() {
             () async {
               testGettingModel(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
-                model: tagModel,
+                modelId: clothTagModel1.id,
+                model: clothTagModel1,
                 jsonWithoutId: tagJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.getClothTag(tagModelId),
+                actFunc: () =>
+                    clothesLocalDataSource.getClothTag(clothTagModel1.id),
               );
             },
           );
@@ -419,8 +373,9 @@ void main() {
             () async {
               testGettingUnknownModel(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
-                actFunc: () => clothesLocalDataSource.getClothTag(tagModelId),
+                modelId: clothTagModel1.id,
+                actFunc: () =>
+                    clothesLocalDataSource.getClothTag(clothTagModel1.id),
               );
             },
           );
@@ -435,9 +390,10 @@ void main() {
             () async {
               testCreatingModel(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
+                modelId: clothTagModel1.id,
                 jsonWithoutId: tagJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.createClothTag(tagModel),
+                actFunc: () =>
+                    clothesLocalDataSource.createClothTag(clothTagModel1),
               );
             },
           );
@@ -452,9 +408,10 @@ void main() {
             () async {
               testUpdatingModel(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
+                modelId: clothTagModel1.id,
                 jsonWithoutId: tagJsonWithoutId,
-                actFunc: () => clothesLocalDataSource.updateClothTag(tagModel),
+                actFunc: () =>
+                    clothesLocalDataSource.updateClothTag(clothTagModel1),
               );
             },
           );
@@ -474,7 +431,7 @@ void main() {
               ];
               final modifiedJsonWithoutId = Map.of(clothJsonWithoutId);
               final tags = List.of(modifiedJsonWithoutId['tagsIds'] as List);
-              tags.remove(tagModelId);
+              tags.remove(clothTagModel1.id);
               modifiedJsonWithoutId['tagsIds'] = tags;
 
               when(() => mockClothesBox.length)
@@ -484,17 +441,17 @@ void main() {
               when(() => mockClothesBox.getAt(1))
                   .thenAnswer((_) => secondClothJsonWithoutId);
               when(() => mockClothesBox.keyAt(0))
-                  .thenAnswer((_) => clothModelId);
+                  .thenAnswer((_) => clothModel1.id);
               when(() => mockClothesBox.keyAt(1))
-                  .thenAnswer((_) => secondClothModelId);
+                  .thenAnswer((_) => clothModel2.id);
               when(() => mockClothesBox.putAt(0, modifiedJsonWithoutId))
                   .thenAnswer((_) => Future.value(null));
 
               testDeletingModel(
                 mockBox: mockClothTagsBox,
-                modelId: tagModelId,
+                modelId: clothTagModel1.id,
                 actFunc: () =>
-                    clothesLocalDataSource.deleteClothTag(tagModelId),
+                    clothesLocalDataSource.deleteClothTag(clothTagModel1.id),
               );
               verify(() => mockClothesBox.length).called(1);
               verify(() => mockClothesBox.getAt(0)).called(1);
@@ -517,11 +474,11 @@ void main() {
             () async {
               testStream(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
-                model: imageModel,
+                modelId: clothImageModel1.id,
+                model: clothImageModel1,
                 jsonWithoutId: imageJsonWithoutId,
-                secondModelId: secondImageModelId,
-                secondModel: secondImageModel,
+                secondModelId: clothImageModel2.id,
+                secondModel: clothImageModel2,
                 secondJsonWithoutId: secondImageJsonWithoutId,
                 actFunc: () => clothesLocalDataSource.getClothImages(),
               );
@@ -538,11 +495,11 @@ void main() {
             () async {
               testGettingModel(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
-                model: imageModel,
+                modelId: clothImageModel1.id,
+                model: clothImageModel1,
                 jsonWithoutId: imageJsonWithoutId,
                 actFunc: () =>
-                    clothesLocalDataSource.getClothImage(imageModelId),
+                    clothesLocalDataSource.getClothImage(clothImageModel1.id),
               );
             },
           );
@@ -552,9 +509,9 @@ void main() {
             () async {
               testGettingUnknownModel(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
+                modelId: clothImageModel1.id,
                 actFunc: () =>
-                    clothesLocalDataSource.getClothImage(imageModelId),
+                    clothesLocalDataSource.getClothImage(clothImageModel1.id),
               );
             },
           );
@@ -569,10 +526,10 @@ void main() {
             () async {
               testCreatingModel(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
+                modelId: clothImageModel1.id,
                 jsonWithoutId: imageJsonWithoutId,
                 actFunc: () =>
-                    clothesLocalDataSource.createClothImage(imageModel),
+                    clothesLocalDataSource.createClothImage(clothImageModel1),
               );
             },
           );
@@ -587,10 +544,10 @@ void main() {
             () async {
               testUpdatingModel(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
+                modelId: clothImageModel1.id,
                 jsonWithoutId: imageJsonWithoutId,
                 actFunc: () =>
-                    clothesLocalDataSource.updateClothImage(imageModel),
+                    clothesLocalDataSource.updateClothImage(clothImageModel1),
               );
             },
           );
@@ -611,7 +568,7 @@ void main() {
               final modifiedJsonWithoutId = Map.of(clothJsonWithoutId);
               final images =
                   List.of(modifiedJsonWithoutId['imagesIds'] as List);
-              images.remove(imageModelId);
+              images.remove(clothImageModel1.id);
               modifiedJsonWithoutId['imagesIds'] = images;
 
               when(() => mockClothesBox.length)
@@ -621,17 +578,17 @@ void main() {
               when(() => mockClothesBox.getAt(1))
                   .thenAnswer((_) => secondClothJsonWithoutId);
               when(() => mockClothesBox.keyAt(0))
-                  .thenAnswer((_) => clothModelId);
+                  .thenAnswer((_) => clothModel1.id);
               when(() => mockClothesBox.keyAt(1))
-                  .thenAnswer((_) => secondClothModelId);
+                  .thenAnswer((_) => clothModel2.id);
               when(() => mockClothesBox.putAt(0, modifiedJsonWithoutId))
                   .thenAnswer((_) => Future.value(null));
 
               testDeletingModel(
                 mockBox: mockClothImagesBox,
-                modelId: imageModelId,
-                actFunc: () =>
-                    clothesLocalDataSource.deleteClothImage(imageModelId),
+                modelId: clothImageModel1.id,
+                actFunc: () => clothesLocalDataSource
+                    .deleteClothImage(clothImageModel1.id),
               );
               verify(() => mockClothesBox.length).called(1);
               verify(() => mockClothesBox.getAt(0)).called(1);
