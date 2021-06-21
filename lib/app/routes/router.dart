@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:clothes/app/pages/home_page.dart';
 import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
+import 'package:clothes/features/clothes/presentation/pages/edit_image_page.dart';
 import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
 
 @MaterialAutoRouter(
@@ -51,6 +54,10 @@ import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
           ],
         ),
       ],
+    ),
+    AutoRoute<Uint8List>(
+      path: 'edit-image',
+      page: EditImagePage,
     ),
     RedirectRoute(path: '*', redirectTo: '/'),
   ],
