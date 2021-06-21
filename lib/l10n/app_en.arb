@@ -1,9 +1,12 @@
 {
   "appName": "Clothes",
   "calendar": "Calendar",
+  "cancel": "Cancel",
   "clothes": "Clothes",
   "nothingToShow": "Nothing to show",
   "outfits": "Outfits",
+  "save": "Save",
+  "selectingImage": "Selecting image. Tap to cancel.",
   "somethingWentWrong": "Something went wrong",
   "tryAgain": "Try again"
 }

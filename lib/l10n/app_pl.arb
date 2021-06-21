@@ -1,9 +1,12 @@
 {
   "appName": "Ubrania",
   "calendar": "Kalendarz",
+  "cancel": "Anuluj",
   "clothes": "Ubrania",
   "nothingToShow": "Nic tu nie ma",
   "outfits": "Outfity",
+  "save": "Zapisz",
+  "selectingImage": "Wybieranie zdjęcia. Dotknij, aby anulować.",
   "somethingWentWrong": "Coś poszło nie tak",
   "tryAgain": "Spróbuj ponownie"
 }
