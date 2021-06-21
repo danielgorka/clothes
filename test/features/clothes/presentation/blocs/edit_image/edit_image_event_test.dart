@@ -17,6 +17,18 @@ void main() {
   );
 
   group(
+    'CancelEditingImage',
+    () {
+      test('should return correct props', () {
+        expect(
+          CancelEditingImage().props,
+          [],
+        );
+      });
+    },
+  );
+
+  group(
     'CompleteEditingImage',
     () {
       test('should return correct props', () {

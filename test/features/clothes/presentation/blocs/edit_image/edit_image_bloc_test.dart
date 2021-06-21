@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
@@ -91,6 +92,47 @@ void main() {
               verify(() => mockAppImagePicker.pickImage(imageSource)).called(1);
               verifyNoMoreInteractions(mockAppImagePicker);
             },
+          );
+          blocTest(
+            'should not freeze the bloc stream when AppImagePicker '
+            'returns a future which never complete',
+            build: () {
+              final completer = Completer<Uint8List>();
+              when(() => mockAppImagePicker.pickImage(imageSource))
+                  .thenAnswer((_) => completer.future);
+              return editImageBloc;
+            },
+            act: (EditImageBloc bloc) => bloc
+              ..add(
+                const PickImage(
+                  imagePickerSource: imagePickerSource,
+                ),
+              )
+              ..add(CancelEditingImage()),
+            expect: () => const [
+              EditImageState(),
+              EditImageState(status: EditImageStatus.canceled),
+            ],
+            verify: (_) {
+              verify(() => mockAppImagePicker.pickImage(imageSource)).called(1);
+              verifyNoMoreInteractions(mockAppImagePicker);
+            },
+          );
+        },
+      );
+
+      group(
+        'CancelEditingImage',
+        () {
+          blocTest(
+            'should emit state with status canceled when cancel editing image',
+            build: () => editImageBloc,
+            act: (EditImageBloc bloc) => bloc..add(CancelEditingImage()),
+            expect: () => [
+              const EditImageState(
+                status: EditImageStatus.canceled,
+              ),
+            ],
           );
         },
       );

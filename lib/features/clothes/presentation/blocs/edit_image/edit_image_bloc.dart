@@ -22,6 +22,8 @@ class EditImageBloc extends Bloc<EditImageEvent, EditImageState> {
   Stream<EditImageState> mapEventToState(EditImageEvent event) async* {
     if (event is PickImage) {
       yield* _mapPickImageToState(event);
+    } else if (event is CancelEditingImage) {
+      yield* _mapCancelEditingImageToState(event);
     } else if (event is CompleteEditingImage) {
       yield* _mapCompleteEditingImageToState(event);
     }
@@ -29,17 +31,28 @@ class EditImageBloc extends Bloc<EditImageEvent, EditImageState> {
 
   Stream<EditImageState> _mapPickImageToState(PickImage event) async* {
     yield state.copyWith(status: EditImageStatus.picking);
-    final image = await appImagePicker.pickImage(
+    // When picking image is canceled in the browser
+    // the future will not complete.
+    // By omitting await, we do not freeze the bloc stream.
+    final pickFuture = appImagePicker.pickImage(
       _mapImageSource(event.imagePickerSource),
     );
-    if (image == null) {
-      yield state.copyWith(status: EditImageStatus.canceled);
-    } else {
-      yield state.copyWith(
-        status: EditImageStatus.editing,
-        image: image,
-      );
-    }
+    pickFuture.then((image) {
+      if (image == null) {
+        emit(state.copyWith(status: EditImageStatus.canceled));
+      } else {
+        emit(state.copyWith(
+          status: EditImageStatus.editing,
+          image: image,
+        ));
+      }
+    });
+  }
+
+  Stream<EditImageState> _mapCancelEditingImageToState(
+    CancelEditingImage event,
+  ) async* {
+    yield state.copyWith(status: EditImageStatus.canceled);
   }
 
   Stream<EditImageState> _mapCompleteEditingImageToState(

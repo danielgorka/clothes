@@ -21,4 +21,6 @@ class PickImage extends EditImageEvent {
   List<Object?> get props => [imagePickerSource];
 }
 
+class CancelEditingImage extends EditImageEvent {}
+
 class CompleteEditingImage extends EditImageEvent {}
