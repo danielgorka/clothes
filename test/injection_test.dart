@@ -6,6 +6,7 @@ import 'package:clothes/injection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGetIt extends Mock implements GetIt {}
@@ -78,6 +79,21 @@ void main() {
               final result = testableRegisterModule.hive();
               // assert
               expect(result, equals(Hive));
+            },
+          );
+        },
+      );
+
+      group(
+        'imagePicker',
+            () {
+          test(
+            'should return ImagePicker instance',
+                () {
+              // act
+              final result = testableRegisterModule.imagePicker();
+              // assert
+              expect(result, isA<ImagePicker>());
             },
           );
         },
