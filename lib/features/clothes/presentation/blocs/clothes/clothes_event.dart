@@ -8,14 +8,3 @@ abstract class ClothesEvent extends Equatable {
 }
 
 class LoadClothes extends ClothesEvent {}
-
-class ClothesUpdated extends ClothesEvent {
-  final List<Cloth> clothes;
-
-  const ClothesUpdated({required this.clothes});
-
-  @override
-  List<Object?> get props => [clothes];
-}
-
-class ClothesError extends ClothesEvent {}

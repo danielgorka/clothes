@@ -23,10 +23,6 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
   Stream<ClothesState> mapEventToState(ClothesEvent event) async* {
     if (event is LoadClothes) {
       yield* _mapLoadClothesToState(event);
-    } else if (event is ClothesUpdated) {
-      yield* _mapClothesUpdatedToState(event);
-    } else if (event is ClothesError) {
-      yield* _mapClothesErrorToState(event);
     }
   }
 
@@ -34,18 +30,10 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
     _clothesSubscription?.cancel();
     _clothesSubscription = getClothes(NoParams()).listen((either) {
       either.fold(
-        (failure) => add(ClothesError()),
-        (clothes) => add(ClothesUpdated(clothes: clothes)),
+        (failure) => emit(LoadError()),
+        (clothes) => emit(Loaded(clothes: clothes)),
       );
     });
-  }
-
-  Stream<ClothesState> _mapClothesUpdatedToState(ClothesUpdated event) async* {
-    yield Loaded(clothes: event.clothes);
-  }
-
-  Stream<ClothesState> _mapClothesErrorToState(ClothesError event) async* {
-    yield LoadError();
   }
 
   @override

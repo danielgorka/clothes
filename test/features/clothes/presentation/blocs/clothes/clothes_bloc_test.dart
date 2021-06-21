@@ -81,80 +81,41 @@ void main() {
               verifyNoMoreInteractions(mockGetClothes);
             },
           );
-          test(
-            'should add ClothesUpdated event with clothes list '
+          blocTest<ClothesBloc, ClothesState>(
+            'should emit Loaded state with clothes list '
             'for each right event from stream',
-            () async {
-              // arrange
+            build: () {
               when(() => mockGetClothes(NoParams())).thenAnswer(
                 (_) => Stream.fromIterable([
                   Right(clothes1),
                   Right(clothes2),
                 ]),
               );
-              // act
-              clothesBloc.add(LoadClothes());
-              await clothesBloc.waitUtilEvents(count: 3);
-              // assert
-              expect(
-                clothesBloc.events,
-                equals([
-                  LoadClothes(),
-                  ClothesUpdated(clothes: clothes1),
-                  ClothesUpdated(clothes: clothes2),
-                ]),
-              );
+              return clothesBloc;
             },
+            act: (bloc) {
+              bloc.add(LoadClothes());
+            },
+            expect: () => <ClothesState>[
+              Loaded(clothes: clothes1),
+              Loaded(clothes: clothes2),
+            ],
           );
-          test(
-            'should add ClothesError event when stream emits Failure',
-            () async {
-              // arrange
+          blocTest<ClothesBloc, ClothesState>(
+            'should emit LoadError state when stream emits Failure',
+            build: () {
               when(() => mockGetClothes(NoParams())).thenAnswer(
                 (_) => Stream.fromIterable(
                   [Right(clothes1), Left(DatabaseFailure())],
                 ),
               );
-              // act
-              clothesBloc.add(LoadClothes());
-              await clothesBloc.waitUtilEvents(count: 3);
-              // assert
-              expect(
-                clothesBloc.events,
-                equals([
-                  LoadClothes(),
-                  ClothesUpdated(clothes: clothes1),
-                  ClothesError(),
-                ]),
-              );
+              return clothesBloc;
             },
-          );
-        },
-      );
-
-      group(
-        'ClothesUpdated',
-        () {
-          blocTest(
-            'should emit Loaded state with clothes list',
-            build: () => clothesBloc,
-            act: (ClothesBloc bloc) =>
-                bloc..add(ClothesUpdated(clothes: clothes1)),
-            expect: () => [
+            act: (bloc) {
+              bloc.add(LoadClothes());
+            },
+            expect: () => <ClothesState>[
               Loaded(clothes: clothes1),
-            ],
-          );
-        },
-      );
-
-      group(
-        'ClothesError',
-        () {
-          blocTest(
-            'should emit LoadError state',
-            build: () => clothesBloc,
-            act: (ClothesBloc bloc) => bloc..add(ClothesError()),
-            expect: () => [
               LoadError(),
             ],
           );
