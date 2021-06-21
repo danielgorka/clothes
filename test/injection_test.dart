@@ -86,10 +86,10 @@ void main() {
 
       group(
         'imagePicker',
-            () {
+        () {
           test(
             'should return ImagePicker instance',
-                () {
+            () {
               // act
               final result = testableRegisterModule.imagePicker();
               // assert
