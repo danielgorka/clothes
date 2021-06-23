@@ -3,10 +3,14 @@
   "calendar": "Kalendarz",
   "cancel": "Anuluj",
   "clothes": "Ubrania",
+  "newCloth": "Nowe ubranie",
   "nothingToShow": "Nic tu nie ma",
   "outfits": "Outfity",
+  "pickFromGallery": "Wybierz z galerii",
   "save": "Zapisz",
   "selectingImage": "Wybieranie zdjęcia. Dotknij, aby anulować.",
   "somethingWentWrong": "Coś poszło nie tak",
-  "tryAgain": "Spróbuj ponownie"
+  "takePhoto": "Zrób zdjęcie",
+  "tryAgain": "Spróbuj ponownie",
+  "withoutPhoto": "Bez zdjęcia"
 }

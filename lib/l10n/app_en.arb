@@ -3,10 +3,14 @@
   "calendar": "Calendar",
   "cancel": "Cancel",
   "clothes": "Clothes",
+  "newCloth": "New cloth",
   "nothingToShow": "Nothing to show",
   "outfits": "Outfits",
+  "pickFromGallery": "Pick from gallery",
   "save": "Save",
   "selectingImage": "Selecting image. Tap to cancel.",
   "somethingWentWrong": "Something went wrong",
-  "tryAgain": "Try again"
+  "takePhoto": "Take a photo",
+  "tryAgain": "Try again",
+  "withoutPhoto": "Without photo"
 }
