@@ -13,4 +13,11 @@ abstract class Keys {
 
   static const editImageCancelButton = Key('edit_image_cancel_button');
   static const editImageSaveButton = Key('edit_image_save_button');
+
+  static const createClothWithoutImageAction =
+      Key('create_cloth_without_image_action');
+  static const createClothTakeImageAction =
+      Key('create_cloth_take_image_action');
+  static const createClothPickFromGalleryAction =
+      Key('create_cloth_pick__from_gallery_action');
 }

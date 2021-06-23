@@ -83,8 +83,10 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       () => _i22.UpdateClothTag(get<_i12.BaseClothesRepository>()));
   gh.lazySingleton<_i23.AddClothImage>(
       () => _i23.AddClothImage(get<_i12.BaseClothesRepository>()));
-  gh.factory<_i24.ClothesBloc>(
-      () => _i24.ClothesBloc(getClothes: get<_i20.GetClothes>()));
+  gh.factory<_i24.ClothesBloc>(() => _i24.ClothesBloc(
+      getClothes: get<_i20.GetClothes>(),
+      createCloth: get<_i14.CreateCloth>(),
+      addClothImage: get<_i23.AddClothImage>()));
   return get;
 }
 

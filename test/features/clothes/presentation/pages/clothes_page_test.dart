@@ -1,6 +1,17 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:clothes/app/routes/router.gr.dart';
+import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
+import 'package:clothes/features/clothes/domain/use_cases/add_cloth_image.dart';
+import 'package:clothes/features/clothes/domain/use_cases/create_cloth.dart';
+import 'package:clothes/features/clothes/domain/use_cases/get_clothes.dart';
 import 'package:clothes/features/clothes/presentation/blocs/clothes/clothes_bloc.dart';
+import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
+    hide PickImage;
 import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_item.dart';
 import 'package:clothes/features/clothes/presentation/widgets/empty_view.dart';
@@ -18,22 +29,34 @@ import '../../../../helpers/entities.dart';
 
 class MockGetIt extends Mock implements GetIt {}
 
+class MockGetClothes extends Mock implements GetClothes {}
+
+class MockCreateCloth extends Mock implements CreateCloth {}
+
+class MockAddClothImage extends Mock implements AddClothImage {}
+
+class MockStackRouter extends Mock implements StackRouter {}
+
 class MockClothesBloc extends MockBloc<ClothesEvent, ClothesState>
     implements ClothesBloc {}
 
 class UnknownClothesState extends ClothesState {}
 
+class MockClothesEvent extends ClothesEvent {}
+
+class MockClothesState extends ClothesState {}
+
 void main() {
+  setUpAll(() {
+    registerFallbackValue<ClothesEvent>(MockClothesEvent());
+    registerFallbackValue<ClothesState>(MockClothesState());
+  });
+
   group(
     'ClothesPage',
     () {
       late MockClothesBloc mockClothesBloc;
       late MockGetIt mockGetIt;
-
-      setUpAll(() {
-        registerFallbackValue<ClothesEvent>(LoadClothes());
-        registerFallbackValue<ClothesState>(Loading());
-      });
 
       setUp(() async {
         mockClothesBloc = MockClothesBloc();
@@ -42,8 +65,9 @@ void main() {
           get: mockGetIt,
           initGetIt: (getIt) async {},
         );
-        when(() => getIt<ClothesBloc>()).thenAnswer((_) => mockClothesBloc);
-        when(() => mockClothesBloc.state).thenAnswer((_) => Loading());
+        when(() => mockGetIt<ClothesBloc>()).thenAnswer((_) => mockClothesBloc);
+        when(() => mockClothesBloc.state)
+            .thenAnswer((_) => const ClothesState());
       });
 
       testWidgets(
@@ -66,7 +90,7 @@ void main() {
             BlocProvider.of<ClothesBloc>(context),
             equals(mockClothesBloc),
           );
-          verify(() => getIt<ClothesBloc>()).called(1);
+          verify(() => mockGetIt<ClothesBloc>()).called(1);
           verify(() => mockClothesBloc.add(LoadClothes())).called(1);
         },
       );
@@ -78,80 +102,250 @@ void main() {
     () {
       late MockClothesBloc mockClothesBloc;
 
-      setUpAll(() {
-        registerFallbackValue<ClothesEvent>(LoadClothes());
-        registerFallbackValue<ClothesState>(Loading());
-      });
-
       setUp(() async {
         mockClothesBloc = MockClothesBloc();
       });
 
-      Widget wrap(Widget widget) {
+      const source = ImagePickerSource.gallery;
+
+      Widget wrapWithBloc(Widget widget, {ClothesBloc? bloc}) {
         return wrapWithApp(
           BlocProvider<ClothesBloc>.value(
-            value: mockClothesBloc,
-            child: Builder(builder: (context) {
-              return widget;
-            }),
+            value: bloc ?? mockClothesBloc,
+            child: Builder(
+              builder: (context) {
+                return widget;
+              },
+            ),
           ),
         );
       }
 
-      testWidgets(
-        'should show LoadingView when state is Loading',
-        (tester) async {
-          // arrange
-          when(() => mockClothesBloc.state).thenAnswer((_) => Loading());
-          await tester.pumpWidget(wrap(const ClothesView()));
-          // assert
-          expect(find.byType(ClothesLoadingView), findsOneWidget);
-        },
-      );
-      testWidgets(
-        'should show ErrorView when state is LoadError',
-        (tester) async {
-          // arrange
-          when(() => mockClothesBloc.state).thenAnswer((_) => LoadError());
-          await tester.pumpWidget(wrap(const ClothesView()));
+      group(
+        'State statuses',
+        () {
+          testWidgets(
+            'should show LoadingView when state status is loading',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state)
+                  .thenAnswer((_) => const ClothesState());
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // assert
+              expect(find.byType(ClothesLoadingView), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should show ErrorView when state status is error',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => const ClothesState(status: ClothesStatus.error),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
 
-          // assert
-          expect(find.byType(ErrorView), findsOneWidget);
+              // assert
+              expect(find.byType(ErrorView), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should show EmptyView when state status is Loaded '
+            'and clothes is empty',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => const ClothesState(status: ClothesStatus.loaded),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // assert
+              expect(find.byType(EmptyView), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should show ClothesView when state status is loaded '
+            'and clothes is not empty',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => ClothesState(
+                  status: ClothesStatus.loaded,
+                  clothes: clothes1,
+                ),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // assert
+              final finder = find.byType(ClothesGridView);
+              final clothesView = tester.widget<ClothesGridView>(finder);
+              expect(clothesView.clothes, clothes1);
+            },
+          );
         },
       );
-      testWidgets(
-        'should show EmptyView when state is Loaded and clothes is empty',
-        (tester) async {
-          // arrange
-          when(() => mockClothesBloc.state)
-              .thenAnswer((_) => const Loaded(clothes: []));
-          await tester.pumpWidget(wrap(const ClothesView()));
-          // assert
-          expect(find.byType(EmptyView), findsOneWidget);
+
+      group(
+        'Create cloth actions',
+        () {
+          testWidgets(
+            'should add CreateEmptyCloth event when tap without image action',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => ClothesState(
+                  status: ClothesStatus.loaded,
+                  clothes: clothes1,
+                ),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // act
+              await tester.tap(find.byType(FloatingActionButton));
+              await tester.pump();
+              await tester.tap(find.byKey(Keys.createClothWithoutImageAction));
+              // assert
+              verify(() => mockClothesBloc.add(CreateEmptyCloth())).called(1);
+            },
+          );
+          testWidgets(
+            'should add PickImage event with camera source when tap '
+            'take image action',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => ClothesState(
+                  status: ClothesStatus.loaded,
+                  clothes: clothes1,
+                ),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // act
+              await tester.tap(find.byType(FloatingActionButton));
+              await tester.pump();
+              await tester.tap(find.byKey(Keys.createClothTakeImageAction));
+              // assert
+              verify(
+                () => mockClothesBloc.add(
+                  const PickImage(source: ImagePickerSource.camera),
+                ),
+              ).called(1);
+            },
+          );
+          testWidgets(
+            'should add PickImage event with gallery source when tap '
+            'pick from gallery action',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => ClothesState(
+                  status: ClothesStatus.loaded,
+                  clothes: clothes1,
+                ),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // act
+              await tester.tap(find.byType(FloatingActionButton));
+              await tester.pump();
+              await tester
+                  .tap(find.byKey(Keys.createClothPickFromGalleryAction));
+              // assert
+              verify(
+                () => mockClothesBloc.add(
+                  const PickImage(source: ImagePickerSource.gallery),
+                ),
+              ).called(1);
+            },
+          );
         },
       );
-      testWidgets(
-        'should show ClothesView when state is Loaded and clothes is not empty',
-        (tester) async {
-          // arrange
-          when(() => mockClothesBloc.state)
-              .thenAnswer((_) => Loaded(clothes: clothes1));
-          await tester.pumpWidget(wrap(const ClothesView()));
-          // assert
-          final finder = find.byType(ClothesGridView);
-          final clothesView = tester.widget<ClothesGridView>(finder);
-          expect(clothesView.clothes, clothes1);
-        },
-      );
-      testWidgets(
-        'should throw StateError when state is unknown',
-        (tester) async {
-          when(() => mockClothesBloc.state)
-              .thenAnswer((_) => UnknownClothesState());
-          // arrange
-          await tester.pumpWidget(wrap(const ClothesView()));
-          // assert
-          expect(tester.takeException(), isInstanceOf<StateError>());
+
+      group(
+        'Listener',
+        () {
+          const pickImageState = ClothesState(
+            action: PickImageAction(source: source),
+          );
+
+          Future<void> shouldPushAndAddEvent({
+            required WidgetTester tester,
+            required ClothesEvent event,
+            dynamic pushResult,
+            required void Function(StreamController<ClothesState> controller)
+                act,
+          }) async {
+            // arrange
+            const defaultState = ClothesState();
+
+            final mockStackRouter = MockStackRouter();
+            final editImageRoute = EditImageRoute(source: source);
+            final controller = StreamController<ClothesState>.broadcast();
+
+            when(() => mockClothesBloc.state).thenAnswer((_) => defaultState);
+            when(() => mockClothesBloc.stream)
+                .thenAnswer((_) => controller.stream);
+            when(() => mockStackRouter.push(editImageRoute))
+                .thenAnswer((_) => Future.value(pushResult));
+            await tester.pumpWidget(
+              StackRouterScope(
+                segmentsHash: 0,
+                controller: mockStackRouter,
+                child: wrapWithBloc(
+                  const ClothesView(),
+                ),
+              ),
+            );
+            // act
+            act.call(controller);
+            // assert
+            await untilCalled(() => mockClothesBloc.add(event));
+            verify(() => mockStackRouter.push(editImageRoute)).called(1);
+            verify(() => mockClothesBloc.add(event)).called(1);
+            verifyNoMoreInteractions(mockStackRouter);
+            controller.close();
+          }
+
+          testWidgets(
+            'should push EditImageRoute when state action change to '
+            'PickImageAction and add ImagePicked event when '
+            'returned data is not null ',
+            (tester) async {
+              final image = Uint8List.fromList([1, 2, 3, 4]);
+              await shouldPushAndAddEvent(
+                tester: tester,
+                event: ImagePicked(image: image),
+                pushResult: image,
+                act: (controller) => controller.add(pickImageState),
+              );
+            },
+          );
+          testWidgets(
+            'should push EditImageRoute when state action change to '
+            'PickImageAction and add CancelAction event when '
+            'returned data is null ',
+            (tester) async {
+              await shouldPushAndAddEvent(
+                tester: tester,
+                event: CancelAction(),
+                act: (controller) => controller.add(pickImageState),
+              );
+            },
+          );
+          testWidgets(
+            'should push EditImageRoute ones when state action change to '
+            'PickImageAction two in a row',
+            (tester) async {
+              const state2 = ClothesState(
+                status: ClothesStatus.loaded,
+                action: PickImageAction(source: source),
+              );
+
+              await shouldPushAndAddEvent(
+                tester: tester,
+                event: CancelAction(),
+                act: (controller) {
+                  controller.add(pickImageState);
+                  controller.add(state2);
+                },
+              );
+            },
+          );
         },
       );
     },
