@@ -157,6 +157,7 @@ class _MultiFloatingActionButtonState extends State<MultiFloatingActionButton>
 
       actions.add(
         InkWell(
+          key: action.key,
           borderRadius: BorderRadius.circular(32.0),
           onTap: onTap,
           child: Padding(
@@ -183,6 +184,7 @@ class _MultiFloatingActionButtonState extends State<MultiFloatingActionButton>
                   alignment: Alignment.bottomCenter,
                   scale: childAnimation,
                   child: FloatingActionButton(
+                    heroTag: null,
                     mini: true,
                     onPressed: onTap,
                     child: action.child,
@@ -218,11 +220,13 @@ class _MultiFloatingActionButtonState extends State<MultiFloatingActionButton>
 }
 
 class MultiFloatingActionButtonAction {
+  final Key? key;
   final Widget? label;
   final Widget child;
   final VoidCallback? onTap;
 
   const MultiFloatingActionButtonAction({
+    this.key,
     this.label,
     required this.child,
     this.onTap,

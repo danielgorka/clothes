@@ -13,11 +13,13 @@ void main() {
       const openedChild = Text('Opened child');
       const closedChild = Text('Closed child');
       final firstAction = MultiFloatingActionButtonAction(
+        key: const Key('first_key'),
         onTap: () => firstActionTaps++,
         label: const Text('First'),
         child: const Text('1'),
       );
       final secondAction = MultiFloatingActionButtonAction(
+        key: const Key('second_key'),
         onTap: () => secondActionTaps++,
         label: const Text('Second'),
         child: const Text('2'),
@@ -219,6 +221,50 @@ void main() {
           // assert
           expect(isClosedChildVisible(tester), isTrue);
           expect(isOpenedChildVisible(tester), isFalse);
+        },
+      );
+
+      testWidgets(
+        'should InkWell in action have specified key to action key',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(widget);
+          // act
+          await tester.tap(find.byWidget(closedChild));
+          await tester.pumpAndSettle();
+          // assert
+          final firstFinder = find.byKey(firstAction.key!);
+          expect(tester.widget(firstFinder), isA<InkWell>());
+
+          final secondFinder = find.byKey(secondAction.key!);
+          expect(tester.widget(secondFinder), isA<InkWell>());
+        },
+      );
+
+      testWidgets(
+        'should hero tag in floating action button be null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(widget);
+          // act
+          await tester.tap(find.byWidget(closedChild));
+          await tester.pumpAndSettle();
+          // assert
+          final firstFinder = find.ancestor(
+            of: find.byWidget(firstAction.child),
+            matching: find.byType(FloatingActionButton),
+          );
+          final firstFABAction =
+              tester.widget(firstFinder) as FloatingActionButton;
+          expect(firstFABAction.heroTag, isNull);
+
+          final secondFinder = find.ancestor(
+            of: find.byWidget(secondAction.child),
+            matching: find.byType(FloatingActionButton),
+          );
+          final secondFABAction =
+              tester.widget(secondFinder) as FloatingActionButton;
+          expect(secondFABAction.heroTag, isNull);
         },
       );
     },
