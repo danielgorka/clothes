@@ -25,6 +25,28 @@ class Cloth extends Equatable {
 
   factory Cloth.empty() => Cloth(id: 0, creationDate: DateTime.now());
 
+  Cloth copyWith({
+    int? id,
+    String? name,
+    String? description,
+    List<ClothImage>? images,
+    List<ClothTag>? tags,
+    bool? favourite,
+    int? order,
+    DateTime? creationDate,
+  }) {
+    return Cloth(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      images: images ?? this.images,
+      tags: tags ?? this.tags,
+      favourite: favourite ?? this.favourite,
+      order: order ?? this.order,
+      creationDate: creationDate ?? this.creationDate,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,
