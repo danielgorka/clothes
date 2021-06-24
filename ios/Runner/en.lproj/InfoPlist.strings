@@ -1,0 +1,3 @@
+
+NSPhotoLibraryUsageDescription = "Picking photos of clothes and outfits.";
+NSCameraUsageDescription = "Taking photos of clothes and outfits.";
