@@ -290,7 +290,7 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
 
   Map<String, dynamic> _getAt(Box box, int index) {
     return _jsonWithId(
-      box.getAt(index) as Map<String, dynamic>,
+      Map<String, dynamic>.from(box.getAt(index) as Map),
       box.keyAt(index) as int,
     );
   }

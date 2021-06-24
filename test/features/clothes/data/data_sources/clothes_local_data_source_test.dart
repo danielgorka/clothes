@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/app_platform.dart';
 import 'package:clothes/core/platform/path_provider.dart';
@@ -85,8 +87,12 @@ void main() {
 
         when(() => mockBox.watch())
             .thenAnswer((_) => Stream.fromIterable(events));
-        when(() => mockBox.getAt(0)).thenAnswer((_) => jsonWithoutId);
-        when(() => mockBox.getAt(1)).thenAnswer((_) => secondJsonWithoutId);
+        when(() => mockBox.getAt(0)).thenAnswer(
+          (_) => LinkedHashMap<dynamic, dynamic>.from(jsonWithoutId),
+        );
+        when(() => mockBox.getAt(1)).thenAnswer(
+          (_) => LinkedHashMap<dynamic, dynamic>.from(secondJsonWithoutId),
+        );
         when(() => mockBox.keyAt(0)).thenAnswer((_) => modelId);
         when(() => mockBox.keyAt(1)).thenAnswer((_) => secondModelId);
         when(() => mockBox.length).thenAnswer((_) => list1.length);
@@ -436,10 +442,16 @@ void main() {
 
               when(() => mockClothesBox.length)
                   .thenAnswer((_) => clothesList.length);
-              when(() => mockClothesBox.getAt(0))
-                  .thenAnswer((_) => clothJsonWithoutId);
-              when(() => mockClothesBox.getAt(1))
-                  .thenAnswer((_) => secondClothJsonWithoutId);
+              when(() => mockClothesBox.getAt(0)).thenAnswer(
+                (_) => LinkedHashMap<dynamic, dynamic>.from(
+                  clothJsonWithoutId,
+                ),
+              );
+              when(() => mockClothesBox.getAt(1)).thenAnswer(
+                (_) => LinkedHashMap<dynamic, dynamic>.from(
+                  secondClothJsonWithoutId,
+                ),
+              );
               when(() => mockClothesBox.keyAt(0))
                   .thenAnswer((_) => clothModel1.id);
               when(() => mockClothesBox.keyAt(1))
@@ -573,10 +585,16 @@ void main() {
 
               when(() => mockClothesBox.length)
                   .thenAnswer((_) => clothesList.length);
-              when(() => mockClothesBox.getAt(0))
-                  .thenAnswer((_) => clothJsonWithoutId);
-              when(() => mockClothesBox.getAt(1))
-                  .thenAnswer((_) => secondClothJsonWithoutId);
+              when(() => mockClothesBox.getAt(0)).thenAnswer(
+                (_) => LinkedHashMap<dynamic, dynamic>.from(
+                  clothJsonWithoutId,
+                ),
+              );
+              when(() => mockClothesBox.getAt(1)).thenAnswer(
+                (_) => LinkedHashMap<dynamic, dynamic>.from(
+                  secondClothJsonWithoutId,
+                ),
+              );
               when(() => mockClothesBox.keyAt(0))
                   .thenAnswer((_) => clothModel1.id);
               when(() => mockClothesBox.keyAt(1))
