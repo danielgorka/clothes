@@ -87,7 +87,8 @@ void main() {
         'copyWith',
         () {
           test(
-            'should return unchanged model when running copyWith wihtout arguments',
+            'should return unchanged model when '
+            'running copyWith without arguments',
             () {
               // act
               final newClothModel = clothModel1.copyWith();
