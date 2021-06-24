@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:clothes/core/error/exceptions.dart';
@@ -108,6 +109,36 @@ void main() {
                   .thenAnswer((_) => Stream.value([clothTagModel1]));
               when(() => mockClothesLocalDataSource.getClothImages())
                   .thenAnswer((_) => Stream.value([clothImageModel1]));
+              // act
+              final result = repository.getClothes();
+              // assert
+              await expectLater(
+                result,
+                emits(Left(DatabaseFailure())),
+              );
+              verify(() => mockClothesLocalDataSource.getClothes()).called(1);
+              verify(() => mockClothesLocalDataSource.getClothTags()).called(1);
+              verify(() => mockClothesLocalDataSource.getClothImages())
+                  .called(1);
+              verifyNoMoreInteractions(mockClothesLocalDataSource);
+              verifyNoMoreInteractions(mockImagesLocalDataSource);
+            },
+          );
+          test(
+            'should return stream with DatabaseFailure '
+            'when data source return DatabaseException in streams',
+            () async {
+              Stream<T> errorStream<T>() async* {
+                throw DatabaseException();
+              }
+
+              // arrange
+              when(() => mockClothesLocalDataSource.getClothes())
+                  .thenAnswer((_) => errorStream());
+              when(() => mockClothesLocalDataSource.getClothTags())
+                  .thenAnswer((_) => errorStream());
+              when(() => mockClothesLocalDataSource.getClothImages())
+                  .thenAnswer((_) => errorStream());
               // act
               final result = repository.getClothes();
               // assert

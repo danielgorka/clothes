@@ -28,9 +28,9 @@ class ClothesRepository extends BaseClothesRepository {
   @override
   Stream<Either<Failure, List<Cloth>>> getClothes() {
     late StreamController<Either<Failure, List<Cloth>>> controller;
-    Stream<List<ClothTagModel>>? tagsStream;
-    Stream<List<ClothImageModel>>? imagesStream;
-    Stream<List<ClothModel>>? clothesStream;
+    StreamSubscription<List<ClothTagModel>>? tagsStreamSubscription;
+    StreamSubscription<List<ClothImageModel>>? imagesStreamSubscription;
+    StreamSubscription<List<ClothModel>>? clothesStreamSubscription;
 
     List<ClothModel>? clothes;
     List<ClothTag>? tags;
@@ -45,6 +45,9 @@ class ClothesRepository extends BaseClothesRepository {
     }
 
     void onError(Object e) {
+      if (controller.isClosed) {
+        return;
+      }
       if (e is ObjectNotFoundException) {
         controller.add(Left(ObjectNotFoundFailure()));
       } else {
@@ -55,8 +58,8 @@ class ClothesRepository extends BaseClothesRepository {
 
     void start() {
       try {
-        tagsStream = clothesDataSource.getClothTags();
-        tagsStream!.listen(
+        final tagsStream = clothesDataSource.getClothTags();
+        tagsStreamSubscription = tagsStream.listen(
           (tagsModels) {
             tags = tagsModels.map((tagModel) => tagModel.toEntity()).toList();
             emit();
@@ -64,8 +67,8 @@ class ClothesRepository extends BaseClothesRepository {
           onError: onError,
         );
 
-        imagesStream = clothesDataSource.getClothImages();
-        imagesStream!.listen(
+        final imagesStream = clothesDataSource.getClothImages();
+        imagesStreamSubscription = imagesStream.listen(
           (imagesModels) {
             images = imagesModels
                 .map((imageModel) => imageModel.toEntity())
@@ -75,8 +78,8 @@ class ClothesRepository extends BaseClothesRepository {
           onError: onError,
         );
 
-        clothesStream = clothesDataSource.getClothes();
-        clothesStream!.listen(
+        final clothesStream = clothesDataSource.getClothes();
+        clothesStreamSubscription = clothesStream.listen(
           (clothesModels) {
             clothes = clothesModels;
             emit();
@@ -91,8 +94,9 @@ class ClothesRepository extends BaseClothesRepository {
     }
 
     void stop() {
-      tagsStream = null;
-      imagesStream = null;
+      tagsStreamSubscription?.cancel();
+      imagesStreamSubscription?.cancel();
+      clothesStreamSubscription?.cancel();
     }
 
     controller = StreamController.broadcast(
