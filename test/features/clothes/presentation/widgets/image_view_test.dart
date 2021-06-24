@@ -7,6 +7,8 @@ void main() {
   group(
     'ImageView',
     () {
+      const fit = BoxFit.cover;
+
       testWidgets(
         'should show CachedNetworkImage when path is http url',
         (tester) async {
@@ -17,6 +19,7 @@ void main() {
           final finder = find.byType(CachedNetworkImage);
           final cachedNetworkImage = tester.widget<CachedNetworkImage>(finder);
           expect(cachedNetworkImage.imageUrl, equals(path));
+          expect(cachedNetworkImage.fit, equals(fit));
         },
       );
       testWidgets(
@@ -29,6 +32,7 @@ void main() {
           final finder = find.byType(CachedNetworkImage);
           final cachedNetworkImage = tester.widget<CachedNetworkImage>(finder);
           expect(cachedNetworkImage.imageUrl, equals(path));
+          expect(cachedNetworkImage.fit, equals(fit));
         },
       );
       testWidgets(
@@ -44,6 +48,7 @@ void main() {
           final finder = find.byType(CachedNetworkImage);
           final cachedNetworkImage = tester.widget<CachedNetworkImage>(finder);
           expect(cachedNetworkImage.imageUrl, equals(path));
+          expect(cachedNetworkImage.fit, equals(fit));
         },
       );
       testWidgets(
@@ -57,6 +62,7 @@ void main() {
           final imageWidget = tester.widget<Image>(finder);
           final fileImage = imageWidget.image as FileImage;
           expect(fileImage.file.path, equals(path));
+          expect(imageWidget.fit, equals(fit));
         },
       );
     },

@@ -20,7 +20,10 @@ class ImageView extends StatelessWidget {
         fit: BoxFit.cover,
       );
     } else {
-      return Image.file(File(path));
+      return Image.file(
+        File(path),
+        fit: BoxFit.cover,
+      );
     }
   }
 }
