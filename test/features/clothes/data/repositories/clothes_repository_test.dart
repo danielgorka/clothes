@@ -77,7 +77,7 @@ void main() {
                   [clothesModelsList, secondClothesModelsList],
                 ),
                 Stream.fromIterable([clothesModelsList])
-                    .interval(const Duration(milliseconds: 200)),
+                    .interval(const Duration(milliseconds: 2 * 200)),
               ]);
 
               when(() => mockClothesLocalDataSource.getClothes())
