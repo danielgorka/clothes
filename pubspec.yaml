@@ -10,7 +10,7 @@ environment:
 dependencies:
   auto_route: ^2.2.0
   cached_network_image: ^3.0.0
-  clock: 1.1.0
+  clock: ^1.1.0
   dartz: ^0.10.0-nullsafety.2
   equatable: ^2.0.2
   file: ^6.1.1
@@ -30,6 +30,7 @@ dependencies:
   mocktail: ^0.1.4
   path: ^1.8.0
   path_provider: ^2.0.2
+  rxdart: ^0.27.1
   shimmer: ^2.0.0
 
 dev_dependencies:

@@ -10,6 +10,7 @@ import 'package:clothes/features/clothes/data/repositories/clothes_repository.da
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../../helpers/entities.dart';
 import '../../../../helpers/models.dart';
@@ -61,7 +62,8 @@ void main() {
         'getClothes',
         () {
           test(
-            'should return stream of lists of all saved clothes',
+            'should return stream with lists of all saved clothes '
+            'last emitted in the each 200 ms',
             () async {
               // arrange
               final clothesModelsList = List.filled(5, clothModel2);
@@ -70,9 +72,12 @@ void main() {
               final secondClothesModelsList = List.filled(6, clothModel2);
               final secondClothesList = List.filled(6, cloth2);
 
-              final stream = Stream.fromIterable([
-                clothesModelsList,
-                secondClothesModelsList,
+              final stream = Rx.merge([
+                Stream.fromIterable(
+                  [clothesModelsList, secondClothesModelsList],
+                ),
+                Stream.fromIterable([clothesModelsList])
+                    .interval(const Duration(milliseconds: 200)),
               ]);
 
               when(() => mockClothesLocalDataSource.getClothes())
@@ -86,9 +91,11 @@ void main() {
               final result = repository.getClothes();
               // assert
               final eventList = await result.take(2).toList();
-              expect(eventList[0].getOrElse(() => []), equals(clothesList));
               expect(
-                  eventList[1].getOrElse(() => []), equals(secondClothesList));
+                eventList[0].getOrElse(() => []),
+                equals(secondClothesList),
+              );
+              expect(eventList[1].getOrElse(() => []), equals(clothesList));
 
               verify(() => mockClothesLocalDataSource.getClothes()).called(1);
               verify(() => mockClothesLocalDataSource.getClothImages())

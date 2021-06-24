@@ -14,6 +14,7 @@ import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/domain/repositories/base_clothes_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 
 @LazySingleton(as: BaseClothesRepository)
 class ClothesRepository extends BaseClothesRepository {
@@ -94,6 +95,7 @@ class ClothesRepository extends BaseClothesRepository {
     }
 
     void stop() {
+      controller.close();
       tagsStreamSubscription?.cancel();
       imagesStreamSubscription?.cancel();
       clothesStreamSubscription?.cancel();
@@ -104,7 +106,7 @@ class ClothesRepository extends BaseClothesRepository {
       onCancel: stop,
     );
 
-    return controller.stream;
+    return controller.stream.debounceTime(const Duration(milliseconds: 200));
   }
 
   @override
