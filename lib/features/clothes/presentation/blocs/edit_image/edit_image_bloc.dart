@@ -37,7 +37,9 @@ class EditImageBloc extends Bloc<EditImageEvent, EditImageState> {
     final pickFuture = appImagePicker.pickImage(
       _mapImageSource(event.imagePickerSource),
     );
-    pickFuture.then((image) {
+    pickFuture.onError((error, stackTrace) {
+      emit(state.copyWith(status: EditImageStatus.canceled));
+    }).then((image) {
       if (image == null) {
         emit(state.copyWith(status: EditImageStatus.canceled));
       } else {

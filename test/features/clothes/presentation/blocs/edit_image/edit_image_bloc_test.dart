@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/app_image_picker.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,6 +77,29 @@ void main() {
             build: () {
               when(() => mockAppImagePicker.pickImage(imageSource))
                   .thenAnswer((_) => Future.value(null));
+              return editImageBloc;
+            },
+            act: (EditImageBloc bloc) => bloc
+              ..add(
+                const PickImage(
+                  imagePickerSource: imagePickerSource,
+                ),
+              ),
+            expect: () => const [
+              EditImageState(),
+              EditImageState(status: EditImageStatus.canceled),
+            ],
+            verify: (_) {
+              verify(() => mockAppImagePicker.pickImage(imageSource)).called(1);
+              verifyNoMoreInteractions(mockAppImagePicker);
+            },
+          );
+          blocTest(
+            'should emit state with status canceled '
+            'when AppImagePicker throws ImagePickerException',
+            build: () {
+              when(() => mockAppImagePicker.pickImage(imageSource))
+                  .thenAnswer((_) => Future.error(ImagePickerException()));
               return editImageBloc;
             },
             act: (EditImageBloc bloc) => bloc

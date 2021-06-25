@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:clothes/core/error/exceptions.dart';
 import 'package:clothes/core/platform/app_image_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
@@ -63,6 +65,24 @@ void main() {
               verifyNoMoreInteractions(mockImagePicker);
             },
           );
+          test(
+            'should throw ImagePickerException when ImagePicker.getImage() '
+            'throws PlatformException',
+            () async {
+              // arrange
+              when(() => mockImagePicker.getImage(source: source))
+                  .thenAnswer((_) => Future.error(PlatformException(code: '')));
+              // act
+              final future = appImagePicker.pickImage(source);
+              // assert
+              expect(
+                future,
+                throwsA(const TypeMatcher<ImagePickerException>()),
+              );
+              verify(() => mockImagePicker.getImage(source: source)).called(1);
+              verifyNoMoreInteractions(mockImagePicker);
+            },
+          );
         },
       );
 
@@ -101,6 +121,24 @@ void main() {
               final result = await appImagePicker.retrieveLostData();
               // assert
               expect(result, isNull);
+              verify(() => mockImagePicker.getLostData()).called(1);
+              verifyNoMoreInteractions(mockImagePicker);
+            },
+          );
+          test(
+            'should throw ImagePickerException when ImagePicker.getLostData() '
+            'throws PlatformException',
+            () async {
+              // arrange
+              when(() => mockImagePicker.getLostData())
+                  .thenAnswer((_) => Future.error(PlatformException(code: '')));
+              // act
+              final future = appImagePicker.retrieveLostData();
+              // assert
+              expect(
+                future,
+                throwsA(const TypeMatcher<ImagePickerException>()),
+              );
               verify(() => mockImagePicker.getLostData()).called(1);
               verifyNoMoreInteractions(mockImagePicker);
             },
