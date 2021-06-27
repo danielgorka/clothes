@@ -26,6 +26,8 @@ class EditImageBloc extends Bloc<EditImageEvent, EditImageState> {
       yield* _mapCancelEditingImageToState(event);
     } else if (event is CompleteEditingImage) {
       yield* _mapCompleteEditingImageToState(event);
+    } else if (event is CompleteCroppingImage) {
+      yield* _mapCompleteCroppingImageToState(event);
     }
   }
 
@@ -60,7 +62,16 @@ class EditImageBloc extends Bloc<EditImageEvent, EditImageState> {
   Stream<EditImageState> _mapCompleteEditingImageToState(
     CompleteEditingImage event,
   ) async* {
-    yield state.copyWith(status: EditImageStatus.completed);
+    yield state.copyWith(status: EditImageStatus.cropping);
+  }
+
+  Stream<EditImageState> _mapCompleteCroppingImageToState(
+    CompleteCroppingImage event,
+  ) async* {
+    yield state.copyWith(
+      status: EditImageStatus.completed,
+      image: event.croppedImage,
+    );
   }
 
   ImageSource _mapImageSource(ImagePickerSource imagePickerSource) {

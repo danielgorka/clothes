@@ -28,6 +28,7 @@ void main() {
       });
 
       final image = Uint8List.fromList([1, 2, 3, 4]);
+      final image2 = Uint8List.fromList([1, 2, 3, 4, 5]);
       const imagePickerSource = ImagePickerSource.gallery;
       const imageSource = ImageSource.gallery;
 
@@ -165,8 +166,8 @@ void main() {
         'CompleteEditingImage',
         () {
           blocTest(
-            'should emit state with status completed and image from last state '
-            'after editing image',
+            'should emit state with status cropping '
+            'when add CompleteEditingImage event',
             build: () {
               when(() => mockAppImagePicker.pickImage(imageSource))
                   .thenAnswer((_) => Future.value(image));
@@ -182,8 +183,41 @@ void main() {
                 image: image,
               ),
               EditImageState(
-                status: EditImageStatus.completed,
+                status: EditImageStatus.cropping,
                 image: image,
+              ),
+            ],
+            verify: (_) {
+              verify(() => mockAppImagePicker.pickImage(imageSource)).called(1);
+              verifyNoMoreInteractions(mockAppImagePicker);
+            },
+          );
+        },
+      );
+
+      group(
+        'CompleteCroppingImage',
+        () {
+          blocTest(
+            'should emit state with status completed and image from event '
+            'when add CompleteCroppingImage event',
+            build: () {
+              when(() => mockAppImagePicker.pickImage(imageSource))
+                  .thenAnswer((_) => Future.value(image));
+              return editImageBloc;
+            },
+            act: (EditImageBloc bloc) => bloc
+              ..add(const PickImage(imagePickerSource: imagePickerSource))
+              ..add(CompleteCroppingImage(croppedImage: image2)),
+            expect: () => [
+              const EditImageState(),
+              EditImageState(
+                status: EditImageStatus.editing,
+                image: image,
+              ),
+              EditImageState(
+                status: EditImageStatus.completed,
+                image: image2,
               ),
             ],
             verify: (_) {
