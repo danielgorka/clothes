@@ -112,6 +112,24 @@ void main() {
           );
         },
       );
+      group(
+        'ShowCloth',
+        () {
+          const clothId = 4;
+          blocTest<ClothesBloc, ClothesState>(
+            'should emit state with EditClothAction with correct cloth id',
+            build: () {
+              return clothesBloc;
+            },
+            act: (bloc) {
+              bloc.add(const ShowCloth(clothId: clothId));
+            },
+            expect: () => <ClothesState>[
+              const ClothesState(action: EditClothAction(clothId: clothId)),
+            ],
+          );
+        },
+      );
 
       group(
         'PickImage',

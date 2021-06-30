@@ -20,6 +20,20 @@ void main() {
   );
 
   group(
+    'ShowCloth',
+        () {
+      test('should return correct props', () {
+        const clothId = 3;
+        const pickImage = ShowCloth(clothId: clothId);
+        expect(
+          pickImage.props,
+          [clothId],
+        );
+      });
+    },
+  );
+
+  group(
     'PickImage',
     () {
       test('should return correct props', () {

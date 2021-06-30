@@ -9,6 +9,15 @@ abstract class ClothesEvent extends Equatable {
 
 class LoadClothes extends ClothesEvent {}
 
+class ShowCloth extends ClothesEvent {
+  final int clothId;
+
+  const ShowCloth({required this.clothId});
+
+  @override
+  List<Object?> get props => [clothId];
+}
+
 class PickImage extends ClothesEvent {
   final ImagePickerSource source;
 

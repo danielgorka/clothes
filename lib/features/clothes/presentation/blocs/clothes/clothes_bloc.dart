@@ -31,6 +31,8 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
   Stream<ClothesState> mapEventToState(ClothesEvent event) async* {
     if (event is LoadClothes) {
       yield* _mapLoadClothesToState(event);
+    } else if (event is ShowCloth) {
+      yield* _mapShowClothToState(event);
     } else if (event is PickImage) {
       yield* _mapPickImageToState(event);
     } else if (event is ImagePicked) {
@@ -52,6 +54,10 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
         ),
       );
     });
+  }
+
+  Stream<ClothesState> _mapShowClothToState(ShowCloth event) async* {
+    yield state.copyWith(action: EditClothAction(clothId: event.clothId));
   }
 
   Stream<ClothesState> _mapPickImageToState(PickImage event) async* {
