@@ -49,6 +49,13 @@ class ClothesView extends StatelessWidget {
     }
   }
 
+  Future<void> _showCloth(BuildContext context, int clothId) async {
+    await AutoRouter.of(context).push(
+      EditClothRoute(clothId: clothId),
+    );
+    BlocProvider.of<ClothesBloc>(context).add(CancelAction());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +96,7 @@ class ClothesView extends StatelessWidget {
           if (action is PickImageAction) {
             await _pickImage(context, action.source);
           } else if (action is EditClothAction) {
-            //TODO: open EditClothPage
+            await _showCloth(context, action.clothId);
           }
         },
         listenWhen: (oldState, newState) => oldState.action != newState.action,

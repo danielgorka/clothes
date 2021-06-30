@@ -260,19 +260,15 @@ void main() {
       group(
         'Listener',
         () {
-          const pickImageState = ClothesState(
-            action: PickImageAction(source: source),
-          );
-
           Future<void> shouldPushAndAddEvent({
             required WidgetTester tester,
             required ClothesEvent event,
+            required PageRouteInfo route,
             dynamic pushResult,
             required List<ClothesState> states,
           }) async {
             final mockStackRouter = MockStackRouter();
-            final editImageRoute = EditImageRoute(source: source);
-            when(() => mockStackRouter.push(editImageRoute))
+            when(() => mockStackRouter.push(route))
                 .thenAnswer((_) => Future.value(pushResult));
 
             await testListener(
@@ -289,50 +285,109 @@ void main() {
                   ),
                 );
               },
-              verifyAction: () => mockClothesBloc.add(event),
+              verifyAction: () {
+                mockClothesBloc.add(event);
+              },
               states: states,
             );
+            verify(() => mockStackRouter.push(route)).called(1);
           }
 
-          testWidgets(
-            'should push EditImageRoute when state action changes to '
-            'PickImageAction and add ImagePicked event when '
-            'returned data is not null ',
-            (tester) async {
-              final image = Uint8List.fromList([1, 2, 3, 4]);
-              await shouldPushAndAddEvent(
-                tester: tester,
-                event: ImagePicked(image: image),
-                pushResult: image,
-                states: [const ClothesState(), pickImageState],
-              );
-            },
-          );
-          testWidgets(
-            'should push EditImageRoute when state action changes to '
-            'PickImageAction and add CancelAction event when '
-            'returned data is null ',
-            (tester) async {
-              await shouldPushAndAddEvent(
-                tester: tester,
-                event: CancelAction(),
-                states: [const ClothesState(), pickImageState],
-              );
-            },
-          );
-          testWidgets(
-            'should push EditImageRoute ones when state action changes to '
-            'PickImageAction two in a row',
-            (tester) async {
-              const state2 = ClothesState(
-                status: ClothesStatus.loaded,
+          group(
+            'PickImageAction',
+            () {
+              const pickImageState = ClothesState(
                 action: PickImageAction(source: source),
               );
 
-              await shouldPushAndAddEvent(
-                tester: tester,
-                event: CancelAction(),
-                states: [const ClothesState(), pickImageState, state2],
+              testWidgets(
+                'should push EditImageRoute when state action changes to '
+                'PickImageAction and add ImagePicked event when '
+                'returned data is not null ',
+                (tester) async {
+                  final image = Uint8List.fromList([1, 2, 3, 4]);
+                  await shouldPushAndAddEvent(
+                    tester: tester,
+                    event: ImagePicked(image: image),
+                    route: EditImageRoute(source: source),
+                    pushResult: image,
+                    states: [const ClothesState(), pickImageState],
+                  );
+                },
+              );
+              testWidgets(
+                'should push EditImageRoute when state action changes to '
+                'PickImageAction and add CancelAction event when '
+                'returned data is null ',
+                (tester) async {
+                  await shouldPushAndAddEvent(
+                    tester: tester,
+                    event: CancelAction(),
+                    route: EditImageRoute(source: source),
+                    states: [const ClothesState(), pickImageState],
+                  );
+                },
+              );
+              testWidgets(
+                'should push EditImageRoute ones when state action changes to '
+                'PickImageAction two in a row',
+                (tester) async {
+                  final state2 = pickImageState.copyWith(
+                    status: ClothesStatus.loaded,
+                  );
+
+                  await shouldPushAndAddEvent(
+                    tester: tester,
+                    event: CancelAction(),
+                    route: EditImageRoute(source: source),
+                    states: [const ClothesState(), pickImageState, state2],
+                  );
+                },
+              );
+            },
+          );
+
+          group(
+            'EditClothAction',
+            () {
+              const clothId = 2;
+              const editClothState = ClothesState(
+                action: EditClothAction(clothId: clothId),
+              );
+
+              testWidgets(
+                'should push EditClothRoute with cloth id '
+                'when state action changes to EditClothAction',
+                (tester) async {
+                  await shouldPushAndAddEvent(
+                    tester: tester,
+                    event: CancelAction(),
+                    route: EditClothRoute(clothId: clothId),
+                    states: [
+                      const ClothesState(),
+                      editClothState,
+                    ],
+                  );
+                },
+              );
+              testWidgets(
+                'should push EditClothRoute ones when state action changes to '
+                'EditClothAction two in a row',
+                (tester) async {
+                  final state2 = editClothState.copyWith(
+                    status: ClothesStatus.loaded,
+                  );
+                  await shouldPushAndAddEvent(
+                    tester: tester,
+                    event: CancelAction(),
+                    route: EditClothRoute(clothId: clothId),
+                    states: [
+                      const ClothesState(),
+                      editClothState,
+                      state2,
+                    ],
+                  );
+                },
               );
             },
           );
