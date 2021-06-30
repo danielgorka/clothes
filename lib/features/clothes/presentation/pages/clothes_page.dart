@@ -110,7 +110,14 @@ class ClothesView extends StatelessWidget {
               if (state.clothes.isEmpty) {
                 return const EmptyView();
               } else {
-                return ClothesGridView(clothes: state.clothes);
+                return ClothesGridView(
+                  clothes: state.clothes,
+                  onItemTap: (clothId) {
+                    BlocProvider.of<ClothesBloc>(context).add(
+                      ShowCloth(clothId: clothId),
+                    );
+                  },
+                );
               }
           }
         },
@@ -119,13 +126,17 @@ class ClothesView extends StatelessWidget {
   }
 }
 
+typedef ClothItemTapCallback = void Function(int clothId);
+
 @visibleForTesting
 class ClothesGridView extends StatelessWidget {
   final List<Cloth> clothes;
+  final ClothItemTapCallback onItemTap;
 
   const ClothesGridView({
     Key? key,
     required this.clothes,
+    required this.onItemTap,
   }) : super(key: key);
 
   @override
@@ -138,9 +149,7 @@ class ClothesGridView extends StatelessWidget {
         final cloth = clothes[index];
         return ClothItem(
           cloth: cloth,
-          onTap: () {
-            //TODO: cloth clicked
-          },
+          onTap: () => onItemTap.call(cloth.id),
         );
       },
     );

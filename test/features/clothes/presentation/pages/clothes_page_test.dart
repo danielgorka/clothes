@@ -258,6 +258,31 @@ void main() {
       );
 
       group(
+        'Open cloth action',
+        () {
+          testWidgets(
+            'should add ShowCloth event with cloth id when tap cloth item',
+            (tester) async {
+              // arrange
+              when(() => mockClothesBloc.state).thenAnswer(
+                (_) => ClothesState(
+                  status: ClothesStatus.loaded,
+                  clothes: [cloth1],
+                ),
+              );
+              await tester.pumpWidget(wrapWithBloc(const ClothesView()));
+              // act
+              await tester.tap(find.byType(ClothItem));
+              // assert
+              verify(
+                () => mockClothesBloc.add(ShowCloth(clothId: cloth1.id)),
+              ).called(1);
+            },
+          );
+        },
+      );
+
+      group(
         'Listener',
         () {
           Future<void> shouldPushAndAddEvent({
@@ -405,7 +430,10 @@ void main() {
         (tester) async {
           // arrange
           await tester.pumpWidget(wrapWithApp(
-            ClothesGridView(clothes: clothes1),
+            ClothesGridView(
+              clothes: clothes1,
+              onItemTap: (_) {},
+            ),
           ));
           // assert
           final finder = find.byType(GridView);
@@ -421,12 +449,35 @@ void main() {
           // arrange
           final clothes = [Cloth(id: 0, creationDate: DateTime.now())];
           await tester.pumpWidget(wrapWithApp(
-            ClothesGridView(clothes: clothes),
+            ClothesGridView(
+              clothes: clothes,
+              onItemTap: (_) {},
+            ),
           ));
           // assert
           final finder = find.byType(ClothItem);
           final clothItem = tester.widget<ClothItem>(finder);
           expect(clothItem.cloth, equals(clothes.first));
+        },
+      );
+      testWidgets(
+        'should call onItemTap with cloth id when item clicked',
+        (tester) async {
+          // arrange
+          int? tapClothId;
+          final clothes = [cloth1];
+          await tester.pumpWidget(wrapWithApp(
+            ClothesGridView(
+              clothes: clothes,
+              onItemTap: (clothId) {
+                tapClothId = clothId;
+              },
+            ),
+          ));
+          // act
+          await tester.tap(find.byType(ClothItem));
+          // assert
+          expect(tapClothId, equals(cloth1.id));
         },
       );
     },
