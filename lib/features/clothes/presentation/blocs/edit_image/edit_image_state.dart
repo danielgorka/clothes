@@ -3,6 +3,7 @@ part of 'edit_image_bloc.dart';
 enum EditImageStatus {
   picking,
   editing,
+  cropping,
   completed,
   canceled,
 }
@@ -25,6 +26,8 @@ class EditImageState extends Equatable {
       image: image ?? this.image,
     );
   }
+
+  bool get isComputing => status == EditImageStatus.cropping;
 
   @override
   List<Object?> get props => [status, image];

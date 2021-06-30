@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -35,6 +37,19 @@ void main() {
         expect(
           CompleteEditingImage().props,
           [],
+        );
+      });
+    },
+  );
+
+  group(
+    'CompleteCroppingImage',
+    () {
+      test('should return correct props', () {
+        final image = Uint8List.fromList([1, 2, 3, 4]);
+        expect(
+          CompleteCroppingImage(croppedImage: image).props,
+          [image],
         );
       });
     },

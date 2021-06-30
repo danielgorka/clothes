@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:clothes/core/error/exceptions.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,13 +19,21 @@ class AppImagePicker extends BaseAppImagePicker {
 
   @override
   Future<Uint8List?> pickImage(ImageSource imageSource) async {
-    final pickedFile = await imagePicker.getImage(source: imageSource);
-    return pickedFile?.readAsBytes();
+    try {
+      final pickedFile = await imagePicker.getImage(source: imageSource);
+      return pickedFile?.readAsBytes();
+    } on PlatformException {
+      throw ImagePickerException();
+    }
   }
 
   @override
   Future<Uint8List?> retrieveLostData() async {
-    final lostData = await imagePicker.getLostData();
-    return lostData.file?.readAsBytes();
+    try {
+      final lostData = await imagePicker.getLostData();
+      return lostData.file?.readAsBytes();
+    } on PlatformException {
+      throw ImagePickerException();
+    }
   }
 }

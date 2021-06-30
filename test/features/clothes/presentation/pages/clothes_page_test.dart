@@ -26,6 +26,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/app_wrapper.dart';
 import '../../../../helpers/entities.dart';
+import '../../../../helpers/tests.dart';
 
 class MockGetIt extends Mock implements GetIt {}
 
@@ -267,42 +268,34 @@ void main() {
             required WidgetTester tester,
             required ClothesEvent event,
             dynamic pushResult,
-            required void Function(StreamController<ClothesState> controller)
-                act,
+            required List<ClothesState> states,
           }) async {
-            // arrange
-            const defaultState = ClothesState();
-
             final mockStackRouter = MockStackRouter();
             final editImageRoute = EditImageRoute(source: source);
-            final controller = StreamController<ClothesState>.broadcast();
-
-            when(() => mockClothesBloc.state).thenAnswer((_) => defaultState);
-            when(() => mockClothesBloc.stream)
-                .thenAnswer((_) => controller.stream);
             when(() => mockStackRouter.push(editImageRoute))
                 .thenAnswer((_) => Future.value(pushResult));
-            await tester.pumpWidget(
-              StackRouterScope(
-                segmentsHash: 0,
-                controller: mockStackRouter,
-                child: wrapWithBloc(
-                  const ClothesView(),
-                ),
-              ),
+
+            await testListener(
+              tester: tester,
+              mockBloc: mockClothesBloc,
+              pumpWidget: () async {
+                await tester.pumpWidget(
+                  StackRouterScope(
+                    segmentsHash: 0,
+                    controller: mockStackRouter,
+                    child: wrapWithBloc(
+                      const ClothesView(),
+                    ),
+                  ),
+                );
+              },
+              verifyAction: () => mockClothesBloc.add(event),
+              states: states,
             );
-            // act
-            act.call(controller);
-            // assert
-            await untilCalled(() => mockClothesBloc.add(event));
-            verify(() => mockStackRouter.push(editImageRoute)).called(1);
-            verify(() => mockClothesBloc.add(event)).called(1);
-            verifyNoMoreInteractions(mockStackRouter);
-            controller.close();
           }
 
           testWidgets(
-            'should push EditImageRoute when state action change to '
+            'should push EditImageRoute when state action changes to '
             'PickImageAction and add ImagePicked event when '
             'returned data is not null ',
             (tester) async {
@@ -311,24 +304,24 @@ void main() {
                 tester: tester,
                 event: ImagePicked(image: image),
                 pushResult: image,
-                act: (controller) => controller.add(pickImageState),
+                states: [const ClothesState(), pickImageState],
               );
             },
           );
           testWidgets(
-            'should push EditImageRoute when state action change to '
+            'should push EditImageRoute when state action changes to '
             'PickImageAction and add CancelAction event when '
             'returned data is null ',
             (tester) async {
               await shouldPushAndAddEvent(
                 tester: tester,
                 event: CancelAction(),
-                act: (controller) => controller.add(pickImageState),
+                states: [const ClothesState(), pickImageState],
               );
             },
           );
           testWidgets(
-            'should push EditImageRoute ones when state action change to '
+            'should push EditImageRoute ones when state action changes to '
             'PickImageAction two in a row',
             (tester) async {
               const state2 = ClothesState(
@@ -339,10 +332,7 @@ void main() {
               await shouldPushAndAddEvent(
                 tester: tester,
                 event: CancelAction(),
-                act: (controller) {
-                  controller.add(pickImageState);
-                  controller.add(state2);
-                },
+                states: [const ClothesState(), pickImageState, state2],
               );
             },
           );

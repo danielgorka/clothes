@@ -24,3 +24,12 @@ class PickImage extends EditImageEvent {
 class CancelEditingImage extends EditImageEvent {}
 
 class CompleteEditingImage extends EditImageEvent {}
+
+class CompleteCroppingImage extends EditImageEvent {
+  final Uint8List croppedImage;
+
+  const CompleteCroppingImage({required this.croppedImage});
+
+  @override
+  List<Object?> get props => [croppedImage];
+}

@@ -53,6 +53,23 @@ void main() {
         },
       );
 
+      group(
+        'isComputing',
+        () {
+          test(
+            'should return true when status is cropping',
+            () {
+              // arrange
+              const state = EditImageState(
+                status: EditImageStatus.cropping,
+              );
+              // assert
+              expect(state.isComputing, isTrue);
+            },
+          );
+        },
+      );
+
       test(
         'should return correct props',
         () {
