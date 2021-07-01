@@ -33,14 +33,25 @@ abstract class AppTheme {
       primaryColor: mainColor,
       accentColor: mainColor,
       canvasColor: isDark ? null : Colors.white,
-      appBarTheme: AppBarTheme(
-        elevation: 1,
-        brightness: brightness,
-        color: isDark ? Colors.grey[800] : Colors.white,
-      ),
+      iconTheme: _iconTheme(isDark),
+      appBarTheme: _appBarTheme(isDark),
       floatingActionButtonTheme: _floatingActionButtonTheme(isDark),
       elevatedButtonTheme: _elevatedButtonTheme(isDark),
       textButtonTheme: _textButtonTheme(isDark),
+    );
+  }
+
+  static IconThemeData _iconTheme(bool isDark) {
+    return IconThemeData(
+      color: isDark ? Colors.white : Colors.grey[700],
+    );
+  }
+
+  static AppBarTheme _appBarTheme(bool isDark) {
+    return AppBarTheme(
+      elevation: 1,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      color: isDark ? Colors.grey[800] : Colors.white,
     );
   }
 
