@@ -30,6 +30,8 @@ import 'features/clothes/domain/use_cases/get_clothes.dart' as _i20;
 import 'features/clothes/domain/use_cases/update_cloth.dart' as _i21;
 import 'features/clothes/domain/use_cases/update_cloth_tag.dart' as _i22;
 import 'features/clothes/presentation/blocs/clothes/clothes_bloc.dart' as _i24;
+import 'features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart'
+    as _i25;
 import 'features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
     as _i11;
 import 'injection.dart' as _i6; // ignore_for_file: unnecessary_lambdas
@@ -87,6 +89,8 @@ Future<_i1.GetIt> $initGetIt(_i1.GetIt get,
       getClothes: get<_i20.GetClothes>(),
       createCloth: get<_i14.CreateCloth>(),
       addClothImage: get<_i23.AddClothImage>()));
+  gh.factory<_i25.EditClothBloc>(() => _i25.EditClothBloc(
+      getCloth: get<_i19.GetCloth>(), updateCloth: get<_i21.UpdateCloth>()));
   return get;
 }
 
