@@ -45,7 +45,7 @@ class ClothesView extends StatelessWidget {
     if (image != null) {
       BlocProvider.of<ClothesBloc>(context).add(ImagePicked(image: image));
     } else {
-      BlocProvider.of<ClothesBloc>(context).add(CancelAction());
+      BlocProvider.of<ClothesBloc>(context).add(ClearAction());
     }
   }
 
@@ -53,7 +53,7 @@ class ClothesView extends StatelessWidget {
     await AutoRouter.of(context).push(
       EditClothRoute(clothId: clothId),
     );
-    BlocProvider.of<ClothesBloc>(context).add(CancelAction());
+    BlocProvider.of<ClothesBloc>(context).add(ClearAction());
   }
 
   @override

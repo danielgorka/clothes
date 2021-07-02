@@ -38,4 +38,4 @@ class ImagePicked extends ClothesEvent {
 
 class CreateEmptyCloth extends ClothesEvent {}
 
-class CancelAction extends ClothesEvent {}
+class ClearAction extends ClothesEvent {}

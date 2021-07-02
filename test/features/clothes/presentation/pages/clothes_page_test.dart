@@ -342,12 +342,12 @@ void main() {
               );
               testWidgets(
                 'should push EditImageRoute when state action changes to '
-                'PickImageAction and add CancelAction event when '
+                'PickImageAction and add ClearAction event when '
                 'returned data is null ',
                 (tester) async {
                   await shouldPushAndAddEvent(
                     tester: tester,
-                    event: CancelAction(),
+                    event: ClearAction(),
                     route: EditImageRoute(source: source),
                     states: [const ClothesState(), pickImageState],
                   );
@@ -363,7 +363,7 @@ void main() {
 
                   await shouldPushAndAddEvent(
                     tester: tester,
-                    event: CancelAction(),
+                    event: ClearAction(),
                     route: EditImageRoute(source: source),
                     states: [const ClothesState(), pickImageState, state2],
                   );
@@ -386,7 +386,7 @@ void main() {
                 (tester) async {
                   await shouldPushAndAddEvent(
                     tester: tester,
-                    event: CancelAction(),
+                    event: ClearAction(),
                     route: EditClothRoute(clothId: clothId),
                     states: [
                       const ClothesState(),
@@ -404,7 +404,7 @@ void main() {
                   );
                   await shouldPushAndAddEvent(
                     tester: tester,
-                    event: CancelAction(),
+                    event: ClearAction(),
                     route: EditClothRoute(clothId: clothId),
                     states: [
                       const ClothesState(),

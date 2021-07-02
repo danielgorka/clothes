@@ -21,7 +21,7 @@ void main() {
 
   group(
     'ShowCloth',
-        () {
+    () {
       test('should return correct props', () {
         const clothId = 3;
         const pickImage = ShowCloth(clothId: clothId);
@@ -75,12 +75,12 @@ void main() {
   );
 
   group(
-    'CancelAction',
+    'ClearAction',
     () {
       test('should return correct props', () {
-        final cancelAction = CancelAction();
+        final clearAction = ClearAction();
         expect(
-          cancelAction.props,
+          clearAction.props,
           [],
         );
       });

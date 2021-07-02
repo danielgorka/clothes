@@ -278,7 +278,7 @@ void main() {
       );
 
       group(
-        'CancelAction',
+        'ClearAction',
         () {
           blocTest<ClothesBloc, ClothesState>(
             'should emit state with NoAction',
@@ -286,7 +286,7 @@ void main() {
               return clothesBloc;
             },
             act: (bloc) {
-              bloc.add(CancelAction());
+              bloc.add(ClearAction());
             },
             expect: () => <ClothesState>[
               const ClothesState(),
