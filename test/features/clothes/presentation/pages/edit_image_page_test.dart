@@ -84,7 +84,7 @@ void main() {
         (tester) async {
           // arrange
           await tester.pumpWidget(
-            wrapWithBloc(
+            wrapWithApp(
               // ignore: prefer_const_constructors
               EditImagePage(source: source),
             ),
@@ -99,7 +99,7 @@ void main() {
         (tester) async {
           // arrange
           await tester.pumpWidget(
-            wrapWithBloc(
+            wrapWithApp(
               const EditImagePage(source: source),
             ),
           );
