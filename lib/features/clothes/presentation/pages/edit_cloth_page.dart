@@ -5,12 +5,12 @@ import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
 class EditClothPage extends StatelessWidget {
   final int clothId;
@@ -76,7 +76,6 @@ class MainClothView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     Widget content = ListView(
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
@@ -92,9 +91,7 @@ class MainClothView extends StatelessWidget {
       ],
     );
     if (cloth == null) {
-      content = Shimmer.fromColors(
-        baseColor: isDark ? Colors.grey[600]! : Colors.grey[300]!,
-        highlightColor: isDark ? Colors.grey[500]! : Colors.grey[100]!,
+      content = AppShimmer(
         child: content,
       );
     }

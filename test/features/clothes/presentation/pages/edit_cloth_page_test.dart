@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/injection.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../helpers/app_wrapper.dart';
 import '../../../../helpers/entities.dart';
@@ -267,10 +267,10 @@ void main() {
     'MainClothView',
     () {
       group(
-        'Show Shimmer',
+        'Show AppShimmer',
         () {
           testWidgets(
-            'should show Shimmer when cloth is null',
+            'should show AppShimmer when cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -281,11 +281,11 @@ void main() {
                 ),
               );
               // assert
-              expect(find.byType(Shimmer), findsOneWidget);
+              expect(find.byType(AppShimmer), findsOneWidget);
             },
           );
           testWidgets(
-            'should not show Shimmer when cloth is not null',
+            'should not show AppShimmer when cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -298,7 +298,7 @@ void main() {
                 ),
               );
               // assert
-              expect(find.byType(Shimmer), findsNothing);
+              expect(find.byType(AppShimmer), findsNothing);
             },
           );
         },

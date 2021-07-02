@@ -8,11 +8,11 @@ import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/presentation/blocs/clothes/clothes_bloc.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
     hide PickImage;
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_item.dart';
 import 'package:clothes/features/clothes/presentation/widgets/empty_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/multi_floating_action_button.dart';
-import 'package:clothes/features/clothes/presentation/widgets/shimmer.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +162,7 @@ class ClothesLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
+    return AppShimmer(
       child: GridView.builder(
         padding: ClothesUtils.gridViewPadding(context),
         gridDelegate: ClothesUtils.gridDelegate,

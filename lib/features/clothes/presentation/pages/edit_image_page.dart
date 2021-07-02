@@ -4,12 +4,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
 class EditImagePage extends StatelessWidget {
   final ImagePickerSource source;
@@ -122,16 +122,14 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       color: Theme.of(context).canvasColor,
       child: Center(
         child: FittedBox(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Shimmer.fromColors(
-              baseColor: isDark ? Colors.white : Colors.grey[800]!,
-              highlightColor: isDark ? Colors.grey[600]! : Colors.grey[100]!,
+            child: AppShimmer(
+              type: ShimmerType.text,
               child: Text(
                 context.l10n.saving,
                 style: Theme.of(context).textTheme.headline2,

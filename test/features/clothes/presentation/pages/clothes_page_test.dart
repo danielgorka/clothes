@@ -13,10 +13,10 @@ import 'package:clothes/features/clothes/presentation/blocs/clothes/clothes_bloc
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
     hide PickImage;
 import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_item.dart';
 import 'package:clothes/features/clothes/presentation/widgets/empty_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
-import 'package:clothes/features/clothes/presentation/widgets/shimmer.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -494,7 +494,7 @@ void main() {
             const ClothesLoadingView(),
           ));
           // assert
-          expect(find.byType(Shimmer), findsOneWidget);
+          expect(find.byType(AppShimmer), findsOneWidget);
         },
       );
       testWidgets(
