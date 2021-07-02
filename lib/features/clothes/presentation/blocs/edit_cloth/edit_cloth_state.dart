@@ -34,6 +34,8 @@ class EditClothState extends Equatable {
     this.error = EditClothError.none,
   });
 
+  bool get hasError => error != EditClothError.none;
+
   EditClothState copyWith({
     Cloth? cloth,
     EditingClothAction? action,

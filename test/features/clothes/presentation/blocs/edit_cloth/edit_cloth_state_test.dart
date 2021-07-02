@@ -44,6 +44,30 @@ void main() {
       );
 
       group(
+        'hasError',
+        () {
+          test(
+            'should return true when error is not EditClothError.none',
+            () {
+              // arrange
+              const state = EditClothState(error: EditClothError.other);
+              // assert
+              expect(state.hasError, isTrue);
+            },
+          );
+          test(
+            'should return false when error is EditClothError.none',
+                () {
+              // arrange
+              const state = EditClothState(error: EditClothError.none);
+              // assert
+              expect(state.hasError, isFalse);
+            },
+          );
+        },
+      );
+
+      group(
         'copyWith',
         () {
           test(
