@@ -115,7 +115,9 @@ void main() {
         required Future<T> Function() actFunc,
       }) async {
         // arrange
-        when(() => mockBox.get(modelId)).thenAnswer((_) => jsonWithoutId);
+        when(() => mockBox.get(modelId)).thenAnswer(
+          (_) => LinkedHashMap<dynamic, dynamic>.from(jsonWithoutId),
+        );
         // act
         final result = await actFunc();
         // assert

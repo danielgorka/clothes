@@ -269,7 +269,7 @@ class ClothesLocalDataSource extends BaseClothesLocalDataSource {
       throw ObjectNotFoundException();
     }
 
-    final json = _jsonWithId(element as Map<String, dynamic>, id);
+    final json = _jsonWithId(Map<String, dynamic>.from(element as Map), id);
     return fromJson(json);
   }
 
