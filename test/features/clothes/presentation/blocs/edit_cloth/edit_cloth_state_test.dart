@@ -57,7 +57,7 @@ void main() {
           );
           test(
             'should return false when error is EditClothError.none',
-                () {
+            () {
               // arrange
               const state = EditClothState(error: EditClothError.none);
               // assert
