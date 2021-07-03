@@ -7,6 +7,8 @@ import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
+import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
+import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -305,10 +307,10 @@ void main() {
       );
 
       group(
-        'Show ImagesView',
+        'Show Stack for image and cloth name',
         () {
           testWidgets(
-            'should show ImagesView with images from cloth',
+            'should show Stack with ImagesView, ImageShadow and NameView',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -321,26 +323,176 @@ void main() {
                 ),
               );
               // assert
-              final finder = find.byType(ImagesView);
-              final imagesView = tester.widget<ImagesView>(finder);
-              expect(imagesView.images, equals(cloth1.images));
+              expect(
+                find.descendant(
+                  of: find.byType(Stack),
+                  matching: find.byType(ImagesView),
+                ),
+                findsOneWidget,
+              );
+              expect(
+                find.descendant(
+                  of: find.byType(Stack),
+                  matching: find.byType(ImageShadow),
+                ),
+                findsWidgets,
+              );
+              expect(
+                find.descendant(
+                  of: find.byType(Stack),
+                  matching: find.byType(NameView),
+                ),
+                findsOneWidget,
+              );
             },
           );
-          testWidgets(
-            'should show ImagesView with null images when cloth is null',
-            (tester) async {
-              // arrange
-              await tester.pumpWidget(
-                wrapWithApp(
-                  const Material(
-                    child: MainClothView(),
-                  ),
-                ),
+
+          group(
+            'Show ImagesView',
+            () {
+              testWidgets(
+                'should show ImagesView with images from cloth',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: cloth1,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(ImagesView);
+                  final imagesView = tester.widget<ImagesView>(finder);
+                  expect(imagesView.images, equals(cloth1.images));
+                },
               );
-              // assert
-              final finder = find.byType(ImagesView);
-              final imagesView = tester.widget<ImagesView>(finder);
-              expect(imagesView.images, isNull);
+              testWidgets(
+                'should show ImagesView with null images when cloth is null',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      const Material(
+                        child: MainClothView(),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(ImagesView);
+                  final imagesView = tester.widget<ImagesView>(finder);
+                  expect(imagesView.images, isNull);
+                },
+              );
+            },
+          );
+
+          group(
+            'Show ImageShadows',
+            () {
+              testWidgets(
+                'should show top and bottom shadow when cloth is null',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      const Material(
+                        child: MainClothView(),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(ImageShadow);
+                  final imageShadows = tester.widgetList<ImageShadow>(finder);
+                  expect(imageShadows.length, equals(2));
+                  expect(imageShadows.first.side, equals(ShadowSide.top));
+                  expect(imageShadows.last.side, equals(ShadowSide.bottom));
+                },
+              );
+              testWidgets(
+                'should show top and bottom shadow when cloth name is not empty',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: cloth1,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(ImageShadow);
+                  final imageShadows = tester.widgetList<ImageShadow>(finder);
+                  expect(imageShadows.length, equals(2));
+                  expect(imageShadows.first.side, equals(ShadowSide.top));
+                  expect(imageShadows.last.side, equals(ShadowSide.bottom));
+                },
+              );
+              testWidgets(
+                'should show only top shadow when cloth name is empty',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: clothWithoutName,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(ImageShadow);
+                  final imageShadow = tester.widget<ImageShadow>(finder);
+                  expect(imageShadow.side, ShadowSide.top);
+                },
+              );
+            },
+          );
+
+          group(
+            'Show NameView',
+            () {
+              testWidgets(
+                'should show NameView with name from cloth',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: cloth1,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(NameView);
+                  final nameView = tester.widget<NameView>(finder);
+                  expect(nameView.name, equals(cloth1.name));
+                },
+              );
+              testWidgets(
+                'should show NameView with null name when cloth is null',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      const Material(
+                        child: MainClothView(),
+                      ),
+                    ),
+                  );
+                  // assert
+                  final finder = find.byType(NameView);
+                  final nameView = tester.widget<NameView>(finder);
+                  expect(nameView.name, isNull);
+                },
+              );
             },
           );
         },
@@ -529,5 +681,37 @@ void main() {
     },
   );
 
-  //TODO
+  group(
+    'NameView',
+    () {
+      testWidgets(
+        'should show Text with name when name is not null',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const NameView(name: name),
+            ),
+          );
+          // assert
+          expect(find.text(name), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should show RoundedContainer with fixed width and height '
+        'when name is null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const NameView(),
+            ),
+          );
+          // assert
+          expect(find.byType(RoundedContainer), findsOneWidget);
+        },
+      );
+    },
+  );
 }

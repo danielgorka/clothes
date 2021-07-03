@@ -8,6 +8,8 @@ import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_clot
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
+import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
+import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,10 +81,21 @@ class MainClothView extends StatelessWidget {
     Widget content = ListView(
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
-        ImagesView(
-          images: cloth?.images,
+        Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            ImagesView(
+              images: cloth?.images,
+            ),
+            const ImageShadow(side: ShadowSide.top),
+            if (cloth == null || cloth!.name.isNotEmpty)
+              const ImageShadow(side: ShadowSide.bottom),
+            NameView(
+              name: cloth?.name,
+            ),
+          ],
         ),
-        // NameView(),
+
         // DescriptionView(),
         // TypeTagsView(),
         // ColorTagsView(),
@@ -125,12 +138,14 @@ class AppBarView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           BackButton(
+            color: Colors.white,
             onPressed: () {
               BlocProvider.of<EditClothBloc>(context).add(CloseCloth());
             },
           ),
           if (editable)
             IconButton(
+              color: Colors.white,
               key: Keys.editClothButton,
               onPressed: () {
                 //TODO: start editing
@@ -175,6 +190,44 @@ class ImagesView extends StatelessWidget {
       itemBuilder: (context, index, realIndex) {
         return ClothImageView(image: images![index]);
       },
+    );
+  }
+}
+
+@visibleForTesting
+class NameView extends StatelessWidget {
+  final String? name;
+
+  const NameView({
+    Key? key,
+    this.name,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.headline4!.copyWith(
+          color: Colors.white,
+        );
+
+    Widget content;
+    if (name == null) {
+      content = RoundedContainer(
+        width: style.fontSize! * 4,
+        height: style.fontSize! / 2,
+      );
+    } else {
+      content = Text(
+        name!,
+        textAlign: TextAlign.center,
+        style: style,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: content,
+      ),
     );
   }
 }
