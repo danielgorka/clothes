@@ -21,5 +21,6 @@ abstract class Keys {
   static const createClothPickFromGalleryAction =
       Key('create_cloth_pick__from_gallery_action');
 
+  static const editClothListView = Key('edit_cloth_list_view');
   static const editClothButton = Key('edit_cloth_button');
 }

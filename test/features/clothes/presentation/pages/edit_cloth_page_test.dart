@@ -268,6 +268,11 @@ void main() {
   group(
     'MainClothView',
     () {
+      void setLongScreen(WidgetTester tester) {
+        tester.binding.window.physicalSizeTestValue = const Size(500, 5000);
+        addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      }
+
       group(
         'Show AppShimmer',
         () {
@@ -498,6 +503,51 @@ void main() {
         },
       );
 
+      group(
+        'Show DescriptionView',
+        () {
+          testWidgets(
+            'should show DescriptionView with description from cloth',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(DescriptionView);
+              final descriptionView = tester.widget<DescriptionView>(finder);
+              expect(descriptionView.description, equals(cloth1.description));
+            },
+          );
+          testWidgets(
+            'should show DescriptionView with null description '
+            'when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(DescriptionView);
+              final descriptionView = tester.widget<DescriptionView>(finder);
+              expect(descriptionView.description, isNull);
+            },
+          );
+        },
+      );
+
       //TODO
 
       group(
@@ -685,7 +735,7 @@ void main() {
     'NameView',
     () {
       testWidgets(
-        'should show Text with name when name is not null',
+        'should show Text with name when it is not null',
         (tester) async {
           // arrange
           const name = 'Cloth name';
@@ -709,7 +759,63 @@ void main() {
             ),
           );
           // assert
-          expect(find.byType(RoundedContainer), findsOneWidget);
+          final finder = find.byType(RoundedContainer);
+          final roundedContainer = tester.widget<RoundedContainer>(finder);
+          expect(roundedContainer.width, isNotNull);
+          expect(roundedContainer.height, isNotNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'DescriptionView',
+    () {
+      testWidgets(
+        'should show Text with description when it is not null',
+        (tester) async {
+          // arrange
+          const description = 'Cloth description';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const DescriptionView(description: description),
+            ),
+          );
+          // assert
+          expect(find.text(description), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should show 2 RoundedContainers with fixed width and height '
+        'when description is null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const DescriptionView(),
+            ),
+          );
+          // assert
+          final finder = find.byType(RoundedContainer);
+          final roundedContainers = tester.widgetList<RoundedContainer>(finder);
+          expect(roundedContainers.length, equals(2));
+          expect(roundedContainers.first.width, isNotNull);
+          expect(roundedContainers.first.height, isNotNull);
+          expect(roundedContainers.last.width, isNotNull);
+          expect(roundedContainers.last.height, isNotNull);
+        },
+      );
+      testWidgets(
+        'should show no Icon when description is empty',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const DescriptionView(description: ''),
+            ),
+          );
+          // assert
+          expect(find.byType(Icon), findsNothing);
         },
       );
     },

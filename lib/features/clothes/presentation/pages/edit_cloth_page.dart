@@ -79,6 +79,7 @@ class MainClothView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget content = ListView(
+      key: Keys.editClothListView,
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
         Stack(
@@ -96,7 +97,9 @@ class MainClothView extends StatelessWidget {
           ],
         ),
 
-        // DescriptionView(),
+        DescriptionView(
+          description: cloth?.description,
+        ),
         // TypeTagsView(),
         // ColorTagsView(),
         // OtherTagsView(),
@@ -209,7 +212,7 @@ class NameView extends StatelessWidget {
           color: Colors.white,
         );
 
-    Widget content;
+    final Widget content;
     if (name == null) {
       content = RoundedContainer(
         width: style.fontSize! * 4,
@@ -227,6 +230,60 @@ class NameView extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Center(
         child: content,
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class DescriptionView extends StatelessWidget {
+  final String? description;
+
+  const DescriptionView({
+    Key? key,
+    this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (description != null && description!.isEmpty) {
+      return Container();
+    }
+
+    final style = Theme.of(context).textTheme.bodyText2!;
+    final Widget content;
+    if (description == null) {
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RoundedContainer(
+            width: style.fontSize! * 15,
+            height: style.fontSize! / 2,
+          ),
+          const SizedBox(height: 6.0),
+          RoundedContainer(
+            width: style.fontSize! * 10,
+            height: style.fontSize! / 2,
+          ),
+        ],
+      );
+    } else {
+      content = Text(
+        description!,
+        style: style,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          const Icon(Icons.notes),
+          const SizedBox(width: 16.0),
+          Expanded(
+            child: content,
+          ),
+        ],
       ),
     );
   }
