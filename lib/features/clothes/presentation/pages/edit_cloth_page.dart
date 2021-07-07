@@ -243,10 +243,12 @@ class NameView extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: content,
+    return IgnorePointer(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: content,
+        ),
       ),
     );
   }

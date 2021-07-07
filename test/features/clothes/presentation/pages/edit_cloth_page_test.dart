@@ -837,6 +837,26 @@ void main() {
     'NameView',
     () {
       testWidgets(
+        'should wrap with IgnorePointer when name is not null',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const NameView(name: name),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(NameView),
+              matching: find.byType(IgnorePointer),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+      testWidgets(
         'should show Text with name when it is not null',
         (tester) async {
           // arrange
