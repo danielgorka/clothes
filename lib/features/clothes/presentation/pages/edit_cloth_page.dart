@@ -7,6 +7,7 @@ import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
@@ -77,7 +78,7 @@ class EditClothView extends StatelessWidget {
 }
 
 @visibleForTesting
-class MainClothView extends StatelessWidget {
+class MainClothView extends StatefulWidget {
   final Cloth? cloth;
   final bool loading;
 
@@ -88,51 +89,66 @@ class MainClothView extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _MainClothViewState createState() => _MainClothViewState();
+}
+
+class _MainClothViewState extends State<MainClothView> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget content = ListView(
       key: Keys.editClothListView,
+      controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
         Stack(
           alignment: Alignment.bottomCenter,
           children: [
             ImagesView(
-              images: cloth?.images,
+              images: widget.cloth?.images,
             ),
-            if (cloth == null || cloth!.name.isNotEmpty)
+            if (widget.cloth == null || widget.cloth!.name.isNotEmpty)
               const ImageShadow(
                 key: Keys.editClothBottomShadow,
                 side: ShadowSide.bottom,
               ),
             NameView(
-              name: cloth?.name,
+              name: widget.cloth?.name,
             ),
           ],
         ),
+        const SizedBox(height: 16.0),
         DescriptionView(
-          description: cloth?.description,
+          description: widget.cloth?.description,
         ),
         TagsView(
           title: context.l10n.kindOfCloth,
           tagType: ClothTagType.clothKind,
-          tags: cloth?.tags,
+          tags: widget.cloth?.tags,
         ),
         TagsView(
           title: context.l10n.colors,
           tagType: ClothTagType.color,
-          tags: cloth?.tags,
+          tags: widget.cloth?.tags,
         ),
         TagsView(
           title: context.l10n.otherTags,
           tagType: ClothTagType.other,
-          tags: cloth?.tags,
+          tags: widget.cloth?.tags,
         ),
         CreationDateView(
-          creationDate: cloth?.creationDate,
+          creationDate: widget.cloth?.creationDate,
         ),
       ],
     );
-    if (cloth == null) {
+    if (widget.cloth == null) {
       content = AppShimmer(
         child: content,
       );
@@ -140,13 +156,35 @@ class MainClothView extends StatelessWidget {
     return Stack(
       children: [
         content,
+        if (widget.cloth != null)
+          AppBarFloatingActionButton(
+            scrollController: _scrollController,
+            appBarHeight:
+                MediaQuery.of(context).size.width / ClothesUtils.aspectRatio,
+            onPressed: () {
+              BlocProvider.of<EditClothBloc>(context).add(
+                ChangeFavourite(favourite: !widget.cloth!.favourite),
+              );
+            },
+            child: Icon(
+              widget.cloth!.favourite
+                  ? Icons.favorite_outlined
+                  : Icons.favorite_border_outlined,
+            ),
+          ),
         const ImageShadow(
           key: Keys.editClothTopShadow,
           side: ShadowSide.top,
         ),
-        AppBarView(editable: cloth != null),
+        AppBarView(editable: widget.cloth != null),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
 

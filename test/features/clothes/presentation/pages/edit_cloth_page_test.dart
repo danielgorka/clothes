@@ -6,6 +6,7 @@ import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
@@ -691,6 +692,98 @@ void main() {
               final finder = find.byType(CreationDateView);
               final creationDateView = tester.widget<CreationDateView>(finder);
               expect(creationDateView.creationDate, isNull);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show AppBarFloatingActionButton',
+        () {
+          testWidgets(
+            'should show AppBarFloatingActionButton with filled heart icon '
+            'when cloth is not null and favourite is true',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1, // favourite is true
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(AppBarFloatingActionButton);
+              final fab = tester.widget<AppBarFloatingActionButton>(finder);
+              final icon = fab.child as Icon;
+              expect(icon.icon, equals(Icons.favorite_outlined));
+            },
+          );
+          testWidgets(
+            'should show AppBarFloatingActionButton with outlined heart icon '
+            'when cloth is not null and favourite is false',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth2, // favourite is false
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(AppBarFloatingActionButton);
+              final fab = tester.widget<AppBarFloatingActionButton>(finder);
+              final icon = fab.child as Icon;
+              expect(icon.icon, equals(Icons.favorite_border_outlined));
+            },
+          );
+
+          testWidgets(
+            'should not show AppBarFloatingActionButton when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarFloatingActionButton), findsNothing);
+            },
+          );
+          testWidgets(
+            'should add ChangeFavourite event '
+            'on AppBarFloatingActionButton pressed',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithBloc(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // act
+              await tester.tap(find.byType(AppBarFloatingActionButton));
+              // assert
+              verify(
+                () => mockEditClothBloc.add(
+                  ChangeFavourite(favourite: !cloth1.favourite),
+                ),
+              ).called(1);
             },
           );
         },
