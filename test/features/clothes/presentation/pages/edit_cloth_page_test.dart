@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
@@ -9,6 +10,7 @@ import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.d
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
 import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
+import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -548,6 +550,59 @@ void main() {
         },
       );
 
+      group(
+        'Show TagsViews',
+        () {
+          testWidgets(
+            'should show three TagsViews with tags from cloth',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(TagsView);
+              expect(finder, findsNWidgets(3));
+              final tagsViews = tester.widgetList<TagsView>(finder).toList();
+              for (final tagsView in tagsViews) {
+                expect(tagsView.tags, equals(cloth1.tags));
+              }
+              expect(tagsViews[0].tagType, equals(ClothTagType.clothKind));
+              expect(tagsViews[1].tagType, equals(ClothTagType.color));
+              expect(tagsViews[2].tagType, equals(ClothTagType.other));
+            },
+          );
+          testWidgets(
+            'should show three TagsViews with null tags when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(TagsView);
+              expect(finder, findsNWidgets(3));
+              final tagsViews = tester.widgetList<TagsView>(finder).toList();
+              for (final tagsView in tagsViews) {
+                expect(tagsView.tags, isNull);
+              }
+            },
+          );
+        },
+      );
+
       //TODO
 
       group(
@@ -806,7 +861,7 @@ void main() {
         },
       );
       testWidgets(
-        'should show no Icon when description is empty',
+        'should show empty Container when description is empty',
         (tester) async {
           // arrange
           await tester.pumpWidget(
@@ -815,7 +870,126 @@ void main() {
             ),
           );
           // assert
-          expect(find.byType(Icon), findsNothing);
+          final finder = find.descendant(
+            of: find.byType(DescriptionView),
+            matching: find.byType(Container),
+          );
+          final container = tester.widget<Container>(finder);
+          expect(container.child, isNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'TagsView',
+    () {
+      const title = 'Tags title';
+      const tags = [
+        ClothTag(
+          id: 0,
+          name: 'Tag 1',
+          type: ClothTagType.clothKind,
+        ),
+        ClothTag(
+          id: 0,
+          name: 'Tag 2',
+          type: ClothTagType.clothKind,
+        ),
+        ClothTag(
+          id: 0,
+          name: 'Tag 3',
+          type: ClothTagType.color,
+        ),
+        ClothTag(
+          id: 0,
+          name: 'Tag 4',
+          type: ClothTagType.color,
+        ),
+        ClothTag(
+          id: 0,
+          name: 'Tag 5',
+          type: ClothTagType.other,
+        ),
+        ClothTag(
+          id: 0,
+          name: 'Tag 6',
+          type: ClothTagType.other,
+        ),
+      ];
+
+      testWidgets(
+        'should show title and tags filtered by type '
+        'when tags variable is not null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: TagsView(
+                  title: title,
+                  tagType: ClothTagType.clothKind,
+                  tags: tags,
+                ),
+              ),
+            ),
+          );
+          // assert
+          expect(find.text(title), findsOneWidget);
+          expect(find.byType(TagView), findsNWidgets(2));
+          expect(find.text('Tag 1'), findsOneWidget);
+          expect(find.text('Tag 2'), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should show 2 RoundedContainers with fixed width and height '
+        'when tags variable is null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: TagsView(
+                  title: title,
+                  tagType: ClothTagType.clothKind,
+                  tags: null,
+                ),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(RoundedContainer);
+          final roundedContainers = tester.widgetList<RoundedContainer>(finder);
+          expect(roundedContainers.length, equals(2));
+          expect(roundedContainers.first.width, isNotNull);
+          expect(roundedContainers.first.height, isNotNull);
+          expect(roundedContainers.last.width, isNotNull);
+          expect(roundedContainers.last.height, isNotNull);
+        },
+      );
+
+      testWidgets(
+        'should show empty Container when tags list is empty',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: TagsView(
+                  title: title,
+                  tagType: ClothTagType.clothKind,
+                  tags: [],
+                ),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.descendant(
+            of: find.byType(TagsView),
+            matching: find.byType(Container),
+          );
+          final container = tester.widget<Container>(finder);
+          expect(container.child, isNull);
         },
       );
     },

@@ -4,13 +4,16 @@ import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
+import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
 import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
+import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
+import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -100,9 +103,21 @@ class MainClothView extends StatelessWidget {
         DescriptionView(
           description: cloth?.description,
         ),
-        // TypeTagsView(),
-        // ColorTagsView(),
-        // OtherTagsView(),
+        TagsView(
+          title: context.l10n.kindOfCloth,
+          tagType: ClothTagType.clothKind,
+          tags: cloth?.tags,
+        ),
+        TagsView(
+          title: context.l10n.colors,
+          tagType: ClothTagType.color,
+          tags: cloth?.tags,
+        ),
+        TagsView(
+          title: context.l10n.otherTags,
+          tagType: ClothTagType.other,
+          tags: cloth?.tags,
+        ),
         // CreationDateView(),
       ],
     );
@@ -283,6 +298,74 @@ class DescriptionView extends StatelessWidget {
           Expanded(
             child: content,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class TagsView extends StatelessWidget {
+  final String title;
+  final ClothTagType tagType;
+  final List<ClothTag>? tags;
+
+  const TagsView({
+    Key? key,
+    required this.title,
+    required this.tagType,
+    required this.tags,
+  }) : super(key: key);
+
+  Widget _blankChip(double width) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 10.0,
+        horizontal: 2.0,
+      ),
+      child: RoundedContainer(
+        width: width,
+        height: 26.0,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (tags != null && tags!.isEmpty) {
+      return Container();
+    }
+
+    final List<Widget> tagWidgets;
+    if (tags == null) {
+      tagWidgets = [
+        _blankChip(60.0),
+        _blankChip(80.0),
+      ];
+    } else {
+      tagWidgets = tags!
+          .where((tag) => tag.type == tagType)
+          .map((tag) => TagView(tag: tag))
+          .toList();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 4.0,
+        horizontal: 8.0,
+      ),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8.0,
+        runSpacing: -8.0,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+          ...tagWidgets
         ],
       ),
     );
