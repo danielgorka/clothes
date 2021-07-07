@@ -28,6 +28,21 @@ void main() {
         },
       );
       testWidgets(
+        'should wrap with IgnorePointer',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(getWidget(ShadowSide.bottom));
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(ImageShadow),
+              matching: find.byType(IgnorePointer),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+      testWidgets(
         'should show LinearGradient from bottom to top when shadow side is top',
         (tester) async {
           // arrange

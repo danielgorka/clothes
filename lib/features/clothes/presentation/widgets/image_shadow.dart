@@ -29,17 +29,19 @@ class ImageShadow extends StatelessWidget {
     }
 
     return Positioned.fill(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.1),
-              Colors.black.withOpacity(0.4),
-            ],
-            begin: begin,
-            end: end,
-            stops: const [0.6, 0.83, 1.0],
+      child: IgnorePointer(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.transparent,
+                Colors.black.withOpacity(0.1),
+                Colors.black.withOpacity(0.4),
+              ],
+              begin: begin,
+              end: end,
+              stops: const [0.6, 0.83, 1.0],
+            ),
           ),
         ),
       ),
