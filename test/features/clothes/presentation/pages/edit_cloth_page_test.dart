@@ -398,10 +398,10 @@ void main() {
           );
 
           group(
-            'Show ImageShadows',
+            'Show bottom ImageShadow',
             () {
               testWidgets(
-                'should show top and bottom shadow when cloth is null',
+                'should show bottom shadow when cloth is null',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -412,15 +412,13 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(ImageShadow);
-                  final imageShadows = tester.widgetList<ImageShadow>(finder);
-                  expect(imageShadows.length, equals(2));
-                  expect(imageShadows.first.side, equals(ShadowSide.top));
-                  expect(imageShadows.last.side, equals(ShadowSide.bottom));
+                  final finder = find.byKey(Keys.editClothBottomShadow);
+                  final imageShadow = tester.widget<ImageShadow>(finder);
+                  expect(imageShadow.side, equals(ShadowSide.bottom));
                 },
               );
               testWidgets(
-                'should show top and bottom shadow when cloth name is not empty',
+                'should show bottom shadow when cloth name is not empty',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -433,15 +431,13 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(ImageShadow);
-                  final imageShadows = tester.widgetList<ImageShadow>(finder);
-                  expect(imageShadows.length, equals(2));
-                  expect(imageShadows.first.side, equals(ShadowSide.top));
-                  expect(imageShadows.last.side, equals(ShadowSide.bottom));
+                  final finder = find.byKey(Keys.editClothBottomShadow);
+                  final imageShadow = tester.widget<ImageShadow>(finder);
+                  expect(imageShadow.side, equals(ShadowSide.bottom));
                 },
               );
               testWidgets(
-                'should show only top shadow when cloth name is empty',
+                'should show no shadow when cloth name is empty',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -454,9 +450,7 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(ImageShadow);
-                  final imageShadow = tester.widget<ImageShadow>(finder);
-                  expect(imageShadow.side, ShadowSide.top);
+                  expect(find.byKey(Keys.editClothBottomShadow), findsNothing);
                 },
               );
             },
@@ -647,6 +641,48 @@ void main() {
               final finder = find.byType(CreationDateView);
               final creationDateView = tester.widget<CreationDateView>(finder);
               expect(creationDateView.creationDate, isNull);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show top ImageShadow',
+        () {
+          testWidgets(
+            'should show top shadow when cloth is null',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byKey(Keys.editClothTopShadow);
+              final imageShadow = tester.widget<ImageShadow>(finder);
+              expect(imageShadow.side, equals(ShadowSide.top));
+            },
+          );
+          testWidgets(
+            'should show top shadow when cloth is not null',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: clothWithoutName,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byKey(Keys.editClothTopShadow);
+              final imageShadow = tester.widget<ImageShadow>(finder);
+              expect(imageShadow.side, equals(ShadowSide.top));
             },
           );
         },

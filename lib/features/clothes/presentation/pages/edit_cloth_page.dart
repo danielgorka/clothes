@@ -92,9 +92,11 @@ class MainClothView extends StatelessWidget {
             ImagesView(
               images: cloth?.images,
             ),
-            const ImageShadow(side: ShadowSide.top),
             if (cloth == null || cloth!.name.isNotEmpty)
-              const ImageShadow(side: ShadowSide.bottom),
+              const ImageShadow(
+                key: Keys.editClothBottomShadow,
+                side: ShadowSide.bottom,
+              ),
             NameView(
               name: cloth?.name,
             ),
@@ -131,6 +133,10 @@ class MainClothView extends StatelessWidget {
     return Stack(
       children: [
         content,
+        const ImageShadow(
+          key: Keys.editClothTopShadow,
+          side: ShadowSide.top,
+        ),
         AppBarView(editable: cloth != null),
       ],
     );
