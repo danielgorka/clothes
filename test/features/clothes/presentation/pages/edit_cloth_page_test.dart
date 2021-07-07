@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
@@ -13,6 +14,7 @@ import 'package:clothes/features/clothes/presentation/widgets/rounded_container.
 import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -117,6 +119,54 @@ void main() {
   group(
     'EditClothView',
     () {
+      group(
+        'AnnotatedRegion',
+        () {
+          testWidgets(
+            'should show AnnotatedRegion with AppTheme.overlayDark '
+            'when dark mode off',
+            (tester) async {
+              tester.binding.window.platformBrightnessTestValue =
+                  Brightness.light;
+              // arrange
+              when(() => mockEditClothBloc.state).thenAnswer(
+                (_) => const EditClothState(error: EditClothError.other),
+              );
+              await tester.pumpWidget(
+                wrapWithBloc(
+                  const EditClothView(),
+                ),
+              );
+              // assert
+              final finder = find.byKey(Keys.editClothAnnotatedRegion);
+              final annotatedRegion = tester.widget<AnnotatedRegion>(finder);
+              expect(annotatedRegion.value, equals(AppTheme.overlayDark));
+            },
+          );
+          testWidgets(
+            'should show AnnotatedRegion with AppTheme.overlayDark '
+            'when dark mode on',
+            (tester) async {
+              tester.binding.window.platformBrightnessTestValue =
+                  Brightness.dark;
+              // arrange
+              when(() => mockEditClothBloc.state).thenAnswer(
+                (_) => const EditClothState(error: EditClothError.other),
+              );
+              await tester.pumpWidget(
+                wrapWithBloc(
+                  const EditClothView(),
+                ),
+              );
+              // assert
+              final finder = find.byKey(Keys.editClothAnnotatedRegion);
+              final annotatedRegion = tester.widget<AnnotatedRegion>(finder);
+              expect(annotatedRegion.value, equals(AppTheme.overlayDark));
+            },
+          );
+        },
+      );
+
       group(
         'Views based on state',
         () {

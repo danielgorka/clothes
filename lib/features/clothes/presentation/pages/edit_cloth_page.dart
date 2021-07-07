@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
@@ -15,6 +16,7 @@ import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -44,26 +46,30 @@ class EditClothView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocConsumer<EditClothBloc, EditClothState>(
-        listener: (context, state) async {
-          if (state.action is CloseClothAction) {
-            await AutoRouter.of(context).pop();
-            BlocProvider.of<EditClothBloc>(context).add(ClearAction());
-          }
-        },
-        listenWhen: (oldState, newState) => oldState.action != newState.action,
-        builder: (context, state) {
-          if (state.cloth == null && state.hasError) {
-            //TODO: create more user friendly view with specific error message
-            return const ErrorView();
-          }
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      key: Keys.editClothAnnotatedRegion,
+      value: AppTheme.overlayDark,
+      child: Scaffold(
+        body: BlocConsumer<EditClothBloc, EditClothState>(
+          listener: (context, state) async {
+            if (state.action is CloseClothAction) {
+              await AutoRouter.of(context).pop();
+              BlocProvider.of<EditClothBloc>(context).add(ClearAction());
+            }
+          },
+          listenWhen: (oldState, newState) => oldState.action != newState.action,
+          builder: (context, state) {
+            if (state.cloth == null && state.hasError) {
+              //TODO: create more user friendly view with specific error message
+              return const ErrorView();
+            }
 
-          return MainClothView(
-            cloth: state.cloth,
-            loading: state.loading,
-          );
-        },
+            return MainClothView(
+              cloth: state.cloth,
+              loading: state.loading,
+            );
+          },
+        ),
       ),
     );
   }
