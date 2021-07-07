@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/app_wrapper.dart';
@@ -603,7 +604,53 @@ void main() {
         },
       );
 
-      //TODO
+      group(
+        'Show CreationDateView',
+        () {
+          testWidgets(
+            'should show CreationDateView with cloth creation date',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(CreationDateView);
+              final creationDateView = tester.widget<CreationDateView>(finder);
+              expect(
+                creationDateView.creationDate,
+                equals(cloth1.creationDate),
+              );
+            },
+          );
+          testWidgets(
+            'should show CreationDateView with null creation date '
+            'when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(CreationDateView);
+              final creationDateView = tester.widget<CreationDateView>(finder);
+              expect(creationDateView.creationDate, isNull);
+            },
+          );
+        },
+      );
 
       group(
         'Show AppBarView',
@@ -986,6 +1033,56 @@ void main() {
           // assert
           final finder = find.descendant(
             of: find.byType(TagsView),
+            matching: find.byType(Container),
+          );
+          final container = tester.widget<Container>(finder);
+          expect(container.child, isNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'CreationDateView',
+    () {
+      testWidgets(
+        'should show text with specified date and time '
+        'when creation date is not null',
+        (tester) async {
+          // arrange
+          final creationDate = cloth1.creationDate;
+          await tester.pumpWidget(
+            wrapWithApp(
+              CreationDateView(
+                creationDate: creationDate,
+              ),
+            ),
+          );
+          // assert
+          final dateFormat = DateFormat.yMd();
+          final timeFormat = DateFormat.Hms();
+          expect(
+            find.textContaining(dateFormat.format(creationDate)),
+            findsOneWidget,
+          );
+          expect(
+            find.textContaining(timeFormat.format(creationDate)),
+            findsOneWidget,
+          );
+        },
+      );
+      testWidgets(
+        'should show empty Container when creation date is null',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const CreationDateView(),
+            ),
+          );
+          // assert
+          final finder = find.descendant(
+            of: find.byType(CreationDateView),
             matching: find.byType(Container),
           );
           final container = tester.widget<Container>(finder);

@@ -4,6 +4,12 @@
   "cancel": "Cancel",
   "clothes": "Clothes",
   "colors": "Colors",
+  "creationDate": "Creation date: {dateTime}",
+  "@creationDate": {
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "kindOfCloth": "Kind of cloth",
   "newCloth": "New cloth",
   "nothingToShow": "Nothing to show",

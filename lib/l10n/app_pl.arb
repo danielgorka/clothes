@@ -4,6 +4,7 @@
   "cancel": "Anuluj",
   "clothes": "Ubrania",
   "colors": "Kolory",
+  "creationDate": "Data utworzenia: {dateTime}",
   "kindOfCloth": "Rodzaj ubrania",
   "newCloth": "Nowe ubranie",
   "nothingToShow": "Nic tu nie ma",

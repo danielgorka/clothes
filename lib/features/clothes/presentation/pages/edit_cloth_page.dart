@@ -16,6 +16,7 @@ import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class EditClothPage extends StatelessWidget {
   final int clothId;
@@ -99,7 +100,6 @@ class MainClothView extends StatelessWidget {
             ),
           ],
         ),
-
         DescriptionView(
           description: cloth?.description,
         ),
@@ -118,7 +118,9 @@ class MainClothView extends StatelessWidget {
           tagType: ClothTagType.other,
           tags: cloth?.tags,
         ),
-        // CreationDateView(),
+        CreationDateView(
+          creationDate: cloth?.creationDate,
+        ),
       ],
     );
     if (cloth == null) {
@@ -304,6 +306,7 @@ class DescriptionView extends StatelessWidget {
   }
 }
 
+@visibleForTesting
 class TagsView extends StatelessWidget {
   final String title;
   final ClothTagType tagType;
@@ -367,6 +370,48 @@ class TagsView extends StatelessWidget {
           ),
           ...tagWidgets
         ],
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class CreationDateView extends StatefulWidget {
+  final DateTime? creationDate;
+
+  const CreationDateView({
+    Key? key,
+    this.creationDate,
+  }) : super(key: key);
+
+  @override
+  _CreationDateViewState createState() => _CreationDateViewState();
+}
+
+class _CreationDateViewState extends State<CreationDateView> {
+  late final DateFormat dateFormat;
+  late final DateFormat timeFormat;
+
+  @override
+  void initState() {
+    super.initState();
+    dateFormat = DateFormat.yMd().add_Hms();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.creationDate == null) {
+      return Container();
+    }
+
+    final date = dateFormat.format(widget.creationDate!);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          context.l10n.creationDate(date),
+          style: Theme.of(context).textTheme.caption,
+        ),
       ),
     );
   }
