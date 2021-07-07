@@ -57,7 +57,8 @@ class EditClothView extends StatelessWidget {
               BlocProvider.of<EditClothBloc>(context).add(ClearAction());
             }
           },
-          listenWhen: (oldState, newState) => oldState.action != newState.action,
+          listenWhen: (oldState, newState) =>
+              oldState.action != newState.action,
           builder: (context, state) {
             if (state.cloth == null && state.hasError) {
               //TODO: create more user friendly view with specific error message
@@ -204,12 +205,14 @@ class ImagesView extends StatelessWidget {
     if (images == null) {
       return AspectRatio(
         aspectRatio: ClothesUtils.aspectRatio,
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Icon(
-            Icons.image,
-            size: constraints.biggest.width,
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Icon(
+              Icons.image,
+              size: constraints.biggest.width,
+            );
+          },
+        ),
       );
     }
     return CarouselSlider.builder(
