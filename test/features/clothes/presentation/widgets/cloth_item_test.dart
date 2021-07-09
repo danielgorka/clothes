@@ -1,6 +1,7 @@
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_item.dart';
+import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,25 +47,25 @@ void main() {
         'Gradient',
         () {
           testWidgets(
-            'should not show BottomGradient when cloth has empty name',
+            'should not show ImageShadow when cloth has empty name',
             (tester) async {
               // arrange
               await tester.pumpWidget(wrapWithApp(
                 ClothItem(cloth: clothWithoutName),
               ));
               // assert
-              expect(find.byType(BottomGradient), findsNothing);
+              expect(find.byType(ImageShadow), findsNothing);
             },
           );
           testWidgets(
-            'should show BottomGradient when cloth has name',
+            'should show ImageShadow when cloth has name',
             (tester) async {
               // arrange
               await tester.pumpWidget(wrapWithApp(
                 ClothItem(cloth: cloth1),
               ));
               // assert
-              expect(find.byType(BottomGradient), findsOneWidget);
+              expect(find.byType(ImageShadow), findsOneWidget);
             },
           );
         },
@@ -134,28 +135,6 @@ void main() {
               expect(tapped, isTrue);
             },
           );
-        },
-      );
-    },
-  );
-
-  group(
-    'BottomGradient',
-    () {
-      testWidgets(
-        'should show DecoratedBox with LinearGradient',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(wrapWithApp(
-            Stack(
-              children: const [BottomGradient()],
-            ),
-          ));
-          // assert
-          final finder = find.byType(DecoratedBox);
-          final decoratedBox = tester.widget<DecoratedBox>(finder);
-          final decoration = decoratedBox.decoration as BoxDecoration;
-          expect(decoration.gradient, isA<LinearGradient>());
         },
       );
     },

@@ -7,6 +7,7 @@ import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/core/platform/app_image_picker.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_image_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/injection.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../helpers/app_wrapper.dart';
 import '../../../../helpers/fixture_reader.dart';
@@ -84,7 +84,7 @@ void main() {
         (tester) async {
           // arrange
           await tester.pumpWidget(
-            wrapWithBloc(
+            wrapWithApp(
               // ignore: prefer_const_constructors
               EditImagePage(source: source),
             ),
@@ -99,7 +99,7 @@ void main() {
         (tester) async {
           // arrange
           await tester.pumpWidget(
-            wrapWithBloc(
+            wrapWithApp(
               const EditImagePage(source: source),
             ),
           );
@@ -473,14 +473,14 @@ void main() {
         },
       );
       testWidgets(
-        'should show Text wrapped with Shimmer',
+        'should show Text wrapped with AppShimmer',
         (tester) async {
           // arrange
           await tester.pumpWidget(wrapWithBloc(const LoadingView()));
           // assert
           final finder = find.ancestor(
             of: find.byType(Text),
-            matching: find.byType(Shimmer),
+            matching: find.byType(AppShimmer),
           );
           expect(finder, findsOneWidget);
         },

@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:clothes/app/pages/home_page.dart';
 import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart';
 import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart';
+import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_image_page.dart';
 import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
 
@@ -25,6 +26,10 @@ import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart';
             AutoRoute(
               path: '',
               page: ClothesPage,
+            ),
+            AutoRoute(
+              path: ':clothId',
+              page: EditClothPage,
             ),
             RedirectRoute(path: '*', redirectTo: ''),
           ],

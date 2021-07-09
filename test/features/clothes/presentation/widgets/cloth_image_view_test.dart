@@ -24,18 +24,6 @@ void main() {
       );
 
       testWidgets(
-        'should have ClipRRect with border radius',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(const ClothImageView(image: clothImage1));
-          // assert
-          final finder = find.byType(ClipRRect);
-          final clipRRect = tester.widget<ClipRRect>(finder);
-          expect(clipRRect.borderRadius, equals(ClothesUtils.borderRadius));
-        },
-      );
-
-      testWidgets(
         'should show image from path',
         (tester) async {
           // arrange

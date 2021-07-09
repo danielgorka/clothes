@@ -1,6 +1,7 @@
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
+import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
 import 'package:flutter/material.dart';
 
 class ClothItem extends StatelessWidget {
@@ -22,7 +23,10 @@ class ClothItem extends StatelessWidget {
           ClothImageView(
             image: cloth.images.isNotEmpty ? cloth.images.first : null,
           ),
-          if (cloth.name.isNotEmpty) const BottomGradient(),
+          if (cloth.name.isNotEmpty)
+            const ImageShadow(
+              side: ShadowSide.bottom,
+            ),
           if (cloth.name.isNotEmpty)
             Positioned(
               bottom: 8.0,
@@ -44,31 +48,6 @@ class ClothItem extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-@visibleForTesting
-class BottomGradient extends StatelessWidget {
-  const BottomGradient({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.1),
-              Colors.black.withOpacity(0.4),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.6, 0.83, 1.0],
-          ),
-        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -33,14 +34,26 @@ abstract class AppTheme {
       primaryColor: mainColor,
       accentColor: mainColor,
       canvasColor: isDark ? null : Colors.white,
-      appBarTheme: AppBarTheme(
-        elevation: 1,
-        brightness: brightness,
-        color: isDark ? Colors.grey[800] : Colors.white,
-      ),
+      iconTheme: _iconTheme(isDark),
+      appBarTheme: _appBarTheme(isDark),
       floatingActionButtonTheme: _floatingActionButtonTheme(isDark),
       elevatedButtonTheme: _elevatedButtonTheme(isDark),
       textButtonTheme: _textButtonTheme(isDark),
+      chipTheme: _chipTheme(isDark),
+    );
+  }
+
+  static IconThemeData _iconTheme(bool isDark) {
+    return IconThemeData(
+      color: isDark ? Colors.white : Colors.grey[700],
+    );
+  }
+
+  static AppBarTheme _appBarTheme(bool isDark) {
+    return AppBarTheme(
+      elevation: 1,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      color: isDark ? Colors.grey[800] : Colors.white,
     );
   }
 
@@ -107,6 +120,18 @@ abstract class AppTheme {
           ),
         ),
       ),
+    );
+  }
+
+  static ChipThemeData _chipTheme(bool isDark) {
+    final typography = Typography.material2014(platform: defaultTargetPlatform);
+    final textTheme = isDark ? typography.white : typography.black;
+    return ChipThemeData.fromDefaults(
+      secondaryColor: mainColor,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      labelStyle: textTheme.bodyText1!,
+    ).copyWith(
+      backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
     );
   }
 

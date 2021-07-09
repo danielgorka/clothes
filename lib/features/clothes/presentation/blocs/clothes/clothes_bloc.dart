@@ -31,14 +31,16 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
   Stream<ClothesState> mapEventToState(ClothesEvent event) async* {
     if (event is LoadClothes) {
       yield* _mapLoadClothesToState(event);
+    } else if (event is ShowCloth) {
+      yield* _mapShowClothToState(event);
     } else if (event is PickImage) {
       yield* _mapPickImageToState(event);
     } else if (event is ImagePicked) {
       yield* _mapImagePickedToState(event);
     } else if (event is CreateEmptyCloth) {
       yield* _mapCreateEmptyClothToState(event);
-    } else if (event is CancelAction) {
-      yield* _mapCancelActionToState(event);
+    } else if (event is ClearAction) {
+      yield* _mapClearActionToState(event);
     }
   }
 
@@ -52,6 +54,10 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
         ),
       );
     });
+  }
+
+  Stream<ClothesState> _mapShowClothToState(ShowCloth event) async* {
+    yield state.copyWith(action: EditClothAction(clothId: event.clothId));
   }
 
   Stream<ClothesState> _mapPickImageToState(PickImage event) async* {
@@ -93,7 +99,7 @@ class ClothesBloc extends Bloc<ClothesEvent, ClothesState> {
     yield state.copyWith(action: EditClothAction(clothId: clothId));
   }
 
-  Stream<ClothesState> _mapCancelActionToState(CancelAction event) async* {
+  Stream<ClothesState> _mapClearActionToState(ClearAction event) async* {
     yield state.copyWith(action: const NoAction());
   }
 

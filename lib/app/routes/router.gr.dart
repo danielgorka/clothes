@@ -9,15 +9,17 @@ import 'dart:typed_data' as _i4;
 import 'package:auto_route/auto_route.dart' as _i1;
 import 'package:clothes/app/pages/home_page.dart' as _i3;
 import 'package:clothes/features/calendar/presentation/pages/calendar_page.dart'
-    as _i8;
-import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
     as _i9;
+import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
+    as _i10;
 import 'package:clothes/features/clothes/presentation/pages/clothes_page.dart'
     as _i6;
+import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart'
+    as _i7;
 import 'package:clothes/features/clothes/presentation/pages/edit_image_page.dart'
     as _i5;
 import 'package:clothes/features/outfits/presentation/pages/outfits_page.dart'
-    as _i7;
+    as _i8;
 import 'package:flutter/material.dart' as _i2;
 
 class AppRouter extends _i1.RootStackRouter {
@@ -63,15 +65,24 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (_) {
           return const _i6.ClothesPage();
         }),
+    EditClothRoute.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (data) {
+          final pathParams = data.pathParams;
+          final args = data.argsAs<EditClothRouteArgs>(
+              orElse: () =>
+                  EditClothRouteArgs(clothId: pathParams.getInt('clothId')));
+          return _i7.EditClothPage(key: args.key, clothId: args.clothId);
+        }),
     OutfitsRoute.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return const _i7.OutfitsPage();
+          return const _i8.OutfitsPage();
         }),
     CalendarRoute.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return const _i8.CalendarPage();
+          return const _i9.CalendarPage();
         })
   };
 
@@ -80,6 +91,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(HomeRoute.name, path: '/', children: [
           _i1.RouteConfig(ClothesRouter.name, path: 'clothes', children: [
             _i1.RouteConfig(ClothesRoute.name, path: ''),
+            _i1.RouteConfig(EditClothRoute.name, path: ':clothId'),
             _i1.RouteConfig('*#redirect',
                 path: '*', redirectTo: '', fullMatch: true)
           ]),
@@ -133,7 +145,7 @@ class HomeRouteArgs {
 }
 
 class EditImageRoute extends _i1.PageRouteInfo<EditImageRouteArgs> {
-  EditImageRoute({_i2.Key? key, required _i9.ImagePickerSource source})
+  EditImageRoute({_i2.Key? key, required _i10.ImagePickerSource source})
       : super(name,
             path: 'edit-image',
             args: EditImageRouteArgs(key: key, source: source));
@@ -146,7 +158,7 @@ class EditImageRouteArgs {
 
   final _i2.Key? key;
 
-  final _i9.ImagePickerSource source;
+  final _i10.ImagePickerSource source;
 }
 
 class ClothesRouter extends _i1.PageRouteInfo {
@@ -174,6 +186,24 @@ class ClothesRoute extends _i1.PageRouteInfo {
   const ClothesRoute() : super(name, path: '');
 
   static const String name = 'ClothesRoute';
+}
+
+class EditClothRoute extends _i1.PageRouteInfo<EditClothRouteArgs> {
+  EditClothRoute({_i2.Key? key, required int clothId})
+      : super(name,
+            path: ':clothId',
+            args: EditClothRouteArgs(key: key, clothId: clothId),
+            rawPathParams: {'clothId': clothId});
+
+  static const String name = 'EditClothRoute';
+}
+
+class EditClothRouteArgs {
+  const EditClothRouteArgs({this.key, required this.clothId});
+
+  final _i2.Key? key;
+
+  final int clothId;
 }
 
 class OutfitsRoute extends _i1.PageRouteInfo {

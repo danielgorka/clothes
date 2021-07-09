@@ -20,4 +20,12 @@ abstract class Keys {
       Key('create_cloth_take_image_action');
   static const createClothPickFromGalleryAction =
       Key('create_cloth_pick__from_gallery_action');
+
+  static const editClothListView = Key('edit_cloth_list_view');
+  static const editClothButton = Key('edit_cloth_button');
+
+  static const editClothTopShadow = Key('edit_cloth_top_shadow');
+  static const editClothBottomShadow = Key('edit_cloth_bottom_shadow');
+
+  static const editClothAnnotatedRegion = Key('edit_cloth_annotated_region');
 }

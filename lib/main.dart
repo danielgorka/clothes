@@ -8,8 +8,8 @@ import 'app/configure/configure_nonweb.dart'
     if (dart.library.html) 'app/configure/configure_web.dart';
 
 Future<void> main() async {
-  configureApp();
   WidgetsFlutterBinding.ensureInitialized();
+  await configureApp();
   await configureDependencies();
   Bloc.observer = AppBlocObserver();
   runApp(App());

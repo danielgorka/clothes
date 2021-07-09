@@ -14,11 +14,7 @@ class ClothImageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: ClothesUtils.aspectRatio,
-      child: ClipRRect(
-        borderRadius: ClothesUtils.borderRadius,
-        child:
-            image != null ? ImageView(path: image!.path) : const NoImageView(),
-      ),
+      child: image != null ? ImageView(path: image!.path) : const NoImageView(),
     );
   }
 }

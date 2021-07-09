@@ -8,11 +8,11 @@ import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/presentation/blocs/clothes/clothes_bloc.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_image/edit_image_bloc.dart'
     hide PickImage;
+import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_item.dart';
 import 'package:clothes/features/clothes/presentation/widgets/empty_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/error_view.dart';
 import 'package:clothes/features/clothes/presentation/widgets/multi_floating_action_button.dart';
-import 'package:clothes/features/clothes/presentation/widgets/shimmer.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +45,15 @@ class ClothesView extends StatelessWidget {
     if (image != null) {
       BlocProvider.of<ClothesBloc>(context).add(ImagePicked(image: image));
     } else {
-      BlocProvider.of<ClothesBloc>(context).add(CancelAction());
+      BlocProvider.of<ClothesBloc>(context).add(ClearAction());
     }
+  }
+
+  Future<void> _showCloth(BuildContext context, int clothId) async {
+    await AutoRouter.of(context).push(
+      EditClothRoute(clothId: clothId),
+    );
+    BlocProvider.of<ClothesBloc>(context).add(ClearAction());
   }
 
   @override
@@ -89,7 +96,7 @@ class ClothesView extends StatelessWidget {
           if (action is PickImageAction) {
             await _pickImage(context, action.source);
           } else if (action is EditClothAction) {
-            //TODO: open EditClothPage
+            await _showCloth(context, action.clothId);
           }
         },
         listenWhen: (oldState, newState) => oldState.action != newState.action,
@@ -103,7 +110,14 @@ class ClothesView extends StatelessWidget {
               if (state.clothes.isEmpty) {
                 return const EmptyView();
               } else {
-                return ClothesGridView(clothes: state.clothes);
+                return ClothesGridView(
+                  clothes: state.clothes,
+                  onItemTap: (clothId) {
+                    BlocProvider.of<ClothesBloc>(context).add(
+                      ShowCloth(clothId: clothId),
+                    );
+                  },
+                );
               }
           }
         },
@@ -112,13 +126,17 @@ class ClothesView extends StatelessWidget {
   }
 }
 
+typedef ClothItemTapCallback = void Function(int clothId);
+
 @visibleForTesting
 class ClothesGridView extends StatelessWidget {
   final List<Cloth> clothes;
+  final ClothItemTapCallback onItemTap;
 
   const ClothesGridView({
     Key? key,
     required this.clothes,
+    required this.onItemTap,
   }) : super(key: key);
 
   @override
@@ -131,9 +149,7 @@ class ClothesGridView extends StatelessWidget {
         final cloth = clothes[index];
         return ClothItem(
           cloth: cloth,
-          onTap: () {
-            //TODO: cloth clicked
-          },
+          onTap: () => onItemTap.call(cloth.id),
         );
       },
     );
@@ -146,7 +162,7 @@ class ClothesLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
+    return AppShimmer(
       child: GridView.builder(
         padding: ClothesUtils.gridViewPadding(context),
         gridDelegate: ClothesUtils.gridDelegate,
