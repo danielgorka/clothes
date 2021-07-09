@@ -45,6 +45,17 @@ class EditClothPage extends StatelessWidget {
 class EditClothView extends StatelessWidget {
   const EditClothView({Key? key}) : super(key: key);
 
+  String _getErrorMessage(BuildContext context, EditClothError error) {
+    switch (error) {
+      case EditClothError.clothNotFound:
+        return context.l10n.clothNotFound;
+      case EditClothError.savingError:
+        return context.l10n.errorSavingChanges;
+      default:
+        return context.l10n.somethingWentWrong;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -57,13 +68,26 @@ class EditClothView extends StatelessWidget {
               await AutoRouter.of(context).pop();
               BlocProvider.of<EditClothBloc>(context).add(ClearAction());
             }
+
+            if (state.cloth != null && state.hasError) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_getErrorMessage(context, state.error)),
+                ),
+              );
+
+              BlocProvider.of<EditClothBloc>(context).add(ClearError());
+            }
           },
           listenWhen: (oldState, newState) =>
-              oldState.action != newState.action,
+              oldState.action != newState.action ||
+              oldState.error != newState.error,
           builder: (context, state) {
             if (state.cloth == null && state.hasError) {
-              //TODO: create more user friendly view with specific error message
-              return const ErrorView();
+              return ErrorView(
+                message: _getErrorMessage(context, state.error),
+              );
             }
 
             return MainClothView(

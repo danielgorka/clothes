@@ -14,6 +14,7 @@ import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart'
 import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
 import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
+import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,7 +173,8 @@ void main() {
         'Views based on state',
         () {
           testWidgets(
-            'should show ErrorView when state has error and no cloth',
+            'should show ErrorView with somethingWentWrong message '
+            'when state has other error and no cloth',
             (tester) async {
               // arrange
               when(() => mockEditClothBloc.state).thenAnswer(
@@ -184,7 +186,35 @@ void main() {
                 ),
               );
               // assert
-              expect(find.byType(ErrorView), findsOneWidget);
+              final finder = find.byType(ErrorView);
+              final errorView = tester.widget<ErrorView>(finder);
+              final BuildContext context = tester.element(finder);
+              expect(
+                errorView.message,
+                equals(context.l10n.somethingWentWrong),
+              );
+            },
+          );
+          testWidgets(
+            'should show ErrorView with clothNotFound message '
+            'when state has cloth not found error and no cloth',
+            (tester) async {
+              // arrange
+              when(() => mockEditClothBloc.state).thenAnswer(
+                (_) => const EditClothState(
+                  error: EditClothError.clothNotFound,
+                ),
+              );
+              await tester.pumpWidget(
+                wrapWithBloc(
+                  const EditClothView(),
+                ),
+              );
+              // assert
+              final finder = find.byType(ErrorView);
+              final errorView = tester.widget<ErrorView>(finder);
+              final BuildContext context = tester.element(finder);
+              expect(errorView.message, equals(context.l10n.clothNotFound));
             },
           );
           testWidgets(
@@ -312,6 +342,108 @@ void main() {
                 ],
               );
               verify(() => mockStackRouter.pop()).called(1);
+            },
+          );
+
+          testWidgets(
+            'should show SnackBar with somethingWentWrong message '
+            'when state contains other error and cloth is not null '
+            'and later should add ClearError event',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                ],
+              );
+              final finder = find.byType(SnackBar);
+              final BuildContext context = tester.element(finder);
+              expect(
+                find.text(context.l10n.somethingWentWrong),
+                findsOneWidget,
+              );
+            },
+          );
+          testWidgets(
+            'should show SnackBar with errorSavingChanges message '
+            'when state contains saving error and cloth is not null '
+            'and later should add ClearError event',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.savingError,
+                  ),
+                ],
+              );
+              final finder = find.byType(SnackBar);
+              final BuildContext context = tester.element(finder);
+              expect(
+                find.text(context.l10n.errorSavingChanges),
+                findsOneWidget,
+              );
+            },
+          );
+          testWidgets(
+            'should show SnackBar ones when bloc emits states '
+            'containing the same error two in a row',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                  EditClothState(
+                    loading: true,
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                ],
+              );
+              expect(find.byType(SnackBar), findsOneWidget);
             },
           );
         },

@@ -40,6 +40,7 @@ abstract class AppTheme {
       elevatedButtonTheme: _elevatedButtonTheme(isDark),
       textButtonTheme: _textButtonTheme(isDark),
       chipTheme: _chipTheme(isDark),
+      snackBarTheme: _snackBarTheme(isDark),
     );
   }
 
@@ -132,6 +133,15 @@ abstract class AppTheme {
       labelStyle: textTheme.bodyText1!,
     ).copyWith(
       backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
+    );
+  }
+
+  static SnackBarThemeData _snackBarTheme(bool isDark) {
+    return SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
     );
   }
 

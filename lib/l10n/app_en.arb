@@ -3,6 +3,7 @@
   "calendar": "Calendar",
   "cancel": "Cancel",
   "clothes": "Clothes",
+  "clothNotFound": "The specified cloth was not found",
   "colors": "Colors",
   "creationDate": "Creation date: {dateTime}",
   "@creationDate": {
@@ -10,6 +11,7 @@
       "dateTime": {}
     }
   },
+  "errorSavingChanges": "Error occurred while saving changes",
   "kindOfCloth": "Kind of cloth",
   "newCloth": "New cloth",
   "nothingToShow": "Nothing to show",
