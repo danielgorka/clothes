@@ -856,8 +856,7 @@ void main() {
         'Show AppBarEditButton',
         () {
           testWidgets(
-            'should show AppBarEditButton with visible set to true '
-            'when cloth is not null',
+            'should show AppBarEditButton when cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -868,14 +867,11 @@ void main() {
                 ),
               );
               // assert
-              final finder = find.byType(AppBarEditButton);
-              final appBarEditButton = tester.widget<AppBarEditButton>(finder);
-              expect(appBarEditButton.visible, isTrue);
+              expect(find.byType(AppBarEditButton), findsOneWidget);
             },
           );
           testWidgets(
-            'should show AppBarEditButton with visible set to false '
-            'when cloth is null',
+            'should not show AppBarEditButton when cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -884,9 +880,7 @@ void main() {
                 ),
               );
               // assert
-              final finder = find.byType(AppBarEditButton);
-              final appBarEditButton = tester.widget<AppBarEditButton>(finder);
-              expect(appBarEditButton.visible, isFalse);
+              expect(find.byType(AppBarEditButton), findsNothing);
             },
           );
         },
@@ -932,29 +926,16 @@ void main() {
     'AppBarEditButton',
     () {
       testWidgets(
-        'should show edit button when visible is true',
+        'should show edit button',
         (tester) async {
           // arrange
           await tester.pumpWidget(
             wrapWithApp(
-              const AppBarEditButton(visible: true),
+              const AppBarEditButton(),
             ),
           );
           // assert
           expect(find.byKey(Keys.editClothButton), findsOneWidget);
-        },
-      );
-      testWidgets(
-        'should not show edit button when visible is false',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(
-            wrapWithApp(
-              const AppBarEditButton(visible: false),
-            ),
-          );
-          // assert
-          expect(find.byKey(Keys.editClothButton), findsNothing);
         },
       );
     },

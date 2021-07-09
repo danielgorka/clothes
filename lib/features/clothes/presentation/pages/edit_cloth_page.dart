@@ -177,7 +177,7 @@ class _MainClothViewState extends State<MainClothView> {
           side: ShadowSide.top,
         ),
         const AppBarBackButton(),
-        AppBarEditButton(visible: widget.cloth != null),
+        if (widget.cloth != null) const AppBarEditButton(),
       ],
     );
   }
@@ -220,18 +220,10 @@ class AppBarBackButton extends StatelessWidget {
 
 @visibleForTesting
 class AppBarEditButton extends StatelessWidget {
-  final bool visible;
-  const AppBarEditButton({
-    Key? key,
-    required this.visible,
-  }) : super(key: key);
+  const AppBarEditButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (!visible) {
-      return Container();
-    }
-
     return Align(
       alignment: Alignment.topRight,
       child: Material(
