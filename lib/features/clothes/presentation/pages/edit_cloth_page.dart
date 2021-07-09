@@ -176,7 +176,8 @@ class _MainClothViewState extends State<MainClothView> {
           key: Keys.editClothTopShadow,
           side: ShadowSide.top,
         ),
-        AppBarView(editable: widget.cloth != null),
+        const AppBarBackButton(),
+        AppBarEditButton(visible: widget.cloth != null),
       ],
     );
   }
@@ -189,41 +190,68 @@ class _MainClothViewState extends State<MainClothView> {
 }
 
 @visibleForTesting
-class AppBarView extends StatelessWidget {
-  final bool editable;
-
-  const AppBarView({
-    Key? key,
-    required this.editable,
-  }) : super(key: key);
+class AppBarBackButton extends StatelessWidget {
+  const AppBarBackButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 8.0,
-        right: 8.0,
-        top: MediaQuery.of(context).padding.top + 8.0,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          BackButton(
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 12.0,
+            right: 12.0,
+            top: MediaQuery.of(context).padding.top + 8.0,
+            bottom: 12.0,
+          ),
+          child: BackButton(
             color: Colors.white,
             onPressed: () {
               BlocProvider.of<EditClothBloc>(context).add(CloseCloth());
             },
           ),
-          if (editable)
-            IconButton(
-              color: Colors.white,
-              key: Keys.editClothButton,
-              onPressed: () {
-                //TODO: start editing
-              },
-              icon: const Icon(Icons.edit_rounded),
-            ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class AppBarEditButton extends StatelessWidget {
+  final bool visible;
+  const AppBarEditButton({
+    Key? key,
+    required this.visible,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (!visible) {
+      return Container();
+    }
+
+    return Align(
+      alignment: Alignment.topRight,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 12.0,
+            right: 12.0,
+            top: MediaQuery.of(context).padding.top + 8.0,
+            bottom: 12.0,
+          ),
+          child: IconButton(
+            color: Colors.white,
+            key: Keys.editClothButton,
+            onPressed: () {
+              //TODO: start editing
+            },
+            icon: const Icon(Icons.edit_rounded),
+          ),
+        ),
       ),
     );
   }

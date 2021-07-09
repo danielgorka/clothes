@@ -832,44 +832,61 @@ void main() {
       );
 
       group(
-        'Show AppBarView',
+        'Show AppBarBackButton',
         () {
           testWidgets(
-            'should show AppBarView with editable set to true '
+            'should show AppBarBackButton',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  MainClothView(
+                    cloth: cloth1,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarBackButton), findsOneWidget);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show AppBarEditButton',
+        () {
+          testWidgets(
+            'should show AppBarEditButton with visible set to true '
             'when cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
                 wrapWithApp(
-                  Material(
-                    child: MainClothView(
-                      cloth: cloth1,
-                    ),
+                  MainClothView(
+                    cloth: cloth1,
                   ),
                 ),
               );
               // assert
-              final finder = find.byType(AppBarView);
-              final appBarView = tester.widget<AppBarView>(finder);
-              expect(appBarView.editable, isTrue);
+              final finder = find.byType(AppBarEditButton);
+              final appBarEditButton = tester.widget<AppBarEditButton>(finder);
+              expect(appBarEditButton.visible, isTrue);
             },
           );
           testWidgets(
-            'should show AppBarView with editable set to false '
+            'should show AppBarEditButton with visible set to false '
             'when cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
                 wrapWithApp(
-                  const Material(
-                    child: MainClothView(),
-                  ),
+                  const MainClothView(),
                 ),
               );
               // assert
-              final finder = find.byType(AppBarView);
-              final appBarView = tester.widget<AppBarView>(finder);
-              expect(appBarView.editable, isFalse);
+              final finder = find.byType(AppBarEditButton);
+              final appBarEditButton = tester.widget<AppBarEditButton>(finder);
+              expect(appBarEditButton.visible, isFalse);
             },
           );
         },
@@ -878,79 +895,66 @@ void main() {
   );
 
   group(
-    'AppBarView',
+    'AppBarBackButton',
     () {
-      group(
-        'Back button',
-        () {
-          testWidgets(
-            'should show BackButton',
-            (tester) async {
-              // arrange
-              await tester.pumpWidget(
-                wrapWithApp(
-                  const Material(
-                    child: AppBarView(editable: false),
-                  ),
-                ),
-              );
-              // assert
-              expect(find.byType(BackButton), findsOneWidget);
-            },
+      testWidgets(
+        'should show BackButton',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarBackButton(),
+            ),
           );
-          testWidgets(
-            'should add CloseCloth event on BackButton pressed',
-            (tester) async {
-              // arrange
-              await tester.pumpWidget(
-                wrapWithBloc(
-                  const Material(
-                    child: AppBarView(editable: false),
-                  ),
-                ),
-              );
-              // act
-              await tester.tap(find.byType(BackButton));
-              // assert
-              verify(() => mockEditClothBloc.add(CloseCloth())).called(1);
-            },
-          );
+          // assert
+          expect(find.byType(BackButton), findsOneWidget);
         },
       );
+      testWidgets(
+        'should add CloseCloth event on BackButton pressed',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarBackButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(BackButton));
+          // assert
+          verify(() => mockEditClothBloc.add(CloseCloth())).called(1);
+        },
+      );
+    },
+  );
 
-      group(
-        'Edit button',
-        () {
-          testWidgets(
-            'should show edit button when editable is true',
-            (tester) async {
-              // arrange
-              await tester.pumpWidget(
-                wrapWithApp(
-                  const Material(
-                    child: AppBarView(editable: true),
-                  ),
-                ),
-              );
-              // assert
-              expect(find.byKey(Keys.editClothButton), findsOneWidget);
-            },
+  group(
+    'AppBarEditButton',
+    () {
+      testWidgets(
+        'should show edit button when visible is true',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarEditButton(visible: true),
+            ),
           );
-          testWidgets(
-            'should not show edit button when editable is false',
-            (tester) async {
-              // arrange
-              await tester.pumpWidget(
-                wrapWithApp(
-                  const Material(
-                    child: AppBarView(editable: false),
-                  ),
-                ),
-              );
-              // assert
-              expect(find.byKey(Keys.editClothButton), findsNothing);
-            },
+          // assert
+          expect(find.byKey(Keys.editClothButton), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should not show edit button when visible is false',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarEditButton(visible: false),
+            ),
           );
+          // assert
+          expect(find.byKey(Keys.editClothButton), findsNothing);
         },
       );
     },
