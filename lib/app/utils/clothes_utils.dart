@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 
 // ignore: avoid_classes_with_only_static_members
 abstract class ClothesUtils {
+  static const maxClothNameLength = 40;
+  static bool validateName(String name) {
+    return name.length <= maxClothNameLength;
+  }
+
+  static const maxClothDescriptionLength = 500;
+  static bool validateDescription(String description) {
+    return description.length <= maxClothDescriptionLength;
+  }
+
   static const aspectRatio = 3 / 4;
 
   static final borderRadius = BorderRadius.circular(32.0);
