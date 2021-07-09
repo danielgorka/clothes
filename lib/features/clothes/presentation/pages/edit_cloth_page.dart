@@ -260,7 +260,7 @@ class AppBarEditButton extends StatelessWidget {
             color: Colors.white,
             key: Keys.editClothButton,
             onPressed: () {
-              //TODO: start editing
+              BlocProvider.of<EditClothBloc>(context).add(EditCloth());
             },
             icon: const Icon(Icons.edit_rounded),
           ),

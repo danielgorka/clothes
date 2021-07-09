@@ -1070,6 +1070,21 @@ void main() {
           expect(find.byKey(Keys.editClothButton), findsOneWidget);
         },
       );
+      testWidgets(
+        'should add EditCloth event on IconButton pressed',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarEditButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(IconButton));
+          // assert
+          verify(() => mockEditClothBloc.add(EditCloth())).called(1);
+        },
+      );
     },
   );
 
