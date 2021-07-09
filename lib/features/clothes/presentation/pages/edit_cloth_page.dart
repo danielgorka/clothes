@@ -68,7 +68,6 @@ class EditClothView extends StatelessWidget {
 
             return MainClothView(
               cloth: state.cloth,
-              loading: state.loading,
             );
           },
         ),
@@ -80,12 +79,10 @@ class EditClothView extends StatelessWidget {
 @visibleForTesting
 class MainClothView extends StatefulWidget {
   final Cloth? cloth;
-  final bool loading;
 
   const MainClothView({
     Key? key,
     this.cloth,
-    this.loading = false,
   }) : super(key: key);
 
   @override
