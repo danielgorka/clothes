@@ -48,6 +48,27 @@ void main() {
           expect(find.byWidget(child), findsOneWidget);
         },
       );
+      testWidgets(
+        'should not show FloatingActionButton when visible is false',
+        (tester) async {
+          // arrange
+          final controller = ScrollController();
+          await tester.pumpWidget(
+            _wrapWithScrollable(
+              controller: controller,
+              widget: AppBarFloatingActionButton(
+                visible: false,
+                scrollController: controller,
+                appBarHeight: 100.0,
+                onPressed: () {},
+                child: const Icon(Icons.add),
+              ),
+            ),
+          );
+          // assert
+          expect(find.byType(FloatingActionButton), findsNothing);
+        },
+      );
 
       testWidgets(
         'should wrap with Positioned where top equals to app bar height '
