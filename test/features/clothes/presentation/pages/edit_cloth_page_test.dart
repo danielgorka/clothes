@@ -2,10 +2,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/keys.dart';
-import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/animated_visibility.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
@@ -14,8 +14,8 @@ import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart'
 import 'package:clothes/features/clothes/presentation/widgets/rounded_container.dart';
 import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
+import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -121,58 +121,11 @@ void main() {
     'EditClothView',
     () {
       group(
-        'AnnotatedRegion',
-        () {
-          testWidgets(
-            'should show AnnotatedRegion with AppTheme.overlayDark '
-            'when dark mode off',
-            (tester) async {
-              tester.binding.window.platformBrightnessTestValue =
-                  Brightness.light;
-              // arrange
-              when(() => mockEditClothBloc.state).thenAnswer(
-                (_) => const EditClothState(error: EditClothError.other),
-              );
-              await tester.pumpWidget(
-                wrapWithBloc(
-                  const EditClothView(),
-                ),
-              );
-              // assert
-              final finder = find.byKey(Keys.editClothAnnotatedRegion);
-              final annotatedRegion = tester.widget<AnnotatedRegion>(finder);
-              expect(annotatedRegion.value, equals(AppTheme.overlayDark));
-            },
-          );
-          testWidgets(
-            'should show AnnotatedRegion with AppTheme.overlayDark '
-            'when dark mode on',
-            (tester) async {
-              tester.binding.window.platformBrightnessTestValue =
-                  Brightness.dark;
-              // arrange
-              when(() => mockEditClothBloc.state).thenAnswer(
-                (_) => const EditClothState(error: EditClothError.other),
-              );
-              await tester.pumpWidget(
-                wrapWithBloc(
-                  const EditClothView(),
-                ),
-              );
-              // assert
-              final finder = find.byKey(Keys.editClothAnnotatedRegion);
-              final annotatedRegion = tester.widget<AnnotatedRegion>(finder);
-              expect(annotatedRegion.value, equals(AppTheme.overlayDark));
-            },
-          );
-        },
-      );
-
-      group(
         'Views based on state',
         () {
           testWidgets(
-            'should show ErrorView when state has error and no cloth',
+            'should show ErrorView with somethingWentWrong message '
+            'when state has other error and no cloth',
             (tester) async {
               // arrange
               when(() => mockEditClothBloc.state).thenAnswer(
@@ -184,7 +137,35 @@ void main() {
                 ),
               );
               // assert
-              expect(find.byType(ErrorView), findsOneWidget);
+              final finder = find.byType(ErrorView);
+              final errorView = tester.widget<ErrorView>(finder);
+              final BuildContext context = tester.element(finder);
+              expect(
+                errorView.message,
+                equals(context.l10n.somethingWentWrong),
+              );
+            },
+          );
+          testWidgets(
+            'should show ErrorView with clothNotFound message '
+            'when state has cloth not found error and no cloth',
+            (tester) async {
+              // arrange
+              when(() => mockEditClothBloc.state).thenAnswer(
+                (_) => const EditClothState(
+                  error: EditClothError.clothNotFound,
+                ),
+              );
+              await tester.pumpWidget(
+                wrapWithBloc(
+                  const EditClothView(),
+                ),
+              );
+              // assert
+              final finder = find.byType(ErrorView);
+              final errorView = tester.widget<ErrorView>(finder);
+              final BuildContext context = tester.element(finder);
+              expect(errorView.message, equals(context.l10n.clothNotFound));
             },
           );
           testWidgets(
@@ -314,6 +295,108 @@ void main() {
               verify(() => mockStackRouter.pop()).called(1);
             },
           );
+
+          testWidgets(
+            'should show SnackBar with somethingWentWrong message '
+            'when state contains other error and cloth is not null '
+            'and later should add ClearError event',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                ],
+              );
+              final finder = find.byType(SnackBar);
+              final BuildContext context = tester.element(finder);
+              expect(
+                find.text(context.l10n.somethingWentWrong),
+                findsOneWidget,
+              );
+            },
+          );
+          testWidgets(
+            'should show SnackBar with errorSavingChanges message '
+            'when state contains saving error and cloth is not null '
+            'and later should add ClearError event',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.savingError,
+                  ),
+                ],
+              );
+              final finder = find.byType(SnackBar);
+              final BuildContext context = tester.element(finder);
+              expect(
+                find.text(context.l10n.errorSavingChanges),
+                findsOneWidget,
+              );
+            },
+          );
+          testWidgets(
+            'should show SnackBar ones when bloc emits states '
+            'containing the same error two in a row',
+            (tester) async {
+              await testListener(
+                tester: tester,
+                mockBloc: mockEditClothBloc,
+                pumpWidget: () async {
+                  await tester.pumpWidget(
+                    wrapWithBloc(
+                      const EditClothView(),
+                    ),
+                  );
+                },
+                verifyAction: () => mockEditClothBloc.add(ClearError()),
+                states: [
+                  EditClothState(
+                    cloth: cloth1,
+                  ),
+                  EditClothState(
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                  EditClothState(
+                    loading: true,
+                    cloth: cloth1,
+                    error: EditClothError.other,
+                  ),
+                ],
+              );
+              expect(find.byType(SnackBar), findsOneWidget);
+            },
+          );
         },
       );
     },
@@ -369,7 +452,7 @@ void main() {
         'Show Stack for image and cloth name',
         () {
           testWidgets(
-            'should show Stack with ImagesView, ImageShadow and NameView',
+            'should show Stack with ImagesView, ImageShadow and NameMainView',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -399,7 +482,7 @@ void main() {
               expect(
                 find.descendant(
                   of: find.byType(Stack),
-                  matching: find.byType(NameView),
+                  matching: find.byType(NameMainView),
                 ),
                 findsOneWidget,
               );
@@ -504,14 +587,32 @@ void main() {
                   expect(find.byKey(Keys.editClothBottomShadow), findsNothing);
                 },
               );
+              testWidgets(
+                'should show no shadow when editing is true',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: cloth1,
+                          editing: true,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  expect(find.byKey(Keys.editClothBottomShadow), findsNothing);
+                },
+              );
             },
           );
 
           group(
-            'Show NameView',
+            'Show NameMainView',
             () {
               testWidgets(
-                'should show NameView with name from cloth',
+                'should show NameMainView with name from cloth',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -524,13 +625,13 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(NameView);
-                  final nameView = tester.widget<NameView>(finder);
+                  final finder = find.byType(NameMainView);
+                  final nameView = tester.widget<NameMainView>(finder);
                   expect(nameView.name, equals(cloth1.name));
                 },
               );
               testWidgets(
-                'should show NameView with null name when cloth is null',
+                'should show NameMainView with null name when cloth is null',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -541,11 +642,119 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(NameView);
-                  final nameView = tester.widget<NameView>(finder);
+                  final finder = find.byType(NameMainView);
+                  final nameView = tester.widget<NameMainView>(finder);
                   expect(nameView.name, isNull);
                 },
               );
+              testWidgets(
+                'should not show NameMainView when editing is true',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      const Material(
+                        child: MainClothView(editing: true),
+                      ),
+                    ),
+                  );
+                  // assert
+                  expect(find.byType(NameMainView), findsNothing);
+                },
+              );
+            },
+          );
+        },
+      );
+
+      group(
+        'Show NameEditableView',
+        () {
+          testWidgets(
+            'should show NameEditableView with name when cloth is not null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(NameEditableView);
+              final nameEditableView = tester.widget<NameEditableView>(finder);
+              expect(nameEditableView.name, equals(cloth1.name));
+            },
+          );
+          testWidgets(
+            'should not show NameEditableView when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(NameEditableView), findsNothing);
+            },
+          );
+          testWidgets(
+            'should wrap with AnimatedVisibility with visible set to true '
+            'when editing is true',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.ancestor(
+                of: find.byType(NameEditableView),
+                matching: find.byType(AnimatedVisibility),
+              );
+              final animatedVisibility =
+                  tester.widget<AnimatedVisibility>(finder);
+              expect(animatedVisibility.visible, isTrue);
+            },
+          );
+          testWidgets(
+            'should wrap with AnimatedVisibility with visible set to false '
+            'when editing is false',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.ancestor(
+                of: find.byType(NameEditableView),
+                matching: find.byType(AnimatedVisibility),
+              );
+              final animatedVisibility =
+                  tester.widget<AnimatedVisibility>(finder);
+              expect(animatedVisibility.visible, isFalse);
             },
           );
         },
@@ -762,6 +971,25 @@ void main() {
             },
           );
           testWidgets(
+            'should not show FloatingActionButton when cloth is editing',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(FloatingActionButton), findsNothing);
+            },
+          );
+          testWidgets(
             'should add ChangeFavourite event '
             'on AppBarFloatingActionButton pressed',
             (tester) async {
@@ -793,7 +1021,8 @@ void main() {
         'Show top ImageShadow',
         () {
           testWidgets(
-            'should show top shadow when cloth is null',
+            'should show top shadow with overrideSystemUiOverlayStyle '
+            'when cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -807,10 +1036,12 @@ void main() {
               final finder = find.byKey(Keys.editClothTopShadow);
               final imageShadow = tester.widget<ImageShadow>(finder);
               expect(imageShadow.side, equals(ShadowSide.top));
+              expect(imageShadow.overrideSystemUiOverlayStyle, isTrue);
             },
           );
           testWidgets(
-            'should show top shadow when cloth is not null',
+            'should show top shadow with overrideSystemUiOverlayStyle '
+            'when cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -826,6 +1057,25 @@ void main() {
               final finder = find.byKey(Keys.editClothTopShadow);
               final imageShadow = tester.widget<ImageShadow>(finder);
               expect(imageShadow.side, equals(ShadowSide.top));
+              expect(imageShadow.overrideSystemUiOverlayStyle, isTrue);
+            },
+          );
+          testWidgets(
+            'should not show top shadow when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: clothWithoutName,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byKey(Keys.editClothTopShadow), findsNothing);
             },
           );
         },
@@ -835,7 +1085,7 @@ void main() {
         'Show AppBarBackButton',
         () {
           testWidgets(
-            'should show AppBarBackButton',
+            'should show AppBarBackButton when editing is false',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -849,6 +1099,21 @@ void main() {
               expect(find.byType(AppBarBackButton), findsOneWidget);
             },
           );
+          testWidgets(
+            'should not show AppBarBackButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarBackButton), findsNothing);
+            },
+          );
         },
       );
 
@@ -856,7 +1121,8 @@ void main() {
         'Show AppBarEditButton',
         () {
           testWidgets(
-            'should show AppBarEditButton when cloth is not null',
+            'should show AppBarEditButton when editing is false '
+            'and cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -871,7 +1137,8 @@ void main() {
             },
           );
           testWidgets(
-            'should not show AppBarEditButton when cloth is null',
+            'should not show AppBarEditButton when editing is false '
+            'and cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -881,6 +1148,58 @@ void main() {
               );
               // assert
               expect(find.byType(AppBarEditButton), findsNothing);
+            },
+          );
+          testWidgets(
+            'should not show AppBarEditButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarEditButton), findsNothing);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show AppBarSaveButton',
+        () {
+          testWidgets(
+            'should show AppBarSaveButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarSaveButton), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should not show AppBarSaveButton when editing is false',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarSaveButton), findsNothing);
             },
           );
         },
@@ -938,6 +1257,55 @@ void main() {
           expect(find.byKey(Keys.editClothButton), findsOneWidget);
         },
       );
+      testWidgets(
+        'should add EditCloth event on IconButton pressed',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarEditButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(IconButton));
+          // assert
+          verify(() => mockEditClothBloc.add(EditCloth())).called(1);
+        },
+      );
+    },
+  );
+
+  group(
+    'AppBarSaveButton',
+    () {
+      testWidgets(
+        'should show save button',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarSaveButton(),
+            ),
+          );
+          // assert
+          expect(find.byKey(Keys.saveClothButton), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should add SaveCloth event on IconButton pressed',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarSaveButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(IconButton));
+          // assert
+          verify(() => mockEditClothBloc.add(SaveCloth())).called(1);
+        },
+      );
     },
   );
 
@@ -945,42 +1313,7 @@ void main() {
     'ImagesView',
     () {
       testWidgets(
-        'should show CarouselSlider with all images when images is not null',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(
-            wrapWithApp(
-              const ImagesView(
-                images: clothImages1,
-              ),
-            ),
-          );
-          // assert
-          final finder = find.byType(CarouselSlider);
-          final carouselSlider = tester.widget<CarouselSlider>(finder);
-          expect(carouselSlider.itemCount, equals(clothImages1.length));
-        },
-      );
-      testWidgets(
-        'should show ClothImageView with first image when images is not null',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(
-            wrapWithApp(
-              const ImagesView(
-                images: clothImages1,
-              ),
-            ),
-          );
-          // assert
-          final finder = find.byType(ClothImageView);
-          final clothImageView = tester.widget<ClothImageView>(finder);
-          expect(clothImageView.image, equals(clothImages1.first));
-        },
-      );
-
-      testWidgets(
-        'should show image icon when images is null',
+        'should show image icon when images is null and editing is false',
         (tester) async {
           // arrange
           await tester.pumpWidget(
@@ -994,11 +1327,203 @@ void main() {
           expect(icon.icon, equals(Icons.image));
         },
       );
+      testWidgets(
+        'should show ImagesMainView with images '
+        'when images is not null and editing is false',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ImagesMainView);
+          final imagesMainView = tester.widget<ImagesMainView>(finder);
+          expect(imagesMainView.images, equals(clothImages1));
+        },
+      );
+      testWidgets(
+        'should show ImagesEditableView with images '
+        'when images is not null and editing is true',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesView(
+                images: clothImages1,
+                editing: true,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ImagesEditableView);
+          final imagesEditableView = tester.widget<ImagesEditableView>(finder);
+          expect(imagesEditableView.images, equals(clothImages1));
+        },
+      );
     },
   );
 
   group(
-    'NameView',
+    'ImagesMainView',
+    () {
+      testWidgets(
+        'should show CarouselSlider with all images',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesMainView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(CarouselSlider);
+          final carouselSlider = tester.widget<CarouselSlider>(finder);
+          expect(carouselSlider.itemCount, equals(clothImages1.length));
+        },
+      );
+      testWidgets(
+        'should show ClothImageView with first image',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesMainView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ClothImageView);
+          final clothImageView = tester.widget<ClothImageView>(finder);
+          expect(clothImageView.image, equals(clothImages1.first));
+        },
+      );
+    },
+  );
+
+  group(
+    'ImagesEditableView',
+    () {
+      testWidgets(
+        'should show ClothImageViews for each image',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesEditableView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ClothImageView);
+          final clothImageViews =
+              tester.widgetList<ClothImageView>(finder).toList();
+          for (int i = 0; i < clothImageViews.length; i++) {
+            expect(clothImageViews[i].image, equals(clothImages1[i]));
+          }
+        },
+      );
+
+      testWidgets(
+        'should show AddImageView',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesEditableView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          expect(find.byType(AddImageView), findsOneWidget);
+        },
+      );
+    },
+  );
+
+  group(
+    'EditableImageView',
+    () {
+      testWidgets(
+        'should show ClothImageView wrapped with ClipRRect',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const EditableImageView(
+                image: clothImage1,
+              ),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(ClipRRect),
+              matching: find.byType(ClothImageView),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+      testWidgets(
+        'should show RawMaterialButton wrapped with Positioned',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const EditableImageView(
+                image: clothImage1,
+              ),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(Positioned),
+              matching: find.byType(RawMaterialButton),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'AddImageView',
+    () {
+      testWidgets(
+        'should show center Icon',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AddImageView(),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(Center),
+              matching: find.byType(Icon),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'NameMainView',
     () {
       testWidgets(
         'should wrap with IgnorePointer when name is not null',
@@ -1007,13 +1532,13 @@ void main() {
           const name = 'Cloth name';
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(name: name),
+              const NameMainView(name: name),
             ),
           );
           // assert
           expect(
             find.descendant(
-              of: find.byType(NameView),
+              of: find.byType(NameMainView),
               matching: find.byType(IgnorePointer),
             ),
             findsOneWidget,
@@ -1027,7 +1552,7 @@ void main() {
           const name = 'Cloth name';
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(name: name),
+              const NameMainView(name: name),
             ),
           );
           // assert
@@ -1041,7 +1566,7 @@ void main() {
           // arrange
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(),
+              const NameMainView(),
             ),
           );
           // assert
@@ -1049,6 +1574,77 @@ void main() {
           final roundedContainer = tester.widget<RoundedContainer>(finder);
           expect(roundedContainer.width, isNotNull);
           expect(roundedContainer.height, isNotNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'NameEditableView',
+    () {
+      testWidgets(
+        'should show enabled TextFormField when enabled is true',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: NameEditableView(name: name),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(TextFormField);
+          final textFormField = tester.widget<TextFormField>(finder);
+          expect(textFormField.enabled, isTrue);
+        },
+      );
+      testWidgets(
+        'should show disabled TextFormField when enabled is false',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: NameEditableView(
+                  enabled: false,
+                  name: name,
+                ),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(TextFormField);
+          final textFormField = tester.widget<TextFormField>(finder);
+          expect(textFormField.enabled, isFalse);
+        },
+      );
+
+      testWidgets(
+        'should add UpdateClothName event with new name when text changed',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          const newName = 'New cloth name';
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const Material(
+                child: NameEditableView(
+                  name: name,
+                ),
+              ),
+            ),
+          );
+          // act
+          await tester.enterText(find.byType(TextFormField), newName);
+          // assert
+          verify(
+            () => mockEditClothBloc.add(
+              const UpdateClothName(name: newName),
+            ),
+          ).called(1);
         },
       );
     },

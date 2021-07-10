@@ -1,3 +1,5 @@
+import 'package:clothes/app/utils/keys.dart';
+import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/presentation/widgets/image_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,11 +10,17 @@ void main() {
   group(
     'ImageShadow',
     () {
-      Widget getWidget(ShadowSide side) {
+      Widget getWidget(
+        ShadowSide side, {
+        bool overrideSystemUiOverlayStyle = false,
+      }) {
         return wrapWithApp(
           Stack(
             children: [
-              ImageShadow(side: side),
+              ImageShadow(
+                side: side,
+                overrideSystemUiOverlayStyle: overrideSystemUiOverlayStyle,
+              ),
             ],
           ),
         );
@@ -40,6 +48,35 @@ void main() {
             ),
             findsOneWidget,
           );
+        },
+      );
+      testWidgets(
+        'should not show AnnotatedRegion '
+        'when overrideSystemUiOverlayStyle is false',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            getWidget(ShadowSide.bottom),
+          );
+          // assert
+          expect(find.byKey(Keys.imageShadowAnnotatedRegion), findsNothing);
+        },
+      );
+      testWidgets(
+        'should show AnnotatedRegion with AppTheme.overlayDark '
+        'when overrideSystemUiOverlayStyle is true',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            getWidget(
+              ShadowSide.bottom,
+              overrideSystemUiOverlayStyle: true,
+            ),
+          );
+          // assert
+          final finder = find.byKey(Keys.imageShadowAnnotatedRegion);
+          final annotatedRegion = tester.widget<AnnotatedRegion>(finder);
+          expect(annotatedRegion.value, equals(AppTheme.overlayDark));
         },
       );
       testWidgets(

@@ -33,6 +33,7 @@ abstract class AppTheme {
       primarySwatch: mainColor,
       primaryColor: mainColor,
       accentColor: mainColor,
+      cardColor: isDark ? Colors.grey[800]! : Colors.grey[100],
       canvasColor: isDark ? null : Colors.white,
       iconTheme: _iconTheme(isDark),
       appBarTheme: _appBarTheme(isDark),
@@ -40,6 +41,8 @@ abstract class AppTheme {
       elevatedButtonTheme: _elevatedButtonTheme(isDark),
       textButtonTheme: _textButtonTheme(isDark),
       chipTheme: _chipTheme(isDark),
+      snackBarTheme: _snackBarTheme(isDark),
+      inputDecorationTheme: _inputDecorationTheme(isDark),
     );
   }
 
@@ -132,6 +135,26 @@ abstract class AppTheme {
       labelStyle: textTheme.bodyText1!,
     ).copyWith(
       backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
+    );
+  }
+
+  static SnackBarThemeData _snackBarTheme(bool isDark) {
+    return SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+    );
+  }
+
+  static InputDecorationTheme _inputDecorationTheme(bool isDark) {
+    return InputDecorationTheme(
+      contentPadding: const EdgeInsets.all(18.0),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(64.0),
+      ),
+      errorStyle: const TextStyle(fontSize: 0.1),
+      counterStyle: const TextStyle(fontSize: 0.1),
     );
   }
 

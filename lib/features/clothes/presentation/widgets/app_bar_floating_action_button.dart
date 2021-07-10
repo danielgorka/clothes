@@ -5,6 +5,8 @@ class AppBarFloatingActionButton extends StatefulWidget {
   final double appBarHeight;
   final Widget child;
   final VoidCallback onPressed;
+  final bool visible;
+  final Duration animationDuration;
 
   const AppBarFloatingActionButton({
     Key? key,
@@ -12,6 +14,8 @@ class AppBarFloatingActionButton extends StatefulWidget {
     required this.appBarHeight,
     required this.child,
     required this.onPressed,
+    this.visible = true,
+    this.animationDuration = const Duration(milliseconds: 200),
   }) : super(key: key);
 
   @override
@@ -40,9 +44,20 @@ class _AppBarFloatingActionButtonState
     return Positioned(
       top: widget.appBarHeight - 28.0 - offset,
       right: 16.0,
-      child: FloatingActionButton(
-        onPressed: widget.onPressed,
-        child: widget.child,
+      child: AnimatedSwitcher(
+        duration: widget.animationDuration,
+        transitionBuilder: (child, animation) {
+          return ScaleTransition(
+            scale: animation,
+            child: child,
+          );
+        },
+        child: widget.visible
+            ? FloatingActionButton(
+                onPressed: widget.onPressed,
+                child: widget.child,
+              )
+            : Container(),
       ),
     );
   }

@@ -2,11 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/app/utils/keys.dart';
-import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
+import 'package:clothes/features/clothes/presentation/widgets/animated_visibility.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
@@ -45,32 +45,53 @@ class EditClothPage extends StatelessWidget {
 class EditClothView extends StatelessWidget {
   const EditClothView({Key? key}) : super(key: key);
 
+  String _getErrorMessage(BuildContext context, EditClothError error) {
+    switch (error) {
+      case EditClothError.clothNotFound:
+        return context.l10n.clothNotFound;
+      case EditClothError.savingError:
+        return context.l10n.errorSavingChanges;
+      default:
+        return context.l10n.somethingWentWrong;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      key: Keys.editClothAnnotatedRegion,
-      value: AppTheme.overlayDark,
-      child: Scaffold(
-        body: BlocConsumer<EditClothBloc, EditClothState>(
-          listener: (context, state) async {
-            if (state.action is CloseClothAction) {
-              await AutoRouter.of(context).pop();
-              BlocProvider.of<EditClothBloc>(context).add(ClearAction());
-            }
-          },
-          listenWhen: (oldState, newState) =>
-              oldState.action != newState.action,
-          builder: (context, state) {
-            if (state.cloth == null && state.hasError) {
-              //TODO: create more user friendly view with specific error message
-              return const ErrorView();
-            }
+    return Scaffold(
+      body: BlocConsumer<EditClothBloc, EditClothState>(
+        listener: (context, state) async {
+          if (state.action is CloseClothAction) {
+            await AutoRouter.of(context).pop();
+            BlocProvider.of<EditClothBloc>(context).add(ClearAction());
+          }
 
-            return MainClothView(
-              cloth: state.cloth,
+          if (state.cloth != null && state.hasError) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(_getErrorMessage(context, state.error)),
+              ),
             );
-          },
-        ),
+
+            BlocProvider.of<EditClothBloc>(context).add(ClearError());
+          }
+        },
+        listenWhen: (oldState, newState) =>
+            oldState.action != newState.action ||
+            oldState.error != newState.error,
+        builder: (context, state) {
+          if (state.cloth == null && state.hasError) {
+            return ErrorView(
+              message: _getErrorMessage(context, state.error),
+            );
+          }
+
+          return MainClothView(
+            cloth: state.cloth,
+            editing: state.editing,
+          );
+        },
       ),
     );
   }
@@ -79,10 +100,12 @@ class EditClothView extends StatelessWidget {
 @visibleForTesting
 class MainClothView extends StatefulWidget {
   final Cloth? cloth;
+  final bool editing;
 
   const MainClothView({
     Key? key,
     this.cloth,
+    this.editing = false,
   }) : super(key: key);
 
   @override
@@ -100,8 +123,21 @@ class _MainClothViewState extends State<MainClothView> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget leftButton;
+    final Widget rightButton;
+    if (widget.editing) {
+      leftButton = Container();
+      rightButton = const AppBarSaveButton();
+    } else {
+      leftButton = const AppBarBackButton();
+      if (widget.cloth != null) {
+        rightButton = const AppBarEditButton();
+      } else {
+        rightButton = Container();
+      }
+    }
+
     Widget content = ListView(
-      key: Keys.editClothListView,
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
@@ -109,19 +145,34 @@ class _MainClothViewState extends State<MainClothView> {
           alignment: Alignment.bottomCenter,
           children: [
             ImagesView(
+              editing: widget.editing,
               images: widget.cloth?.images,
             ),
-            if (widget.cloth == null || widget.cloth!.name.isNotEmpty)
+            if (!widget.editing &&
+                (widget.cloth == null || widget.cloth!.name.isNotEmpty))
               const ImageShadow(
                 key: Keys.editClothBottomShadow,
                 side: ShadowSide.bottom,
               ),
-            NameView(
-              name: widget.cloth?.name,
+            AnimatedSwitcher(
+              duration: ClothesUtils.switchViewDuration,
+              child: widget.editing
+                  ? Container()
+                  : NameMainView(name: widget.cloth?.name),
             ),
           ],
         ),
         const SizedBox(height: 16.0),
+        AnimatedVisibility(
+          visible: widget.editing,
+          duration: ClothesUtils.switchViewDuration,
+          child: widget.cloth != null
+              ? NameEditableView(
+                  enabled: widget.editing,
+                  name: widget.cloth!.name,
+                )
+              : Container(),
+        ),
         DescriptionView(
           description: widget.cloth?.description,
         ),
@@ -155,6 +206,8 @@ class _MainClothViewState extends State<MainClothView> {
         content,
         if (widget.cloth != null)
           AppBarFloatingActionButton(
+            visible: !widget.editing,
+            animationDuration: ClothesUtils.switchViewDuration,
             scrollController: _scrollController,
             appBarHeight:
                 MediaQuery.of(context).size.width / ClothesUtils.aspectRatio,
@@ -169,12 +222,20 @@ class _MainClothViewState extends State<MainClothView> {
                   : Icons.favorite_border_outlined,
             ),
           ),
-        const ImageShadow(
-          key: Keys.editClothTopShadow,
-          side: ShadowSide.top,
+        if (!widget.editing)
+          const ImageShadow(
+            key: Keys.editClothTopShadow,
+            side: ShadowSide.top,
+            overrideSystemUiOverlayStyle: true,
+          ),
+        AnimatedSwitcher(
+          duration: ClothesUtils.switchViewDuration,
+          child: leftButton,
         ),
-        const AppBarBackButton(),
-        if (widget.cloth != null) const AppBarEditButton(),
+        AnimatedSwitcher(
+          duration: ClothesUtils.switchViewDuration,
+          child: rightButton,
+        ),
       ],
     );
   }
@@ -233,10 +294,10 @@ class AppBarEditButton extends StatelessWidget {
             bottom: 12.0,
           ),
           child: IconButton(
-            color: Colors.white,
             key: Keys.editClothButton,
+            color: Colors.white,
             onPressed: () {
-              //TODO: start editing
+              BlocProvider.of<EditClothBloc>(context).add(EditCloth());
             },
             icon: const Icon(Icons.edit_rounded),
           ),
@@ -247,11 +308,43 @@ class AppBarEditButton extends StatelessWidget {
 }
 
 @visibleForTesting
+class AppBarSaveButton extends StatelessWidget {
+  const AppBarSaveButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 12.0,
+            right: 12.0,
+            top: MediaQuery.of(context).padding.top + 8.0,
+            bottom: 12.0,
+          ),
+          child: IconButton(
+            key: Keys.saveClothButton,
+            onPressed: () {
+              BlocProvider.of<EditClothBloc>(context).add(SaveCloth());
+            },
+            icon: const Icon(Icons.check),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
 class ImagesView extends StatelessWidget {
+  final bool editing;
   final List<ClothImage>? images;
 
   const ImagesView({
     Key? key,
+    this.editing = false,
     this.images,
   }) : super(key: key);
 
@@ -270,25 +363,154 @@ class ImagesView extends StatelessWidget {
         ),
       );
     }
+
+    return AnimatedCrossFade(
+      duration: ClothesUtils.switchViewDuration,
+      crossFadeState:
+          editing ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      firstChild: IgnorePointer(
+        ignoring: editing,
+        child: ImagesMainView(images: images!),
+      ),
+      secondChild: IgnorePointer(
+        ignoring: !editing,
+        child: ImagesEditableView(images: images!),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class ImagesMainView extends StatelessWidget {
+  final List<ClothImage> images;
+
+  const ImagesMainView({
+    Key? key,
+    required this.images,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return CarouselSlider.builder(
       options: CarouselOptions(
         aspectRatio: ClothesUtils.aspectRatio,
         enableInfiniteScroll: false,
         viewportFraction: 1.0,
       ),
-      itemCount: images!.length,
+      itemCount: images.length,
       itemBuilder: (context, index, realIndex) {
-        return ClothImageView(image: images![index]);
+        return ClothImageView(image: images[index]);
       },
     );
   }
 }
 
 @visibleForTesting
-class NameView extends StatelessWidget {
+class ImagesEditableView extends StatelessWidget {
+  final List<ClothImage> images;
+
+  const ImagesEditableView({
+    Key? key,
+    required this.images,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+        top: MediaQuery.of(context).padding.top + 64.0,
+        bottom: 8.0,
+      ),
+      shrinkWrap: true,
+      gridDelegate: ClothesUtils.gridDelegate,
+      itemCount: images.length + 1,
+      itemBuilder: (context, index) {
+        if (index == images.length) {
+          return const AddImageView();
+        }
+        return EditableImageView(image: images[index]);
+      },
+    );
+  }
+}
+
+@visibleForTesting
+class EditableImageView extends StatelessWidget {
+  final ClothImage image;
+
+  const EditableImageView({
+    Key? key,
+    required this.image,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: ClothesUtils.smallBorderRadius,
+          child: ClothImageView(
+            image: image,
+          ),
+        ),
+        Positioned(
+          top: -8.0,
+          right: -8.0,
+          child: RawMaterialButton(
+            fillColor: Colors.white,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            constraints: const BoxConstraints(),
+            shape: const CircleBorder(),
+            onPressed: () {
+              //TODO: delete image
+            },
+            child: const Icon(
+              Icons.remove,
+              size: 24.0,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+@visibleForTesting
+class AddImageView extends StatelessWidget {
+  const AddImageView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.card,
+      borderRadius: ClothesUtils.smallBorderRadius,
+      child: InkWell(
+        borderRadius: ClothesUtils.smallBorderRadius,
+        onTap: () {
+          //TODO: add new image
+        },
+        child: Center(
+          child: Icon(
+            Icons.add_rounded,
+            size: 48.0,
+            color: Theme.of(context).accentColor,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class NameMainView extends StatelessWidget {
   final String? name;
 
-  const NameView({
+  const NameMainView({
     Key? key,
     this.name,
   }) : super(key: key);
@@ -319,6 +541,39 @@ class NameView extends StatelessWidget {
         child: Center(
           child: content,
         ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class NameEditableView extends StatelessWidget {
+  final bool enabled;
+  final String name;
+
+  const NameEditableView({
+    Key? key,
+    this.enabled = true,
+    required this.name,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        enabled: enabled,
+        initialValue: name,
+        maxLength: ClothesUtils.maxClothNameLength,
+        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+        decoration: InputDecoration(
+          labelText: context.l10n.clothName,
+        ),
+        keyboardType: TextInputType.name,
+        onChanged: (value) {
+          BlocProvider.of<EditClothBloc>(context)
+              .add(UpdateClothName(name: value));
+        },
       ),
     );
   }
