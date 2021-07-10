@@ -149,6 +149,7 @@ class _MainClothViewState extends State<MainClothView> {
           alignment: Alignment.bottomCenter,
           children: [
             ImagesView(
+              editing: widget.editing,
               images: widget.cloth?.images,
             ),
             if (widget.cloth == null || widget.cloth!.name.isNotEmpty)
@@ -324,10 +325,12 @@ class AppBarSaveButton extends StatelessWidget {
 
 @visibleForTesting
 class ImagesView extends StatelessWidget {
+  final bool editing;
   final List<ClothImage>? images;
 
   const ImagesView({
     Key? key,
+    this.editing = false,
     this.images,
   }) : super(key: key);
 
@@ -346,16 +349,145 @@ class ImagesView extends StatelessWidget {
         ),
       );
     }
+
+    return AnimatedCrossFade(
+      duration: ClothesUtils.switchViewDuration,
+      crossFadeState:
+          editing ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      firstChild: IgnorePointer(
+        ignoring: editing,
+        child: ImagesMainView(images: images!),
+      ),
+      secondChild: IgnorePointer(
+        ignoring: !editing,
+        child: ImagesEditableView(images: images!),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class ImagesMainView extends StatelessWidget {
+  final List<ClothImage> images;
+
+  const ImagesMainView({
+    Key? key,
+    required this.images,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return CarouselSlider.builder(
       options: CarouselOptions(
         aspectRatio: ClothesUtils.aspectRatio,
         enableInfiniteScroll: false,
         viewportFraction: 1.0,
       ),
-      itemCount: images!.length,
+      itemCount: images.length,
       itemBuilder: (context, index, realIndex) {
-        return ClothImageView(image: images![index]);
+        return ClothImageView(image: images[index]);
       },
+    );
+  }
+}
+
+@visibleForTesting
+class ImagesEditableView extends StatelessWidget {
+  final List<ClothImage> images;
+
+  const ImagesEditableView({
+    Key? key,
+    required this.images,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+        top: MediaQuery.of(context).padding.top + 64.0,
+        bottom: 8.0,
+      ),
+      shrinkWrap: true,
+      gridDelegate: ClothesUtils.gridDelegate,
+      itemCount: images.length + 1,
+      itemBuilder: (context, index) {
+        if (index == images.length) {
+          return const AddImageView();
+        }
+        return EditableImageView(image: images[index]);
+      },
+    );
+  }
+}
+
+@visibleForTesting
+class EditableImageView extends StatelessWidget {
+  final ClothImage image;
+
+  const EditableImageView({
+    Key? key,
+    required this.image,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: ClothesUtils.smallBorderRadius,
+          child: ClothImageView(
+            image: image,
+          ),
+        ),
+        Positioned(
+          top: -8.0,
+          right: -8.0,
+          child: RawMaterialButton(
+            fillColor: Colors.white,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            constraints: const BoxConstraints(),
+            shape: const CircleBorder(),
+            onPressed: () {
+              //TODO: delete image
+            },
+            child: const Icon(
+              Icons.remove,
+              size: 24.0,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+@visibleForTesting
+class AddImageView extends StatelessWidget {
+  const AddImageView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.card,
+      borderRadius: ClothesUtils.smallBorderRadius,
+      child: InkWell(
+        borderRadius: ClothesUtils.smallBorderRadius,
+        onTap: () {
+          //TODO: add new image
+        },
+        child: Center(
+          child: Icon(
+            Icons.add_rounded,
+            size: 48.0,
+            color: Theme.of(context).accentColor,
+          ),
+        ),
+      ),
     );
   }
 }

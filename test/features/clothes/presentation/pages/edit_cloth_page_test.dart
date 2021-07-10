@@ -1059,9 +1059,11 @@ void main() {
               // arrange
               await tester.pumpWidget(
                 wrapWithApp(
-                  MainClothView(
-                    cloth: cloth1,
-                    editing: true,
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
                   ),
                 ),
               );
@@ -1193,42 +1195,7 @@ void main() {
     'ImagesView',
     () {
       testWidgets(
-        'should show CarouselSlider with all images when images is not null',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(
-            wrapWithApp(
-              const ImagesView(
-                images: clothImages1,
-              ),
-            ),
-          );
-          // assert
-          final finder = find.byType(CarouselSlider);
-          final carouselSlider = tester.widget<CarouselSlider>(finder);
-          expect(carouselSlider.itemCount, equals(clothImages1.length));
-        },
-      );
-      testWidgets(
-        'should show ClothImageView with first image when images is not null',
-        (tester) async {
-          // arrange
-          await tester.pumpWidget(
-            wrapWithApp(
-              const ImagesView(
-                images: clothImages1,
-              ),
-            ),
-          );
-          // assert
-          final finder = find.byType(ClothImageView);
-          final clothImageView = tester.widget<ClothImageView>(finder);
-          expect(clothImageView.image, equals(clothImages1.first));
-        },
-      );
-
-      testWidgets(
-        'should show image icon when images is null',
+        'should show image icon when images is null and editing is false',
         (tester) async {
           // arrange
           await tester.pumpWidget(
@@ -1240,6 +1207,198 @@ void main() {
           final finder = find.byType(Icon);
           final icon = tester.widget<Icon>(finder);
           expect(icon.icon, equals(Icons.image));
+        },
+      );
+      testWidgets(
+        'should show ImagesMainView with images '
+        'when images is not null and editing is false',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ImagesMainView);
+          final imagesMainView = tester.widget<ImagesMainView>(finder);
+          expect(imagesMainView.images, equals(clothImages1));
+        },
+      );
+      testWidgets(
+        'should show ImagesEditableView with images '
+        'when images is not null and editing is true',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesView(
+                images: clothImages1,
+                editing: true,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ImagesEditableView);
+          final imagesEditableView = tester.widget<ImagesEditableView>(finder);
+          expect(imagesEditableView.images, equals(clothImages1));
+        },
+      );
+    },
+  );
+
+  group(
+    'ImagesMainView',
+    () {
+      testWidgets(
+        'should show CarouselSlider with all images',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesMainView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(CarouselSlider);
+          final carouselSlider = tester.widget<CarouselSlider>(finder);
+          expect(carouselSlider.itemCount, equals(clothImages1.length));
+        },
+      );
+      testWidgets(
+        'should show ClothImageView with first image',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesMainView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ClothImageView);
+          final clothImageView = tester.widget<ClothImageView>(finder);
+          expect(clothImageView.image, equals(clothImages1.first));
+        },
+      );
+    },
+  );
+
+  group(
+    'ImagesEditableView',
+    () {
+      testWidgets(
+        'should show ClothImageViews for each image',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesEditableView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(ClothImageView);
+          final clothImageViews =
+              tester.widgetList<ClothImageView>(finder).toList();
+          for (int i = 0; i < clothImageViews.length; i++) {
+            expect(clothImageViews[i].image, equals(clothImages1[i]));
+          }
+        },
+      );
+
+      testWidgets(
+        'should show AddImageView',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const ImagesEditableView(
+                images: clothImages1,
+              ),
+            ),
+          );
+          // assert
+          expect(find.byType(AddImageView), findsOneWidget);
+        },
+      );
+    },
+  );
+
+  group(
+    'EditableImageView',
+    () {
+      testWidgets(
+        'should show ClothImageView wrapped with ClipRRect',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const EditableImageView(
+                image: clothImage1,
+              ),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(ClipRRect),
+              matching: find.byType(ClothImageView),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+      testWidgets(
+        'should show RawMaterialButton wrapped with Positioned',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const EditableImageView(
+                image: clothImage1,
+              ),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(Positioned),
+              matching: find.byType(RawMaterialButton),
+            ),
+            findsOneWidget,
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'AddImageView',
+    () {
+      testWidgets(
+        'should show center Icon',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AddImageView(),
+            ),
+          );
+          // assert
+          expect(
+            find.descendant(
+              of: find.byType(Center),
+              matching: find.byType(Icon),
+            ),
+            findsOneWidget,
+          );
         },
       );
     },
