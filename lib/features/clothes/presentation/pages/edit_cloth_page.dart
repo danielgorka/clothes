@@ -206,6 +206,8 @@ class _MainClothViewState extends State<MainClothView> {
         content,
         if (widget.cloth != null)
           AppBarFloatingActionButton(
+            visible: !widget.editing,
+            animationDuration: ClothesUtils.switchViewDuration,
             scrollController: _scrollController,
             appBarHeight:
                 MediaQuery.of(context).size.width / ClothesUtils.aspectRatio,

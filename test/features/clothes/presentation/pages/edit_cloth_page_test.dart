@@ -972,6 +972,25 @@ void main() {
             },
           );
           testWidgets(
+            'should not show FloatingActionButton when cloth is editing',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(FloatingActionButton), findsNothing);
+            },
+          );
+          testWidgets(
             'should add ChangeFavourite event '
             'on AppBarFloatingActionButton pressed',
             (tester) async {
