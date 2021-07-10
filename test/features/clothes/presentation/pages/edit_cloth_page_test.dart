@@ -587,6 +587,24 @@ void main() {
                   expect(find.byKey(Keys.editClothBottomShadow), findsNothing);
                 },
               );
+              testWidgets(
+                'should show no shadow when editing is true',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      Material(
+                        child: MainClothView(
+                          cloth: cloth1,
+                          editing: true,
+                        ),
+                      ),
+                    ),
+                  );
+                  // assert
+                  expect(find.byKey(Keys.editClothBottomShadow), findsNothing);
+                },
+              );
             },
           );
 

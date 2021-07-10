@@ -148,7 +148,8 @@ class _MainClothViewState extends State<MainClothView> {
               editing: widget.editing,
               images: widget.cloth?.images,
             ),
-            if (widget.cloth == null || widget.cloth!.name.isNotEmpty)
+            if (!widget.editing &&
+                (widget.cloth == null || widget.cloth!.name.isNotEmpty))
               const ImageShadow(
                 key: Keys.editClothBottomShadow,
                 side: ShadowSide.bottom,
