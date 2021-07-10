@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:clothes/app/utils/clothes_utils.dart';
 import 'package:clothes/app/utils/keys.dart';
-import 'package:clothes/app/utils/theme.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
@@ -17,7 +16,6 @@ import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -58,44 +56,40 @@ class EditClothView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      key: Keys.editClothAnnotatedRegion,
-      value: AppTheme.overlayDark,
-      child: Scaffold(
-        body: BlocConsumer<EditClothBloc, EditClothState>(
-          listener: (context, state) async {
-            if (state.action is CloseClothAction) {
-              await AutoRouter.of(context).pop();
-              BlocProvider.of<EditClothBloc>(context).add(ClearAction());
-            }
+    return Scaffold(
+      body: BlocConsumer<EditClothBloc, EditClothState>(
+        listener: (context, state) async {
+          if (state.action is CloseClothAction) {
+            await AutoRouter.of(context).pop();
+            BlocProvider.of<EditClothBloc>(context).add(ClearAction());
+          }
 
-            if (state.cloth != null && state.hasError) {
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(_getErrorMessage(context, state.error)),
-                ),
-              );
-
-              BlocProvider.of<EditClothBloc>(context).add(ClearError());
-            }
-          },
-          listenWhen: (oldState, newState) =>
-              oldState.action != newState.action ||
-              oldState.error != newState.error,
-          builder: (context, state) {
-            if (state.cloth == null && state.hasError) {
-              return ErrorView(
-                message: _getErrorMessage(context, state.error),
-              );
-            }
-
-            return MainClothView(
-              cloth: state.cloth,
-              editing: state.editing,
+          if (state.cloth != null && state.hasError) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(_getErrorMessage(context, state.error)),
+              ),
             );
-          },
-        ),
+
+            BlocProvider.of<EditClothBloc>(context).add(ClearError());
+          }
+        },
+        listenWhen: (oldState, newState) =>
+            oldState.action != newState.action ||
+            oldState.error != newState.error,
+        builder: (context, state) {
+          if (state.cloth == null && state.hasError) {
+            return ErrorView(
+              message: _getErrorMessage(context, state.error),
+            );
+          }
+
+          return MainClothView(
+            cloth: state.cloth,
+            editing: state.editing,
+          );
+        },
       ),
     );
   }
@@ -210,10 +204,12 @@ class _MainClothViewState extends State<MainClothView> {
                   : Icons.favorite_border_outlined,
             ),
           ),
-        const ImageShadow(
-          key: Keys.editClothTopShadow,
-          side: ShadowSide.top,
-        ),
+        if (!widget.editing)
+          const ImageShadow(
+            key: Keys.editClothTopShadow,
+            side: ShadowSide.top,
+            overrideSystemUiOverlayStyle: true,
+          ),
         AnimatedSwitcher(
           duration: ClothesUtils.switchViewDuration,
           child: leftButton,
