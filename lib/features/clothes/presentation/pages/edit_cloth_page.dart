@@ -214,11 +214,11 @@ class _MainClothViewState extends State<MainClothView> {
           side: ShadowSide.top,
         ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: ClothesUtils.switchViewDuration,
           child: leftButton,
         ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: ClothesUtils.switchViewDuration,
           child: rightButton,
         ),
       ],

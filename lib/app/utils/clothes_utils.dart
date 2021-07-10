@@ -15,6 +15,9 @@ abstract class ClothesUtils {
   static const aspectRatio = 3 / 4;
 
   static final borderRadius = BorderRadius.circular(32.0);
+  static final smallBorderRadius = BorderRadius.circular(16.0);
+
+  static const switchViewDuration = Duration(milliseconds: 300);
 
   static const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
     maxCrossAxisExtent: 250.0,
