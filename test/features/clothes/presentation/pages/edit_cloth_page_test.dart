@@ -697,7 +697,7 @@ void main() {
               setLongScreen(tester);
               await tester.pumpWidget(
                 wrapWithApp(
-                  Material(
+                  const Material(
                     child: MainClothView(),
                   ),
                 ),
@@ -743,7 +743,6 @@ void main() {
                   Material(
                     child: MainClothView(
                       cloth: cloth1,
-                      editing: false,
                     ),
                   ),
                 ),
