@@ -33,6 +33,7 @@ abstract class AppTheme {
       primarySwatch: mainColor,
       primaryColor: mainColor,
       accentColor: mainColor,
+      cardColor: isDark ? Colors.grey[800]! : Colors.grey[100],
       canvasColor: isDark ? null : Colors.white,
       iconTheme: _iconTheme(isDark),
       appBarTheme: _appBarTheme(isDark),
