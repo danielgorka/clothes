@@ -6,6 +6,7 @@ import 'package:clothes/features/clothes/domain/entities/cloth.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_image.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
+import 'package:clothes/features/clothes/presentation/widgets/animated_visibility.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
@@ -16,6 +17,7 @@ import 'package:clothes/features/clothes/presentation/widgets/tag_view.dart';
 import 'package:clothes/injection.dart';
 import 'package:clothes/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -151,12 +153,25 @@ class _MainClothViewState extends State<MainClothView> {
                 key: Keys.editClothBottomShadow,
                 side: ShadowSide.bottom,
               ),
-            NameView(
-              name: widget.cloth?.name,
+            AnimatedSwitcher(
+              duration: ClothesUtils.switchViewDuration,
+              child: widget.editing
+                  ? Container()
+                  : NameMainView(name: widget.cloth?.name),
             ),
           ],
         ),
         const SizedBox(height: 16.0),
+        AnimatedVisibility(
+          visible: widget.editing,
+          duration: ClothesUtils.switchViewDuration,
+          child: widget.cloth != null
+              ? NameEditableView(
+                  enabled: widget.editing,
+                  name: widget.cloth!.name,
+                )
+              : Container(),
+        ),
         DescriptionView(
           description: widget.cloth?.description,
         ),
@@ -489,10 +504,10 @@ class AddImageView extends StatelessWidget {
 }
 
 @visibleForTesting
-class NameView extends StatelessWidget {
+class NameMainView extends StatelessWidget {
   final String? name;
 
-  const NameView({
+  const NameMainView({
     Key? key,
     this.name,
   }) : super(key: key);
@@ -523,6 +538,39 @@ class NameView extends StatelessWidget {
         child: Center(
           child: content,
         ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class NameEditableView extends StatelessWidget {
+  final bool enabled;
+  final String name;
+
+  const NameEditableView({
+    Key? key,
+    this.enabled = true,
+    required this.name,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        enabled: enabled,
+        initialValue: name,
+        maxLength: ClothesUtils.maxClothNameLength,
+        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+        decoration: InputDecoration(
+          labelText: context.l10n.clothName,
+        ),
+        keyboardType: TextInputType.name,
+        onChanged: (value) {
+          BlocProvider.of<EditClothBloc>(context)
+              .add(UpdateClothName(name: value));
+        },
       ),
     );
   }

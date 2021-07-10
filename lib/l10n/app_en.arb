@@ -3,6 +3,7 @@
   "calendar": "Calendar",
   "cancel": "Cancel",
   "clothes": "Clothes",
+  "clothName": "Cloth name",
   "clothNotFound": "The specified cloth was not found",
   "colors": "Colors",
   "creationDate": "Creation date: {dateTime}",

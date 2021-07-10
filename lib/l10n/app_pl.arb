@@ -3,6 +3,7 @@
   "calendar": "Kalendarz",
   "cancel": "Anuluj",
   "clothes": "Ubrania",
+  "clothName": "Nazwa ubrania",
   "clothNotFound": "Nie odnaleziono podanego ubrania",
   "colors": "Kolory",
   "creationDate": "Data utworzenia: {dateTime}",

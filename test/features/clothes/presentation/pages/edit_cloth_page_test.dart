@@ -5,6 +5,7 @@ import 'package:clothes/app/utils/keys.dart';
 import 'package:clothes/features/clothes/domain/entities/cloth_tag.dart';
 import 'package:clothes/features/clothes/presentation/blocs/edit_cloth/edit_cloth_bloc.dart';
 import 'package:clothes/features/clothes/presentation/pages/edit_cloth_page.dart';
+import 'package:clothes/features/clothes/presentation/widgets/animated_visibility.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_bar_floating_action_button.dart';
 import 'package:clothes/features/clothes/presentation/widgets/app_shimmer.dart';
 import 'package:clothes/features/clothes/presentation/widgets/cloth_image_view.dart';
@@ -451,7 +452,7 @@ void main() {
         'Show Stack for image and cloth name',
         () {
           testWidgets(
-            'should show Stack with ImagesView, ImageShadow and NameView',
+            'should show Stack with ImagesView, ImageShadow and NameMainView',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -481,7 +482,7 @@ void main() {
               expect(
                 find.descendant(
                   of: find.byType(Stack),
-                  matching: find.byType(NameView),
+                  matching: find.byType(NameMainView),
                 ),
                 findsOneWidget,
               );
@@ -590,10 +591,10 @@ void main() {
           );
 
           group(
-            'Show NameView',
+            'Show NameMainView',
             () {
               testWidgets(
-                'should show NameView with name from cloth',
+                'should show NameMainView with name from cloth',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -606,13 +607,13 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(NameView);
-                  final nameView = tester.widget<NameView>(finder);
+                  final finder = find.byType(NameMainView);
+                  final nameView = tester.widget<NameMainView>(finder);
                   expect(nameView.name, equals(cloth1.name));
                 },
               );
               testWidgets(
-                'should show NameView with null name when cloth is null',
+                'should show NameMainView with null name when cloth is null',
                 (tester) async {
                   // arrange
                   await tester.pumpWidget(
@@ -623,11 +624,120 @@ void main() {
                     ),
                   );
                   // assert
-                  final finder = find.byType(NameView);
-                  final nameView = tester.widget<NameView>(finder);
+                  final finder = find.byType(NameMainView);
+                  final nameView = tester.widget<NameMainView>(finder);
                   expect(nameView.name, isNull);
                 },
               );
+              testWidgets(
+                'should not show NameMainView when editing is true',
+                (tester) async {
+                  // arrange
+                  await tester.pumpWidget(
+                    wrapWithApp(
+                      const Material(
+                        child: MainClothView(editing: true),
+                      ),
+                    ),
+                  );
+                  // assert
+                  expect(find.byType(NameMainView), findsNothing);
+                },
+              );
+            },
+          );
+        },
+      );
+
+      group(
+        'Show NameEditableView',
+        () {
+          testWidgets(
+            'should show NameEditableView with name when cloth is not null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.byType(NameEditableView);
+              final nameEditableView = tester.widget<NameEditableView>(finder);
+              expect(nameEditableView.name, equals(cloth1.name));
+            },
+          );
+          testWidgets(
+            'should not show NameEditableView when cloth is null',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(),
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(NameEditableView), findsNothing);
+            },
+          );
+          testWidgets(
+            'should wrap with AnimatedVisibility with visible set to true '
+            'when editing is true',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: true,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.ancestor(
+                of: find.byType(NameEditableView),
+                matching: find.byType(AnimatedVisibility),
+              );
+              final animatedVisibility =
+                  tester.widget<AnimatedVisibility>(finder);
+              expect(animatedVisibility.visible, isTrue);
+            },
+          );
+          testWidgets(
+            'should wrap with AnimatedVisibility with visible set to false '
+            'when editing is false',
+            (tester) async {
+              // arrange
+              setLongScreen(tester);
+              await tester.pumpWidget(
+                wrapWithApp(
+                  Material(
+                    child: MainClothView(
+                      cloth: cloth1,
+                      editing: false,
+                    ),
+                  ),
+                ),
+              );
+              // assert
+              final finder = find.ancestor(
+                of: find.byType(NameEditableView),
+                matching: find.byType(AnimatedVisibility),
+              );
+              final animatedVisibility =
+                  tester.widget<AnimatedVisibility>(finder);
+              expect(animatedVisibility.visible, isFalse);
             },
           );
         },
@@ -1377,7 +1487,7 @@ void main() {
   );
 
   group(
-    'NameView',
+    'NameMainView',
     () {
       testWidgets(
         'should wrap with IgnorePointer when name is not null',
@@ -1386,13 +1496,13 @@ void main() {
           const name = 'Cloth name';
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(name: name),
+              const NameMainView(name: name),
             ),
           );
           // assert
           expect(
             find.descendant(
-              of: find.byType(NameView),
+              of: find.byType(NameMainView),
               matching: find.byType(IgnorePointer),
             ),
             findsOneWidget,
@@ -1406,7 +1516,7 @@ void main() {
           const name = 'Cloth name';
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(name: name),
+              const NameMainView(name: name),
             ),
           );
           // assert
@@ -1420,7 +1530,7 @@ void main() {
           // arrange
           await tester.pumpWidget(
             wrapWithApp(
-              const NameView(),
+              const NameMainView(),
             ),
           );
           // assert
@@ -1428,6 +1538,77 @@ void main() {
           final roundedContainer = tester.widget<RoundedContainer>(finder);
           expect(roundedContainer.width, isNotNull);
           expect(roundedContainer.height, isNotNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'NameEditableView',
+    () {
+      testWidgets(
+        'should show enabled TextFormField when enabled is true',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: NameEditableView(name: name),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(TextFormField);
+          final textFormField = tester.widget<TextFormField>(finder);
+          expect(textFormField.enabled, isTrue);
+        },
+      );
+      testWidgets(
+        'should show disabled TextFormField when enabled is false',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          await tester.pumpWidget(
+            wrapWithApp(
+              const Material(
+                child: NameEditableView(
+                  enabled: false,
+                  name: name,
+                ),
+              ),
+            ),
+          );
+          // assert
+          final finder = find.byType(TextFormField);
+          final textFormField = tester.widget<TextFormField>(finder);
+          expect(textFormField.enabled, isFalse);
+        },
+      );
+
+      testWidgets(
+        'should add UpdateClothName event with new name when text changed',
+        (tester) async {
+          // arrange
+          const name = 'Cloth name';
+          const newName = 'New cloth name';
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const Material(
+                child: NameEditableView(
+                  name: name,
+                ),
+              ),
+            ),
+          );
+          // act
+          await tester.enterText(find.byType(TextFormField), newName);
+          // assert
+          verify(
+            () => mockEditClothBloc.add(
+              const UpdateClothName(name: newName),
+            ),
+          ).called(1);
         },
       );
     },
