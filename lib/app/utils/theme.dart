@@ -42,6 +42,7 @@ abstract class AppTheme {
       textButtonTheme: _textButtonTheme(isDark),
       chipTheme: _chipTheme(isDark),
       snackBarTheme: _snackBarTheme(isDark),
+      inputDecorationTheme: _inputDecorationTheme(isDark),
     );
   }
 
@@ -143,6 +144,17 @@ abstract class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
+    );
+  }
+
+  static InputDecorationTheme _inputDecorationTheme(bool isDark) {
+    return InputDecorationTheme(
+      contentPadding: const EdgeInsets.all(18.0),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(64.0),
+      ),
+      errorStyle: const TextStyle(fontSize: 0.1),
+      counterStyle: const TextStyle(fontSize: 0.1),
     );
   }
 
