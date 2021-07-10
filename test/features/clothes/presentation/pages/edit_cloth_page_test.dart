@@ -967,7 +967,7 @@ void main() {
         'Show AppBarBackButton',
         () {
           testWidgets(
-            'should show AppBarBackButton',
+            'should show AppBarBackButton when editing is false',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -981,6 +981,21 @@ void main() {
               expect(find.byType(AppBarBackButton), findsOneWidget);
             },
           );
+          testWidgets(
+            'should not show AppBarBackButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarBackButton), findsNothing);
+            },
+          );
         },
       );
 
@@ -988,7 +1003,8 @@ void main() {
         'Show AppBarEditButton',
         () {
           testWidgets(
-            'should show AppBarEditButton when cloth is not null',
+            'should show AppBarEditButton when editing is false '
+            'and cloth is not null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -1003,7 +1019,8 @@ void main() {
             },
           );
           testWidgets(
-            'should not show AppBarEditButton when cloth is null',
+            'should not show AppBarEditButton when editing is false '
+            'and cloth is null',
             (tester) async {
               // arrange
               await tester.pumpWidget(
@@ -1013,6 +1030,91 @@ void main() {
               );
               // assert
               expect(find.byType(AppBarEditButton), findsNothing);
+            },
+          );
+          testWidgets(
+            'should not show AppBarEditButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarEditButton), findsNothing);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show AppBarCancelButton',
+        () {
+          testWidgets(
+            'should show AppBarCancelButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  MainClothView(
+                    cloth: cloth1,
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarCancelButton), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should not show AppBarCancelButton when editing is false',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarCancelButton), findsNothing);
+            },
+          );
+        },
+      );
+
+      group(
+        'Show AppBarSaveButton',
+        () {
+          testWidgets(
+            'should show AppBarSaveButton when editing is true',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  MainClothView(
+                    cloth: cloth1,
+                    editing: true,
+                  ),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarSaveButton), findsOneWidget);
+            },
+          );
+          testWidgets(
+            'should not show AppBarSaveButton when editing is false',
+            (tester) async {
+              // arrange
+              await tester.pumpWidget(
+                wrapWithApp(
+                  const MainClothView(),
+                ),
+              );
+              // assert
+              expect(find.byType(AppBarSaveButton), findsNothing);
             },
           );
         },
@@ -1083,6 +1185,77 @@ void main() {
           await tester.tap(find.byType(IconButton));
           // assert
           verify(() => mockEditClothBloc.add(EditCloth())).called(1);
+        },
+      );
+    },
+  );
+
+  group(
+    'AppBarCancelButton',
+    () {
+      testWidgets(
+        'should show cancel button',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarCancelButton(),
+            ),
+          );
+          // assert
+          expect(find.byKey(Keys.cancelEditingClothButton), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should add SetCloth event with cloth id on TextButton pressed',
+        (tester) async {
+          // arrange
+          when(() => mockEditClothBloc.state)
+              .thenAnswer((_) => EditClothState(cloth: cloth1));
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarCancelButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(TextButton));
+          // assert
+          verify(() => mockEditClothBloc.add(SetCloth(clothId: cloth1.id)))
+              .called(1);
+        },
+      );
+    },
+  );
+
+  group(
+    'AppBarSaveButton',
+    () {
+      testWidgets(
+        'should show save button',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithApp(
+              const AppBarSaveButton(),
+            ),
+          );
+          // assert
+          expect(find.byKey(Keys.saveClothButton), findsOneWidget);
+        },
+      );
+      testWidgets(
+        'should add SaveCloth event on TextButton pressed',
+        (tester) async {
+          // arrange
+          await tester.pumpWidget(
+            wrapWithBloc(
+              const AppBarSaveButton(),
+            ),
+          );
+          // act
+          await tester.tap(find.byType(TextButton));
+          // assert
+          verify(() => mockEditClothBloc.add(SaveCloth())).called(1);
         },
       );
     },

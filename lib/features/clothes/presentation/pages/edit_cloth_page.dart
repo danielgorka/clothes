@@ -92,6 +92,7 @@ class EditClothView extends StatelessWidget {
 
             return MainClothView(
               cloth: state.cloth,
+              editing: state.editing,
             );
           },
         ),
@@ -103,10 +104,12 @@ class EditClothView extends StatelessWidget {
 @visibleForTesting
 class MainClothView extends StatefulWidget {
   final Cloth? cloth;
+  final bool editing;
 
   const MainClothView({
     Key? key,
     this.cloth,
+    this.editing = false,
   }) : super(key: key);
 
   @override
@@ -124,8 +127,21 @@ class _MainClothViewState extends State<MainClothView> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget leftButton;
+    final Widget rightButton;
+    if (widget.editing) {
+      leftButton = const AppBarCancelButton();
+      rightButton = const AppBarSaveButton();
+    } else {
+      leftButton = const AppBarBackButton();
+      if (widget.cloth != null) {
+        rightButton = const AppBarEditButton();
+      } else {
+        rightButton = Container();
+      }
+    }
+
     Widget content = ListView(
-      key: Keys.editClothListView,
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 8.0),
       children: [
@@ -197,8 +213,14 @@ class _MainClothViewState extends State<MainClothView> {
           key: Keys.editClothTopShadow,
           side: ShadowSide.top,
         ),
-        const AppBarBackButton(),
-        if (widget.cloth != null) const AppBarEditButton(),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: leftButton,
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: rightButton,
+        ),
       ],
     );
   }
@@ -257,12 +279,76 @@ class AppBarEditButton extends StatelessWidget {
             bottom: 12.0,
           ),
           child: IconButton(
-            color: Colors.white,
             key: Keys.editClothButton,
+            color: Colors.white,
             onPressed: () {
               BlocProvider.of<EditClothBloc>(context).add(EditCloth());
             },
             icon: const Icon(Icons.edit_rounded),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class AppBarCancelButton extends StatelessWidget {
+  const AppBarCancelButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 4.0,
+            right: 4.0,
+            top: MediaQuery.of(context).padding.top + 4.0,
+            bottom: 4.0,
+          ),
+          child: TextButton(
+            key: Keys.cancelEditingClothButton,
+            onPressed: () {
+              final bloc = BlocProvider.of<EditClothBloc>(context);
+              final clothId = bloc.state.cloth!.id;
+              bloc.add(
+                SetCloth(clothId: clothId),
+              );
+            },
+            child: Text(context.l10n.cancel),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+@visibleForTesting
+class AppBarSaveButton extends StatelessWidget {
+  const AppBarSaveButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 4.0,
+            right: 4.0,
+            top: MediaQuery.of(context).padding.top + 4.0,
+            bottom: 4.0,
+          ),
+          child: TextButton(
+            key: Keys.saveClothButton,
+            onPressed: () {
+              BlocProvider.of<EditClothBloc>(context).add(SaveCloth());
+            },
+            child: Text(context.l10n.save),
           ),
         ),
       ),
