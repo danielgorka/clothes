@@ -130,7 +130,7 @@ class _MainClothViewState extends State<MainClothView> {
     final Widget leftButton;
     final Widget rightButton;
     if (widget.editing) {
-      leftButton = const AppBarCancelButton();
+      leftButton = Container();
       rightButton = const AppBarSaveButton();
     } else {
       leftButton = const AppBarBackButton();
@@ -293,40 +293,6 @@ class AppBarEditButton extends StatelessWidget {
 }
 
 @visibleForTesting
-class AppBarCancelButton extends StatelessWidget {
-  const AppBarCancelButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Material(
-        color: Colors.transparent,
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: 4.0,
-            right: 4.0,
-            top: MediaQuery.of(context).padding.top + 4.0,
-            bottom: 4.0,
-          ),
-          child: TextButton(
-            key: Keys.cancelEditingClothButton,
-            onPressed: () {
-              final bloc = BlocProvider.of<EditClothBloc>(context);
-              final clothId = bloc.state.cloth!.id;
-              bloc.add(
-                SetCloth(clothId: clothId),
-              );
-            },
-            child: Text(context.l10n.cancel),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-@visibleForTesting
 class AppBarSaveButton extends StatelessWidget {
   const AppBarSaveButton({Key? key}) : super(key: key);
 
@@ -338,17 +304,17 @@ class AppBarSaveButton extends StatelessWidget {
         color: Colors.transparent,
         child: Padding(
           padding: EdgeInsets.only(
-            left: 4.0,
-            right: 4.0,
-            top: MediaQuery.of(context).padding.top + 4.0,
-            bottom: 4.0,
+            left: 12.0,
+            right: 12.0,
+            top: MediaQuery.of(context).padding.top + 8.0,
+            bottom: 12.0,
           ),
-          child: TextButton(
+          child: IconButton(
             key: Keys.saveClothButton,
             onPressed: () {
               BlocProvider.of<EditClothBloc>(context).add(SaveCloth());
             },
-            child: Text(context.l10n.save),
+            icon: const Icon(Icons.check),
           ),
         ),
       ),

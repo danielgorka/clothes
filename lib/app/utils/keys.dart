@@ -22,7 +22,6 @@ abstract class Keys {
       Key('create_cloth_pick__from_gallery_action');
 
   static const editClothButton = Key('edit_cloth_button');
-  static const cancelEditingClothButton = Key('cancel_editing_cloth_button');
   static const saveClothButton = Key('save_cloth_button');
 
   static const editClothTopShadow = Key('edit_cloth_top_shadow');
